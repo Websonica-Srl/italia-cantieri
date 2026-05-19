@@ -5,36 +5,40 @@ import { faqLd, safeJsonLd } from '@/lib/seo/structured-data';
 import BreadcrumbCantiere from '@/components/cantieri/BreadcrumbCantiere';
 
 export const metadata: Metadata = {
-  title: 'Come trattiamo i dati — Trasparenza GDPR',
+  title: 'Come trattiamo i dati — Trasparenza GDPR su fonti, base legale e diritti',
   description:
-    'Spiegazione completa di come Italia Cantieri raccoglie, aggrega e pubblica i dati cantieri da fonti pubbliche, nel rispetto del GDPR.',
+    'Tutto quello che serve sapere sul trattamento dati di Italia Cantieri: fonti pubbliche, base legale GDPR, k-anonymity 5 e modulo opt-out. Risposte chiare entro 30 giorni.',
   alternates: { canonical: '/come-trattiamo-i-dati' },
 };
 
 const faqs = [
   {
     q: 'Da dove provengono i dati pubblicati su Italia Cantieri?',
-    a: 'Esclusivamente da fonti pubbliche e aperte: albo pretorio dei Comuni italiani, open data della Pubblica Amministrazione (es. open data Comune di Bologna, MEPA, portali ANAC), portali appalti regionali. Non raccogliamo dati da fonti private o non autorizzate.',
+    a: "Esclusivamente da fonti pubbliche e aperte: albo pretorio dei Comuni italiani, open data della Pubblica Amministrazione (es. open data Comune di Bologna, MEPA, portali ANAC), portali appalti regionali. Non raccogliamo dati da fonti private ne da soggetti non autorizzati.",
   },
   {
-    q: 'Qual è la base legale del trattamento?',
-    a: 'Art. 6.1.f GDPR (legittimo interesse alla trasparenza pubblica e libertà di informazione su dati di rilevanza pubblicistica) + Art. 14 GDPR (informativa per dati raccolti da terzi). Il trattamento è bilanciato con la tutela dei diritti dei titolari.',
+    q: 'Qual e la base legale del trattamento?',
+    a: 'Art. 6.1.f GDPR (legittimo interesse alla trasparenza pubblica e liberta di informazione su dati di rilevanza pubblicistica) + Art. 14 GDPR (informativa per dati raccolti da terzi). Il trattamento e bilanciato con la tutela dei diritti dei titolari, valutati caso per caso.',
   },
   {
-    q: 'Cosa è la k-anonymity 5 che applicate ai cantieri privati?',
-    a: 'Per cantieri privati (es. ristrutturazioni residenziali), aggreghiamo statisticamente i dati garantendo che ogni gruppo visualizzato contenga almeno 5 cantieri con caratteristiche simili (comune + categoria + mese). Questo impedisce di risalire al singolo cantiere o committente.',
+    q: "Cos'e la k-anonymity 5 che applicate ai cantieri privati?",
+    a: 'Per cantieri privati (es. ristrutturazioni residenziali), aggreghiamo statisticamente i dati garantendo che ogni gruppo visualizzato contenga almeno 5 cantieri con caratteristiche simili (Comune + categoria + mese). Questo impedisce di risalire al singolo cantiere o committente: vedi solo statistiche aggregate, mai schede personali.',
   },
   {
     q: 'Posso richiedere la rimozione di un cantiere che mi riguarda?',
-    a: 'Sì. Ai sensi degli Art. 15-22 GDPR puoi esercitare i diritti di accesso, rettifica, cancellazione, limitazione e opposizione. Scrivi al nostro DPO con allegato documento d\'identità: la richiesta viene presa in carico entro 30 giorni.',
+    a: "Si. Ai sensi degli Art. 15-22 GDPR puoi esercitare i diritti di accesso, rettifica, cancellazione, limitazione e opposizione. Scrivi al nostro DPO con allegato documento d'identita: la richiesta viene presa in carico entro 30 giorni. Trovi il modulo direttamente in ogni scheda cantiere.",
   },
   {
     q: 'Pubblicate i nomi dei committenti privati?',
-    a: 'No, mai. Pubblichiamo solo dati LAYER 1 ufficiali (riferimenti protocollo, indirizzo, tipologia titolo, importo) per cantieri con visibilità pubblica già nell\'albo pretorio. I cantieri privati appaiono solo in forma aggregata anonima (k-anonymity 5).',
+    a: "No, mai. Pubblichiamo solo dati LAYER 1 ufficiali (riferimenti protocollo, indirizzo, tipologia titolo, importo) per cantieri con visibilita pubblica gia presenti nell'albo pretorio. I cantieri privati appaiono solo in forma aggregata anonima (k-anonymity 5).",
   },
   {
     q: 'Come vengono protetti i miei dati di navigazione sul sito?',
-    a: 'Utilizziamo cookie tecnici necessari + cookie analitici opt-in (Google Analytics IP-anonymized). Nessun cookie di marketing attivato di default. Cookie banner attivo su prima visita.',
+    a: 'Utilizziamo solo cookie tecnici necessari + cookie analitici opt-in (Google Analytics con IP anonimizzato). Nessun cookie di marketing attivato di default. Cookie banner attivo sulla prima visita, sempre revocabile.',
+  },
+  {
+    q: 'I dati di Italia Cantieri sono utilizzabili in ambito commerciale?',
+    a: 'I dati pubblicati su questa piattaforma sono accessibili gratuitamente per consultazione. Per utilizzi commerciali strutturati (export massivi, integrazioni API, redistribuzione) e necessario un accordo dedicato: scrivici a info@italiacantieri.it.',
   },
 ];
 
@@ -49,69 +53,79 @@ export default function ComeTrattiamoIDatiPage() {
           <h1 className="heading-section mb-4">Come trattiamo i dati</h1>
           <p className="body-large text-muted-foreground mb-10">
             Italia Cantieri pubblica esclusivamente dati provenienti da fonti pubbliche. Questa pagina spiega in modo
-            trasparente origine dei dati, base legale del trattamento e diritti che puoi esercitare.
+            trasparente origine dei dati, base legale del trattamento, tecniche di anonimizzazione e diritti che puoi
+            esercitare in qualsiasi momento.
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-12">
             <div className="rounded-2xl border border-border bg-white p-5">
               <Database className="h-6 w-6 text-foreground mb-2" />
-              <h3 className="font-semibold mb-1">Fonti pubbliche</h3>
-              <p className="text-sm text-secondary-text">Albi pretori comunali, open data PA, portali appalti regionali, ANAC.</p>
+              <h3 className="font-semibold mb-1">Fonti pubbliche verificate</h3>
+              <p className="text-sm text-secondary-text">
+                Albi pretori comunali, open data PA, portali appalti regionali, ANAC. Ogni fonte e dichiarata in scheda.
+              </p>
             </div>
             <div className="rounded-2xl border border-border bg-white p-5">
               <Scale className="h-6 w-6 text-foreground mb-2" />
-              <h3 className="font-semibold mb-1">Base legale</h3>
-              <p className="text-sm text-secondary-text">Art. 6.1.f GDPR (legittimo interesse) + Art. 14 (informativa).</p>
+              <h3 className="font-semibold mb-1">Base legale GDPR</h3>
+              <p className="text-sm text-secondary-text">
+                Art. 6.1.f (legittimo interesse alla trasparenza) + Art. 14 (informativa terzi).
+              </p>
             </div>
             <div className="rounded-2xl border border-border bg-white p-5">
               <Eye className="h-6 w-6 text-foreground mb-2" />
-              <h3 className="font-semibold mb-1">Trasparenza</h3>
-              <p className="text-sm text-secondary-text">Ogni scheda cantiere dichiara la fonte di provenienza e la data di pubblicazione.</p>
+              <h3 className="font-semibold mb-1">Trasparenza totale</h3>
+              <p className="text-sm text-secondary-text">
+                Ogni scheda cantiere dichiara la fonte di provenienza e la data di pubblicazione originale.
+              </p>
             </div>
             <div className="rounded-2xl border border-border bg-white p-5">
               <UserX className="h-6 w-6 text-foreground mb-2" />
               <h3 className="font-semibold mb-1">k-anonymity 5</h3>
-              <p className="text-sm text-secondary-text">I cantieri privati appaiono solo in aggregati con almeno 5 record per gruppo.</p>
+              <p className="text-sm text-secondary-text">
+                I cantieri privati appaiono solo in aggregati con almeno 5 record per gruppo. Mai dati individuali.
+              </p>
             </div>
           </div>
 
-          <h2 className="text-2xl font-bold mb-6">Cos&apos;è Italia Cantieri</h2>
+          <h2 className="text-2xl font-bold mb-6">Cos&apos;e Italia Cantieri</h2>
           <div className="prose prose-neutral max-w-none mb-12">
             <p>
-              Italia Cantieri è un aggregatore pubblico di informazioni sui cantieri edilizi italiani. Raccogliamo, normalizziamo e
-              pubblichiamo dati provenienti esclusivamente da fonti pubbliche, con l&apos;obiettivo di rendere accessibili e
-              navigabili informazioni che sono già di dominio pubblico ma frammentate fra centinaia di portali comunali e
-              regionali.
+              Italia Cantieri e un aggregatore pubblico di informazioni sui cantieri edilizi italiani. Raccogliamo,
+              normalizziamo e pubblichiamo dati provenienti esclusivamente da fonti pubbliche, con l&apos;obiettivo di
+              rendere accessibili e navigabili informazioni che sono gia di dominio pubblico ma frammentate fra
+              centinaia di portali comunali e regionali.
             </p>
             <p>
-              Il servizio è gestito da <strong>{siteConfig.companyName}</strong> ({siteConfig.companyPiva}) e fa parte del network
-              ItaliaProgettisti.
+              Il servizio e gestito da <strong>{siteConfig.companyName}</strong> ({siteConfig.companyPiva}) e fa parte
+              del network ItaliaProgettisti.
             </p>
           </div>
 
           <h2 className="text-2xl font-bold mb-6">I tuoi diritti GDPR</h2>
           <div className="prose prose-neutral max-w-none mb-12">
-            <p>Ai sensi degli Art. 15-22 GDPR, puoi richiedere:</p>
+            <p>Ai sensi degli Art. 15-22 GDPR, in qualsiasi momento puoi richiedere:</p>
             <ul>
               <li><strong>Accesso</strong> (Art. 15): copia dei dati che ti riguardano.</li>
-              <li><strong>Rettifica</strong> (Art. 16): correzione di dati inesatti.</li>
-              <li><strong>Cancellazione</strong> (Art. 17 – diritto all&apos;oblio).</li>
+              <li><strong>Rettifica</strong> (Art. 16): correzione di dati inesatti o incompleti.</li>
+              <li><strong>Cancellazione</strong> (Art. 17 — diritto all&apos;oblio).</li>
               <li><strong>Limitazione</strong> (Art. 18): sospensione temporanea del trattamento.</li>
-              <li><strong>Portabilità</strong> (Art. 20): ricezione in formato strutturato.</li>
+              <li><strong>Portabilita</strong> (Art. 20): ricezione dei dati in formato strutturato.</li>
               <li><strong>Opposizione</strong> (Art. 21): contestazione del legittimo interesse.</li>
             </ul>
             <p>
-              Per esercitare uno o più diritti, contatta il nostro DPO con allegato documento d&apos;identità.
-              Risposta garantita entro 30 giorni dalla ricezione.
+              Per esercitare uno o piu diritti, contatta il nostro DPO con allegato documento d&apos;identita. Risposta
+              garantita entro 30 giorni dalla ricezione.
             </p>
           </div>
 
           <div id="opt-out" className="rounded-2xl border border-amber-200 bg-amber-50 p-8 mb-12 scroll-mt-24">
             <Mail className="h-6 w-6 text-amber-700 mb-3" />
-            <h2 className="text-2xl font-bold text-amber-900 mb-2">Richiedi opt-out / rimozione</h2>
+            <h2 className="text-2xl font-bold text-amber-900 mb-2">Richiedi opt-out o rimozione</h2>
             <p className="text-amber-900/80 mb-5 leading-relaxed">
-              Se sei il titolare di un cantiere pubblicato e ritieni che il legittimo interesse di Italia Cantieri non prevalga
-              sui tuoi diritti, scrivi al nostro DPO. La tua richiesta sarà valutata individualmente.
+              Se sei il titolare di un cantiere pubblicato e ritieni che il legittimo interesse di Italia Cantieri non
+              prevalga sui tuoi diritti, scrivi al nostro DPO. Ogni richiesta viene valutata individualmente entro 30
+              giorni.
             </p>
             <a
               href={`mailto:${siteConfig.dpoEmail}?subject=Opt-out%20%2F%20rimozione%20dati%20Italia%20Cantieri`}
@@ -121,7 +135,7 @@ export default function ComeTrattiamoIDatiPage() {
             </a>
           </div>
 
-          <h2 className="text-2xl font-bold mb-6">Domande frequenti</h2>
+          <h2 className="text-2xl font-bold mb-6">Domande frequenti GDPR</h2>
           <div className="space-y-4 mb-12">
             {faqs.map((f, i) => (
               <details key={i} className="rounded-2xl border border-border bg-white p-5 group">
@@ -137,9 +151,15 @@ export default function ComeTrattiamoIDatiPage() {
           <div className="rounded-2xl border border-border bg-secondary p-6 text-sm">
             <ShieldCheck className="h-5 w-5 mb-2" />
             <p>
-              <strong>Titolare del trattamento:</strong> {siteConfig.companyName} ({siteConfig.companyPiva})<br />
-              <strong>DPO / Responsabile della protezione dati:</strong> <a href={`mailto:${siteConfig.dpoEmail}`} className="underline">{siteConfig.dpoEmail}</a><br />
-              <strong>Autorità di controllo:</strong> Garante per la Protezione dei Dati Personali (Piazza Venezia 11, Roma).
+              <strong>Titolare del trattamento:</strong> {siteConfig.companyName} ({siteConfig.companyPiva})
+              <br />
+              <strong>DPO / Responsabile della protezione dati:</strong>{' '}
+              <a href={`mailto:${siteConfig.dpoEmail}`} className="underline">
+                {siteConfig.dpoEmail}
+              </a>
+              <br />
+              <strong>Autorita di controllo:</strong> Garante per la Protezione dei Dati Personali (Piazza Venezia 11,
+              Roma).
             </p>
           </div>
         </div>

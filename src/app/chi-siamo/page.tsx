@@ -1,64 +1,81 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { Database, Globe, ShieldCheck, ExternalLink } from 'lucide-react';
+import { Database, Globe, ShieldCheck, ExternalLink, Target, Users } from 'lucide-react';
 import { siteConfig } from '@/lib/site-config';
 import BreadcrumbCantiere from '@/components/cantieri/BreadcrumbCantiere';
+import TrustBadges from '@/components/cantieri/TrustBadges';
+import FAQ from '@/components/cantieri/FAQ';
 
 export const metadata: Metadata = {
-  title: 'Chi siamo',
-  description: `${siteConfig.name} è l'aggregatore pubblico cantieri edilizi italiani. Trasparenza, GDPR, open data.`,
+  title: `Chi siamo — ${siteConfig.name} | Trasparenza, open data, network ItaliaProgettisti`,
+  description: `${siteConfig.name} aggrega i cantieri edilizi pubblici italiani da fonti ufficiali. Servizio editoriale di Websonica S.r.l., parte del network ItaliaProgettisti.`,
   alternates: { canonical: '/chi-siamo' },
 };
+
+const chiSiamoFaq = [
+  {
+    q: 'Chi gestisce Italia Cantieri?',
+    a: 'Italia Cantieri e un servizio editoriale di Websonica S.r.l. (P.IVA 03789340046), parte del network ItaliaProgettisti che dal 2024 connette progettisti, studi e imprese edili in tutta Italia.',
+  },
+  {
+    q: 'Perche e nato Italia Cantieri?',
+    a: 'I dati sui cantieri sono pubblici per legge, ma frammentati su centinaia di portali comunali con formati diversi. Abbiamo creato uno strumento unico che li unifica, normalizza e rende navigabili a tutti: progettisti, imprese, committenti, ricercatori e cittadini.',
+  },
+  {
+    q: 'Italia Cantieri vende dati a terzi?',
+    a: 'No. I dati pubblici restano accessibili gratuitamente sul sito. Il modello di business e basato sulla rete di abbonamenti professionali al network ItaliaProgettisti, dove i professionisti pagano per visibilita, alert e dashboard avanzate.',
+  },
+  {
+    q: 'Posso collaborare o segnalare un Comune da aggiungere?',
+    a: 'Si. Scrivici a info@italiacantieri.it: integriamo nuovi Comuni quando i dati sono accessibili tramite API o albo pretorio digitale. Ogni nuova fonte importata e gratuita per gli utenti.',
+  },
+];
 
 export default function ChiSiamoPage() {
   return (
     <section className="py-12 md:py-16">
       <div className="container-zen max-w-3xl">
         <BreadcrumbCantiere steps={[{ label: 'Chi siamo' }]} />
-        <h1 className="heading-section mb-4">Chi siamo</h1>
-        <p className="body-large text-muted-foreground mb-12">
-          {siteConfig.name} è un servizio editoriale di {siteConfig.companyName} che aggrega e rende navigabili in modo
-          trasparente i dati pubblici sui cantieri edilizi italiani.
+        <h1 className="heading-section mb-4">
+          Rendiamo trasparente l&apos;edilizia italiana.
+        </h1>
+        <p className="body-large text-muted-foreground mb-10">
+          {siteConfig.name} e l&apos;aggregatore pubblico dei cantieri edilizi italiani: un servizio editoriale di{' '}
+          {siteConfig.companyName} che raccoglie, normalizza e rende navigabili i dati gia di dominio pubblico,
+          frammentati fra centinaia di Comuni e portali regionali.
         </p>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-12">
-          <div className="rounded-2xl border border-border bg-white p-6">
-            <Database className="h-6 w-6 mb-3" />
-            <h3 className="font-semibold mb-2">Open data</h3>
-            <p className="text-sm text-secondary-text">
-              Aggreghiamo dati esclusivamente da fonti pubbliche e open data della Pubblica Amministrazione.
-            </p>
-          </div>
-          <div className="rounded-2xl border border-border bg-white p-6">
-            <ShieldCheck className="h-6 w-6 mb-3" />
-            <h3 className="font-semibold mb-2">GDPR-first</h3>
-            <p className="text-sm text-secondary-text">
-              k-anonymity 5 per cantieri privati, opt-out semplice, DPO contattabile.
-            </p>
-          </div>
-          <div className="rounded-2xl border border-border bg-white p-6">
-            <Globe className="h-6 w-6 mb-3" />
-            <h3 className="font-semibold mb-2">Network</h3>
-            <p className="text-sm text-secondary-text">
-              Parte del network ItaliaProgettisti: professionisti, studi, imprese, satelliti verticali.
-            </p>
-          </div>
+        <div className="mb-12">
+          <TrustBadges variant="grid" />
         </div>
 
-        <h2 className="text-2xl font-bold mb-4">La nostra missione</h2>
+        <h2 className="text-2xl font-bold mb-4 inline-flex items-center gap-2">
+          <Target className="h-6 w-6" /> La nostra missione
+        </h2>
         <div className="prose prose-neutral max-w-none mb-12">
           <p>
-            I dati sui cantieri edilizi italiani sono pubblici per legge, ma frammentati su centinaia di portali comunali
-            con formati e interfacce diverse. Italia Cantieri li unifica in un&apos;unica base dati navigabile, ricercabile
-            per regione, provincia, comune e categoria.
+            Crediamo che la <strong>trasparenza pubblica</strong> sia un pilastro del settore edilizio. Progettisti,
+            imprese, committenti e cittadini hanno diritto a un accesso facile alle informazioni che gia esistono nel
+            dominio pubblico, ma che oggi richiedono ore di navigazione su decine di portali comunali eterogenei.
           </p>
           <p>
-            Crediamo nella trasparenza pubblica come pilastro del settore edilizio: progettisti, imprese, committenti e
-            cittadini hanno diritto a un accesso facile alle informazioni che già esistono nel dominio pubblico.
+            Italia Cantieri risolve questo problema: <strong>un solo posto, dati normalizzati, ricerca per Comune</strong>,
+            mappe interattive e schede dettagliate. Tutto gratuito, sempre.
+          </p>
+          <p>
+            Per chi vuole andare oltre la consultazione e trasformare l&apos;informazione in opportunita di business,
+            il network <strong>ItaliaProgettisti</strong> offre alert email, contatti diretti dei professionisti
+            collegati ai cantieri, esportazioni CSV e dashboard intelligence.
           </p>
         </div>
 
-        <h2 className="text-2xl font-bold mb-4">Il network</h2>
+        <h2 className="text-2xl font-bold mb-4 inline-flex items-center gap-2">
+          <Globe className="h-6 w-6" /> Il network
+        </h2>
+        <p className="text-muted-foreground mb-6">
+          Italia Cantieri fa parte di un ecosistema di portali verticali specializzati nel settore edilizia,
+          architettura e design.
+        </p>
         <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-12">
           {siteConfig.network.map((s) => (
             <li key={s.url}>
@@ -74,12 +91,59 @@ export default function ChiSiamoPage() {
           ))}
         </ul>
 
+        <h2 className="text-2xl font-bold mb-4 inline-flex items-center gap-2">
+          <Users className="h-6 w-6" /> Per chi e Italia Cantieri
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-12">
+          <div className="rounded-2xl border border-border bg-white p-5">
+            <h3 className="font-semibold mb-2">Progettisti e studi</h3>
+            <p className="text-sm text-secondary-text">
+              Intercetta i cantieri prima dei competitor, individua opportunita di collaborazione tecnica e farti
+              trovare dai committenti.
+            </p>
+          </div>
+          <div className="rounded-2xl border border-border bg-white p-5">
+            <h3 className="font-semibold mb-2">Imprese edili</h3>
+            <p className="text-sm text-secondary-text">
+              Identifica nuovi appalti privati e pubblici, analizza la concorrenza locale e pianifica strategie
+              commerciali data-driven.
+            </p>
+          </div>
+          <div className="rounded-2xl border border-border bg-white p-5">
+            <h3 className="font-semibold mb-2">Aziende fornitrici</h3>
+            <p className="text-sm text-secondary-text">
+              Trova progettisti e imprese attivi nei tuoi territori e settori target. Segmenta lead per tipologia di
+              opera e importo.
+            </p>
+          </div>
+          <div className="rounded-2xl border border-border bg-white p-5">
+            <h3 className="font-semibold mb-2">Cittadini e ricercatori</h3>
+            <p className="text-sm text-secondary-text">
+              Consulta i lavori in corso nel tuo quartiere, monitora la trasformazione urbana e accedi alle statistiche
+              aggregate per ricerca o giornalismo.
+            </p>
+          </div>
+        </div>
+
+        <FAQ title="Domande frequenti su chi siamo" items={chiSiamoFaq} />
+
         <div className="rounded-2xl border border-border bg-secondary p-6 text-sm">
           <p>
-            <strong>{siteConfig.companyName}</strong> · {siteConfig.companyPiva}<br />
-            Email generica: <a href={`mailto:${siteConfig.email}`} className="underline">{siteConfig.email}</a><br />
-            DPO: <a href={`mailto:${siteConfig.dpoEmail}`} className="underline">{siteConfig.dpoEmail}</a><br />
-            <Link href="/contatti" className="underline">Form contatti</Link>
+            <strong>{siteConfig.companyName}</strong> · {siteConfig.companyPiva}
+            <br />
+            Email generica:{' '}
+            <a href={`mailto:${siteConfig.email}`} className="underline">
+              {siteConfig.email}
+            </a>
+            <br />
+            DPO:{' '}
+            <a href={`mailto:${siteConfig.dpoEmail}`} className="underline">
+              {siteConfig.dpoEmail}
+            </a>
+            <br />
+            <Link href="/contatti" className="underline">
+              Form contatti
+            </Link>
           </p>
         </div>
       </div>
