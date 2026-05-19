@@ -3,9 +3,9 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { HardHat, DraftingCompass, User, ArrowRight, ShieldCheck, Zap, Mail } from 'lucide-react';
 import {
-  URBAN_CRANE,
-  ARCHITECT_BLUEPRINT,
-  URBAN_RENOVATION,
+  INDUSTRIAL_GEOMETRY,
+  ARCHITECT_MODEL,
+  ITALIAN_FACADE,
 } from '@/lib/images/unsplash';
 
 export const metadata: Metadata = {
@@ -38,7 +38,7 @@ const OPTIONS = [
     hubPath: 'register',
     hubParams: '&intent=impresa&type=COMPANY',
     cta: 'Registra la mia impresa',
-    image: URBAN_CRANE,
+    image: INDUSTRIAL_GEOMETRY,
   },
   {
     id: 'studio',
@@ -55,7 +55,7 @@ const OPTIONS = [
     hubPath: 'register',
     hubParams: '&intent=studio&type=STUDIO',
     cta: 'Registra il mio studio',
-    image: ARCHITECT_BLUEPRINT,
+    image: ARCHITECT_MODEL,
   },
   {
     id: 'professionista',
@@ -72,7 +72,7 @@ const OPTIONS = [
     hubPath: 'register',
     hubParams: '&intent=professionista&type=FREELANCE',
     cta: 'Registrami gratis',
-    image: URBAN_RENOVATION,
+    image: ITALIAN_FACADE,
   },
 ];
 
