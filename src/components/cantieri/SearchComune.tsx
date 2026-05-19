@@ -9,6 +9,8 @@ interface ComuneResult {
   comune: string;
   provincia: string;
   regione: string;
+  /** Hint count cantieri (proveniente dall'autocomplete API). */
+  count?: number;
 }
 
 interface Props {
@@ -106,25 +108,51 @@ export default function SearchComune({
       </div>
 
       {open && results.length > 0 && (
-        <div className="absolute top-full mt-2 left-0 right-0 z-50 bg-popover rounded-3xl border border-border shadow-xl overflow-hidden max-h-96 overflow-y-auto">
-          {results.map((r, i) => (
-            <button
-              key={`${r.comune}-${r.provincia}-${i}`}
-              onClick={() => go(r)}
-              onMouseEnter={() => setFocusIdx(i)}
-              className={`w-full px-5 py-3 flex items-center gap-3 text-left transition-colors ${
-                i === focusIdx ? 'bg-secondary' : 'hover:bg-secondary/60'
-              }`}
-            >
-              <MapPin className="h-4 w-4 text-muted-foreground flex-shrink-0" strokeWidth={1.5} />
-              <div className="flex-1 min-w-0">
-                <div className="font-medium text-foreground">{r.comune}</div>
-                <div className="text-xs text-muted-foreground">
-                  {r.provincia} · {r.regione}
+        <div
+          role="listbox"
+          className="absolute top-full mt-2 left-0 right-0 z-50 bg-popover rounded-3xl border border-border shadow-[0_24px_60px_-20px_rgba(17,17,17,0.18)] overflow-hidden max-h-96 overflow-y-auto"
+        >
+          {results.map((r, i) => {
+            const isActive = i === focusIdx;
+            return (
+              <button
+                key={`${r.comune}-${r.provincia}-${i}`}
+                role="option"
+                aria-selected={isActive}
+                onClick={() => go(r)}
+                onMouseEnter={() => setFocusIdx(i)}
+                className={`w-full px-5 py-3.5 flex items-center gap-3 text-left transition-colors ${
+                  isActive ? 'bg-secondary' : 'hover:bg-secondary/60'
+                }`}
+              >
+                <span
+                  className={`inline-flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl transition-colors ${
+                    isActive ? 'bg-foreground text-background' : 'bg-secondary text-foreground/70'
+                  }`}
+                >
+                  <MapPin className="h-4 w-4" strokeWidth={1.5} />
+                </span>
+                <div className="flex-1 min-w-0">
+                  <div className="font-medium text-foreground truncate">{r.comune}</div>
+                  <div className="text-xs text-muted-foreground truncate">
+                    {r.provincia} · {r.regione}
+                  </div>
                 </div>
-              </div>
-            </button>
-          ))}
+                {typeof r.count === 'number' && r.count > 0 && (
+                  <span
+                    className={`flex-shrink-0 rounded-full px-2.5 py-1 text-[11px] font-semibold tabular-nums transition-colors ${
+                      isActive
+                        ? 'bg-foreground text-background'
+                        : 'bg-secondary text-foreground/70 border border-border'
+                    }`}
+                    aria-label={`${r.count} cantieri tracciati`}
+                  >
+                    {r.count >= 100 ? '99+' : r.count}
+                  </span>
+                )}
+              </button>
+            );
+          })}
         </div>
       )}
 

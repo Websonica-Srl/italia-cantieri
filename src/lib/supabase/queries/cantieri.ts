@@ -325,8 +325,13 @@ export async function getAggregatiAnonimiByComune(comune: string): Promise<{
   return { categorie, totale_aggregato };
 }
 
-/** Autocomplete comuni (per search box). */
-export async function searchComuni(q: string, limit = 10): Promise<{ comune: string; provincia: string; regione: string }[]> {
+/** Autocomplete comuni (per search box). Restituisce anche un count
+ *  approssimato di cantieri per comune (numero di record matchati nel
+ *  limite di lookup) - utile come hint visivo in autocomplete. */
+export async function searchComuni(
+  q: string,
+  limit = 10,
+): Promise<{ comune: string; provincia: string; regione: string; count?: number }[]> {
   if (!q || q.length < 2) return [];
   const supabase: any = createServerClient();
   const { data, error } = await supabase
@@ -334,19 +339,20 @@ export async function searchComuni(q: string, limit = 10): Promise<{ comune: str
     .select('comune, provincia, regione')
     .ilike('comune', `${q}%`)
     .eq('is_active', true)
-    .limit(200);
+    .limit(400);
   if (error || !data) return [];
-  // Deduplica per comune (case-insensitive)
-  const seen = new Set<string>();
-  const out: { comune: string; provincia: string; regione: string }[] = [];
+  // Deduplica per comune (case-insensitive) e conta occorrenze come hint
+  const seenMap = new Map<string, { comune: string; provincia: string; regione: string; count: number }>();
   for (const r of data as any[]) {
     const key = (r.comune || '').toLowerCase();
-    if (seen.has(key)) continue;
-    seen.add(key);
-    out.push({ comune: r.comune, provincia: r.provincia, regione: r.regione });
-    if (out.length >= limit) break;
+    const existing = seenMap.get(key);
+    if (existing) {
+      existing.count += 1;
+    } else {
+      seenMap.set(key, { comune: r.comune, provincia: r.provincia, regione: r.regione, count: 1 });
+    }
   }
-  return out;
+  return Array.from(seenMap.values()).slice(0, limit);
 }
 
 /** Lista distinct comuni per sitemap (max 5000). */
