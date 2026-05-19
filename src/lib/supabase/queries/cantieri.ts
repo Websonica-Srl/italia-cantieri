@@ -140,25 +140,26 @@ export async function getGlobalStats(): Promise<{
     supabase.from('cantieri_pubblici').select('importo_lavori').eq('is_active', true).not('importo_lavori', 'is', null).limit(5000),
   ]);
 
-  // Fallback se RPC non esiste: due query separate
+  // Fallback se RPC non esiste: paginazione per superare cap PostgREST 1000.
   let regioni = 0;
   let comuni = 0;
   if (distinctData && Array.isArray(distinctData) && distinctData[0]) {
     regioni = distinctData[0].regioni || 0;
     comuni = distinctData[0].comuni || 0;
   } else {
-    const { data: regs } = await supabase
-      .from('cantieri_pubblici')
-      .select('regione')
-      .eq('is_active', true)
-      .limit(10000);
-    const { data: coms } = await supabase
-      .from('cantieri_pubblici')
-      .select('comune')
-      .eq('is_active', true)
-      .limit(10000);
-    regioni = new Set((regs || []).map((r: any) => r.regione)).size;
-    comuni = new Set((coms || []).map((c: any) => c.comune)).size;
+    const [regs, coms] = await Promise.all([
+      fetchAllPages<{ regione: string }>(() =>
+        supabase.from('cantieri_pubblici').select('regione').eq('is_active', true),
+      ),
+      fetchAllPages<{ comune: string }>(() =>
+        supabase.from('cantieri_pubblici').select('comune').eq('is_active', true),
+      ),
+    ]);
+    // Conta solo regioni "reali" (escludi placeholder "Italia" usato per i bandi).
+    regioni = new Set(
+      regs.map((r) => r.regione).filter((x) => x && x.toLowerCase() !== 'italia'),
+    ).size;
+    comuni = new Set(coms.map((c) => c.comune).filter(Boolean)).size;
   }
 
   const importo_totale = ((importoData as any[]) || []).reduce(
@@ -174,18 +175,40 @@ export async function getGlobalStats(): Promise<{
   };
 }
 
+/**
+ * Helper interno: legge tutti i record di una colonna con paginazione,
+ * bypassando il default cap PostgREST (1000 righe) tramite `.range()`.
+ */
+async function fetchAllPages<T extends Record<string, any>>(
+  buildQuery: () => any,
+  pageSize = 1000,
+  maxPages = 30,
+): Promise<T[]> {
+  const out: T[] = [];
+  for (let i = 0; i < maxPages; i++) {
+    const from = i * pageSize;
+    const to = from + pageSize - 1;
+    const { data, error } = await buildQuery().range(from, to);
+    if (error) {
+      console.error('[cantieri] fetchAllPages error:', error.message);
+      break;
+    }
+    if (!data || data.length === 0) break;
+    out.push(...(data as T[]));
+    if (data.length < pageSize) break; // pagina finale
+  }
+  return out;
+}
+
 /** Conta cantieri per regione (lista regioni con count). */
 export async function getCantieriByRegione(): Promise<{ regione: string; cnt: number }[]> {
   const supabase: any = createServerClient();
-  // Usa RPC se disponibile, altrimenti fallback con query manuale
-  const { data, error } = await supabase
-    .from('cantieri_pubblici')
-    .select('regione')
-    .eq('is_active', true)
-    .limit(10000);
-  if (error || !data) return [];
+  const data = await fetchAllPages<{ regione: string }>(() =>
+    supabase.from('cantieri_pubblici').select('regione').eq('is_active', true),
+  );
   const counts: Record<string, number> = {};
-  for (const r of data as any[]) {
+  for (const r of data) {
+    if (!r.regione) continue;
     counts[r.regione] = (counts[r.regione] || 0) + 1;
   }
   return Object.entries(counts)
@@ -196,15 +219,16 @@ export async function getCantieriByRegione(): Promise<{ regione: string; cnt: nu
 /** Conta cantieri per provincia di una regione. */
 export async function getCantieriByProvincia(regione: string): Promise<{ provincia: string; cnt: number }[]> {
   const supabase: any = createServerClient();
-  const { data, error } = await supabase
-    .from('cantieri_pubblici')
-    .select('provincia')
-    .ilike('regione', regione)
-    .eq('is_active', true)
-    .limit(10000);
-  if (error || !data) return [];
+  const data = await fetchAllPages<{ provincia: string }>(() =>
+    supabase
+      .from('cantieri_pubblici')
+      .select('provincia')
+      .ilike('regione', regione)
+      .eq('is_active', true),
+  );
   const counts: Record<string, number> = {};
-  for (const r of data as any[]) {
+  for (const r of data) {
+    if (!r.provincia) continue;
     counts[r.provincia] = (counts[r.provincia] || 0) + 1;
   }
   return Object.entries(counts)
@@ -215,15 +239,16 @@ export async function getCantieriByProvincia(regione: string): Promise<{ provinc
 /** Conta cantieri per comune di una provincia. */
 export async function getCantieriByComune(provincia: string): Promise<{ comune: string; cnt: number }[]> {
   const supabase: any = createServerClient();
-  const { data, error } = await supabase
-    .from('cantieri_pubblici')
-    .select('comune')
-    .ilike('provincia', provincia)
-    .eq('is_active', true)
-    .limit(10000);
-  if (error || !data) return [];
+  const data = await fetchAllPages<{ comune: string }>(() =>
+    supabase
+      .from('cantieri_pubblici')
+      .select('comune')
+      .ilike('provincia', provincia)
+      .eq('is_active', true),
+  );
   const counts: Record<string, number> = {};
-  for (const r of data as any[]) {
+  for (const r of data) {
+    if (!r.comune) continue;
     counts[r.comune] = (counts[r.comune] || 0) + 1;
   }
   return Object.entries(counts)
@@ -234,14 +259,11 @@ export async function getCantieriByComune(provincia: string): Promise<{ comune: 
 /** Distribuzione tipo_titolo (PDC/SCIA/CILA) nazionale. */
 export async function getTipoTitoloDistribution(): Promise<{ tipo: string; cnt: number }[]> {
   const supabase: any = createServerClient();
-  const { data, error } = await supabase
-    .from('cantieri_pubblici')
-    .select('tipo_titolo')
-    .eq('is_active', true)
-    .limit(10000);
-  if (error || !data) return [];
+  const data = await fetchAllPages<{ tipo_titolo: string | null }>(() =>
+    supabase.from('cantieri_pubblici').select('tipo_titolo').eq('is_active', true),
+  );
   const counts: Record<string, number> = {};
-  for (const r of data as any[]) {
+  for (const r of data) {
     const t = r.tipo_titolo || 'N/D';
     counts[t] = (counts[t] || 0) + 1;
   }
@@ -253,17 +275,17 @@ export async function getTipoTitoloDistribution(): Promise<{ tipo: string; cnt: 
 /** Categorie top per cantieri. */
 export async function getTopCategorie(limit = 10, regione?: string): Promise<{ categoria: string; cnt: number }[]> {
   const supabase: any = createServerClient();
-  let query = supabase
-    .from('cantieri_pubblici')
-    .select('categorie')
-    .eq('is_active', true)
-    .not('categorie', 'is', null);
-  if (regione) query = query.ilike('regione', regione);
-  query = query.limit(10000);
-  const { data, error } = await query;
-  if (error || !data) return [];
+  const data = await fetchAllPages<{ categorie: string[] | null }>(() => {
+    let q = supabase
+      .from('cantieri_pubblici')
+      .select('categorie')
+      .eq('is_active', true)
+      .not('categorie', 'is', null);
+    if (regione) q = q.ilike('regione', regione);
+    return q;
+  });
   const counts: Record<string, number> = {};
-  for (const r of data as any[]) {
+  for (const r of data) {
     for (const c of (r.categorie || []) as string[]) {
       counts[c] = (counts[c] || 0) + 1;
     }
@@ -283,12 +305,18 @@ export async function getRegioneStats(regione: string): Promise<{
   top_categorie: { categoria: string; cnt: number }[];
 }> {
   const supabase: any = createServerClient();
-  const [{ count }, { data: rows }, top_categorie] = await Promise.all([
+  const [{ count }, rows, top_categorie] = await Promise.all([
     supabase.from('cantieri_pubblici').select('id', { count: 'exact', head: true }).ilike('regione', regione).eq('is_active', true),
-    supabase.from('cantieri_pubblici').select('provincia, comune, importo_lavori').ilike('regione', regione).eq('is_active', true).limit(10000),
+    fetchAllPages<{ provincia: string; comune: string; importo_lavori: number | null }>(() =>
+      supabase
+        .from('cantieri_pubblici')
+        .select('provincia, comune, importo_lavori')
+        .ilike('regione', regione)
+        .eq('is_active', true),
+    ),
     getTopCategorie(8, regione),
   ]);
-  const r = (rows as any[]) || [];
+  const r = rows || [];
   const province = new Set(r.map((x) => x.provincia)).size;
   const comuni = new Set(r.map((x) => x.comune)).size;
   const importo_totale = r.reduce((s, x) => s + (Number(x.importo_lavori) || 0), 0);

@@ -3,7 +3,8 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { Calendar, MapPin, FileText, Hash, Tag, Database, Building2 } from 'lucide-react';
 import { getCantiereBySlug, countFirmsByComune } from '@/lib/supabase/queries/cantieri';
-import { formatDate, formatEuro, formatNumber, regioneSlug, provinciaSlug, slugify } from '@/lib/utils';
+import { formatDate, formatEuro, formatNumber, regioneSlug, slugify } from '@/lib/utils';
+import { provinciaSlugFromCode, provinciaNameFromCode } from '@/lib/province';
 import { cantiereLd, safeJsonLd } from '@/lib/seo/structured-data';
 import { siteConfig } from '@/lib/site-config';
 import BreadcrumbCantiere from '@/components/cantieri/BreadcrumbCantiere';
@@ -91,7 +92,7 @@ export default async function CantierePage({ params }: PageProps) {
             steps={[
               { label: 'Regioni', href: '/regioni' },
               { label: c.regione, href: `/${regioneSlug(c.regione)}` },
-              { label: `Provincia di ${c.provincia}`, href: `/${regioneSlug(c.regione)}/${provinciaSlug(c.provincia)}` },
+              { label: `Provincia di ${provinciaNameFromCode(c.provincia)}`, href: `/${regioneSlug(c.regione)}/${provinciaSlugFromCode(c.provincia)}` },
               { label: c.comune, href: `/comune/${slugify(c.comune)}` },
               { label: c.protocollo || c.slug },
             ]}

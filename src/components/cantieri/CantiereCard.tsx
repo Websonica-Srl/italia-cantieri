@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { MapPin, Calendar, FileText, ArrowRight } from 'lucide-react';
 import { Cantiere } from '@/lib/supabase/queries/cantieri';
-import { formatDateShort, formatEuro, truncate, slugify } from '@/lib/utils';
+import { formatDateShort, formatEuro, truncate } from '@/lib/utils';
 
 interface Props {
   cantiere: Cantiere;
@@ -39,9 +39,7 @@ export default function CantiereCard({ cantiere, compact = false }: Props) {
         <MapPin className="h-3.5 w-3.5 mt-0.5 flex-shrink-0" />
         <span className="line-clamp-1">
           {indirizzoBreve ? `${indirizzoBreve}, ` : ''}
-          <Link href={`/comune/${slugify(cantiere.comune)}`} className="text-foreground hover:underline">
-            {cantiere.comune}
-          </Link>{' '}
+          <span className="font-medium text-foreground">{cantiere.comune}</span>{' '}
           ({cantiere.provincia})
         </span>
       </div>

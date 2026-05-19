@@ -7,7 +7,8 @@ import {
   getAllCantieriSlugs,
 } from '@/lib/supabase/queries/cantieri';
 import { getAllBandiSlugs } from '@/lib/supabase/queries/bandi';
-import { regioneSlug, provinciaSlug, slugify } from '@/lib/utils';
+import { regioneSlug, slugify } from '@/lib/utils';
+import { provinciaSlugFromCode } from '@/lib/province';
 
 export const revalidate = 3600;
 
@@ -45,7 +46,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Province (per ogni regione)
   const province = await getAllProvince();
   const provinciaPages: MetadataRoute.Sitemap = province.slice(0, 200).map((p) => ({
-    url: `${baseUrl}/${regioneSlug(p.regione)}/${provinciaSlug(p.provincia)}`,
+    url: `${baseUrl}/${regioneSlug(p.regione)}/${provinciaSlugFromCode(p.provincia)}`,
     lastModified: now,
     changeFrequency: 'daily',
     priority: 0.75,

@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { MapPin, ArrowRight, Bell, ShieldCheck } from 'lucide-react';
@@ -9,14 +8,14 @@ import {
   getCantieriByRegione,
   getRegioneStats,
 } from '@/lib/supabase/queries/cantieri';
-import { regioneFromSlug, regioneSlug, provinciaSlug, formatNumber } from '@/lib/utils';
+import { regioneSlug, formatNumber } from '@/lib/utils';
+import { provinciaSlugFromCode, provinciaNameFromCode } from '@/lib/province';
 import BreadcrumbCantiere from '@/components/cantieri/BreadcrumbCantiere';
 import StatsBox from '@/components/cantieri/StatsBox';
 import CantiereCard from '@/components/cantieri/CantiereCard';
 import BarChart from '@/components/cantieri/BarChart';
 import FAQ from '@/components/cantieri/FAQ';
 import DividerOrnament from '@/components/cantieri/DividerOrnament';
-import { getRegionHero } from '@/lib/images/unsplash';
 
 export const revalidate = 3600;
 
@@ -76,47 +75,35 @@ export default async function RegionePage({ params }: PageProps) {
     },
   ];
 
-  const hero = getRegionHero(regioneNome);
-
   return (
     <>
-      {/* HERO regione — immagine contestuale Unsplash */}
+      {/* HERO regione — minimal HUB-aligned, sfondo cream, NO immagine */}
       <section
-        className="relative overflow-hidden isolate -mt-20"
-        style={{ minHeight: 'clamp(480px, 65vh, 680px)' }}
+        className="relative bg-background pt-32 pb-12 md:pt-40 md:pb-16"
         aria-labelledby="regione-hero-heading"
       >
-        <div className="absolute inset-0 -z-10">
-          <Image
-            src={hero.src}
-            alt={`${regioneNome} — ${hero.alt}`}
-            fill
-            priority
-            sizes="100vw"
-            className="object-cover object-center"
-          />
-        </div>
-        <div aria-hidden="true" className="hero-overlay absolute inset-0 -z-10" />
-
-        <div className="container-zen relative h-full flex flex-col justify-end pt-28 md:pt-32 pb-12 md:pb-16">
-          <div className="max-w-3xl">
-            <div className="mb-5 text-white/85">
+        <div className="container-zen">
+          <div className="max-w-4xl">
+            <div className="mb-6">
               <BreadcrumbCantiere
                 steps={[{ label: 'Regioni', href: '/regioni' }, { label: regioneNome }]}
-                inverted
               />
             </div>
-            <p className="eyebrow eyebrow-light mb-5">
+            <p className="mb-8 inline-flex items-center gap-2.5 text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
               <ShieldCheck className="h-3.5 w-3.5" strokeWidth={2} />
               <span>Dati pubblici · Aggiornati ogni giorno</span>
             </p>
-            <h1 id="regione-hero-heading" className="heading-cinematic text-white mb-5">
+            <h1
+              id="regione-hero-heading"
+              className="font-black tracking-[-0.05em] leading-[0.92] text-foreground text-balance mb-8"
+              style={{ fontSize: 'clamp(2.5rem, 6vw + 0.5rem, 5.5rem)' }}
+            >
               Cantieri edilizi
               <br className="hidden sm:block" />
-              in <span className="text-white/65">{regioneNome}</span>.
+              in <span className="italic font-black text-construction">{regioneNome}</span>.
             </h1>
-            <p className="body-large text-white/85 max-w-2xl">
-              <span className="stat-display text-white text-2xl md:text-3xl mr-1.5">
+            <p className="text-lg md:text-xl font-light leading-relaxed text-secondary-text max-w-2xl">
+              <span className="font-black tabular-nums text-foreground text-2xl md:text-3xl mr-1.5 tracking-tight">
                 {formatNumber(stats.totale)}
               </span>
               cantieri attivi in {regioneNome}, distribuiti su {stats.province} province
@@ -126,7 +113,7 @@ export default async function RegionePage({ params }: PageProps) {
         </div>
       </section>
 
-    <section className="py-16 md:py-24">
+    <section className="pb-20 md:pb-28">
       <div className="container-zen">
         <StatsBox
           items={[
@@ -169,26 +156,29 @@ export default async function RegionePage({ params }: PageProps) {
             </p>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
-            {province.map((p) => (
-              <Link
-                key={p.provincia}
-                href={`/${params.regione}/${provinciaSlug(p.provincia)}`}
-                aria-label={`Vedi i cantieri in provincia di ${p.provincia}`}
-                className="group rounded-2xl border border-border bg-white p-4 md:p-5 transition-all duration-300 hover:-translate-y-0.5 hover:border-foreground/25 hover:shadow-[0_12px_30px_-12px_rgba(17,17,17,0.14)]"
-              >
-                <div className="flex items-center justify-between gap-2 mb-1.5">
-                  <div className="flex items-center gap-2 min-w-0">
-                    <MapPin className="h-3.5 w-3.5 flex-shrink-0 text-muted-foreground group-hover:text-foreground transition-colors" strokeWidth={1.5} />
-                    <span className="font-semibold uppercase tracking-wider text-sm truncate">{p.provincia}</span>
+            {province.map((p) => {
+              const provName = provinciaNameFromCode(p.provincia);
+              return (
+                <Link
+                  key={p.provincia}
+                  href={`/${params.regione}/${provinciaSlugFromCode(p.provincia)}`}
+                  aria-label={`Vedi i cantieri in provincia di ${provName}`}
+                  className="group rounded-2xl border border-border bg-white p-4 md:p-5 transition-all duration-300 hover:-translate-y-0.5 hover:border-foreground/25 hover:shadow-[0_12px_30px_-12px_rgba(17,17,17,0.14)]"
+                >
+                  <div className="flex items-center justify-between gap-2 mb-1.5">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <MapPin className="h-3.5 w-3.5 flex-shrink-0 text-muted-foreground group-hover:text-foreground transition-colors" strokeWidth={1.5} />
+                      <span className="font-semibold text-sm truncate tracking-tight">{provName}</span>
+                    </div>
+                    <ArrowRight
+                      className="h-3 w-3 flex-shrink-0 text-muted-foreground/50 opacity-0 -translate-x-1 transition-all duration-300 group-hover:opacity-100 group-hover:translate-x-0 group-hover:text-foreground"
+                      strokeWidth={2}
+                    />
                   </div>
-                  <ArrowRight
-                    className="h-3 w-3 flex-shrink-0 text-muted-foreground/50 opacity-0 -translate-x-1 transition-all duration-300 group-hover:opacity-100 group-hover:translate-x-0 group-hover:text-foreground"
-                    strokeWidth={2}
-                  />
-                </div>
-                <div className="text-xs text-muted-foreground tabular-nums">{formatNumber(p.cnt)} cantieri</div>
-              </Link>
-            ))}
+                  <div className="text-xs text-muted-foreground tabular-nums">{formatNumber(p.cnt)} cantieri · {p.provincia}</div>
+                </Link>
+              );
+            })}
           </div>
         </div>
 

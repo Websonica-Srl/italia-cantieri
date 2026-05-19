@@ -8,7 +8,8 @@ import {
   getCantieriByProvincia,
   getCantieriByRegione,
 } from '@/lib/supabase/queries/cantieri';
-import { regioneFromSlug, regioneSlug, provinciaSlug, slugify, formatNumber } from '@/lib/utils';
+import { regioneSlug, slugify, formatNumber } from '@/lib/utils';
+import { provinciaCodeFromSlug, provinciaNameFromCode } from '@/lib/province';
 import BreadcrumbCantiere from '@/components/cantieri/BreadcrumbCantiere';
 import CantiereCard from '@/components/cantieri/CantiereCard';
 import StatsBox from '@/components/cantieri/StatsBox';
@@ -26,10 +27,16 @@ async function resolveRegione(slug: string): Promise<string | null> {
   return hit ? hit.regione : null;
 }
 
+/**
+ * Risolve uno slug provincia (es. "torino") nella sigla 2-lettere DB (TO).
+ * Verifica anche che la sigla sia realmente presente nella regione richiesta:
+ * cosi /lombardia/torino → 404 anche se TO esiste nel DB.
+ */
 async function resolveProvincia(regione: string, slug: string): Promise<string | null> {
+  const code = provinciaCodeFromSlug(slug);
+  if (!code) return null;
   const list = await getCantieriByProvincia(regione);
-  const target = slug.toLowerCase();
-  const hit = list.find((p) => provinciaSlug(p.provincia) === target);
+  const hit = list.find((p) => p.provincia.toUpperCase() === code);
   return hit ? hit.provincia : null;
 }
 
@@ -38,9 +45,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   if (!reg) return { title: 'Provincia non trovata' };
   const prov = await resolveProvincia(reg, params.provincia);
   if (!prov) return { title: 'Provincia non trovata' };
+  const provName = provinciaNameFromCode(prov);
   return {
-    title: `Cantieri provincia di ${prov} (${reg}) — Italia Cantieri`,
-    description: `Permessi di costruire e SCIA nella provincia di ${prov}, regione ${reg}.`,
+    title: `Cantieri provincia di ${provName} (${reg}) — Italia Cantieri`,
+    description: `Permessi di costruire e SCIA nella provincia di ${provName}, regione ${reg}.`,
     alternates: { canonical: `/${params.regione}/${params.provincia}` },
   };
 }
@@ -50,6 +58,8 @@ export default async function ProvinciaPage({ params }: PageProps) {
   if (!reg) notFound();
   const prov = await resolveProvincia(reg, params.provincia);
   if (!prov) notFound();
+
+  const provName = provinciaNameFromCode(prov);
 
   const [comuni, recenti] = await Promise.all([
     getCantieriByComune(prov),
@@ -66,12 +76,12 @@ export default async function ProvinciaPage({ params }: PageProps) {
           steps={[
             { label: 'Regioni', href: '/regioni' },
             { label: reg, href: `/${params.regione}` },
-            { label: `Provincia di ${prov}` },
+            { label: `Provincia di ${provName}` },
           ]}
         />
-        <h1 className="heading-section mb-3">Cantieri in provincia di {prov}</h1>
+        <h1 className="heading-section mb-3">Cantieri in provincia di {provName}</h1>
         <p className="body-default text-muted-foreground mb-10 max-w-2xl">
-          {formatNumber(totale)} cantieri tracciati nella provincia di {prov} ({reg}), distribuiti su {comuni.length}{' '}
+          {formatNumber(totale)} cantieri tracciati nella provincia di {provName} ({reg}), distribuiti su {comuni.length}{' '}
           comuni.
         </p>
 
@@ -86,7 +96,7 @@ export default async function ProvinciaPage({ params }: PageProps) {
 
         {/* COMUNI */}
         <div className="mt-12">
-          <h2 className="text-xl font-semibold mb-4">Comuni della provincia di {prov}</h2>
+          <h2 className="text-xl font-semibold mb-4">Comuni della provincia di {provName}</h2>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
             {comuni.map((c) => (
               <Link
@@ -106,7 +116,7 @@ export default async function ProvinciaPage({ params }: PageProps) {
 
         {/* CANTIERI RECENTI */}
         <div className="mt-12">
-          <h2 className="text-xl font-semibold mb-6">Cantieri recenti in provincia di {prov}</h2>
+          <h2 className="text-xl font-semibold mb-6">Cantieri recenti in provincia di {provName}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {recenti.data.map((c) => (
               <CantiereCard key={c.id} cantiere={c} />

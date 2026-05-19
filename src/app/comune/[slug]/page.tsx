@@ -8,7 +8,8 @@ import {
   countFirmsByComune,
   getAllComuni,
 } from '@/lib/supabase/queries/cantieri';
-import { slugify, formatNumber, formatEuro, regioneSlug, provinciaSlug } from '@/lib/utils';
+import { slugify, formatNumber, formatEuro, regioneSlug } from '@/lib/utils';
+import { provinciaSlugFromCode, provinciaNameFromCode } from '@/lib/province';
 import BreadcrumbCantiere from '@/components/cantieri/BreadcrumbCantiere';
 import StatsBox from '@/components/cantieri/StatsBox';
 import CantiereCard from '@/components/cantieri/CantiereCard';
@@ -81,7 +82,7 @@ export default async function ComunePage({ params }: PageProps) {
           steps={[
             { label: 'Regioni', href: '/regioni' },
             { label: meta.regione, href: `/${regioneSlug(meta.regione)}` },
-            { label: `Provincia di ${meta.provincia}`, href: `/${regioneSlug(meta.regione)}/${provinciaSlug(meta.provincia)}` },
+            { label: `Provincia di ${provinciaNameFromCode(meta.provincia)}`, href: `/${regioneSlug(meta.regione)}/${provinciaSlugFromCode(meta.provincia)}` },
             { label: meta.comune },
           ]}
         />

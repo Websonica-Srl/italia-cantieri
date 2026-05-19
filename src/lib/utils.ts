@@ -81,12 +81,19 @@ export function regioneFromSlug(slug: string): string {
 }
 
 /**
- * Province italiane: sigla 2 lettere (BO, MI, TO, ...).
- * Per route /[regione]/[provincia] usiamo slug nome esteso (es. "torino")
- * o sigla lowercase ("to"). Decidiamo: slug nome esteso.
+ * Province italiane: il DB memorizza la sigla 2 lettere (BO, MI, TO, ...).
+ * Le URL del sito usano lo slug del nome esteso (es. "TO" → "torino"),
+ * coerente con la convenzione editoriale italiaprogettisti.com.
+ *
+ * @deprecated Usa `provinciaSlugFromCode` da `@/lib/province` per ottenere lo slug
+ * canonico (es. "torino"). Questa funzione adesso e' un wrapper di compatibilita.
  */
 export function provinciaSlug(provinciaSigla: string): string {
-  return provinciaSigla.toLowerCase();
+  // Lazy import per evitare cicli — ma in pratica e' un re-export sicuro.
+  // Mantieni signature stabile per i call-site legacy.
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const { provinciaSlugFromCode } = require('./province') as typeof import('./province');
+  return provinciaSlugFromCode(provinciaSigla);
 }
 
 /**
