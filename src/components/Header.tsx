@@ -8,6 +8,7 @@ const navItems = [
   { label: 'Cantieri per regione', href: '/regioni' },
   { label: 'Bandi pubblici', href: '/bandi' },
   { label: 'Statistiche', href: '/statistiche' },
+  { label: 'Glossario', href: '/glossario' },
   { label: 'Chi siamo', href: '/chi-siamo' },
   { label: 'Trasparenza dati', href: '/come-trattiamo-i-dati' },
 ];

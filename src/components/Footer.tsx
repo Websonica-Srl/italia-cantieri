@@ -57,6 +57,9 @@ export default function Footer() {
                 <li><FooterLink href="/regioni">Cantieri per regione</FooterLink></li>
                 <li><FooterLink href="/bandi">Bandi pubblici</FooterLink></li>
                 <li><FooterLink href="/statistiche">Statistiche nazionali</FooterLink></li>
+                <li><FooterLink href="/glossario">Glossario edilizia</FooterLink></li>
+                <li><FooterLink href="/per-pubbliche-amministrazioni">Per la PA</FooterLink></li>
+                <li><FooterLink href="/api-pubbliche">API & sviluppatori</FooterLink></li>
                 <li><FooterLink href="/chi-siamo">Chi siamo</FooterLink></li>
                 <li><FooterLink href="/contatti">Contatti</FooterLink></li>
               </ul>
@@ -130,6 +133,19 @@ export default function Footer() {
         <p className="mt-3 text-xs text-background/40 max-w-3xl">
           {siteConfig.companyName} · {siteConfig.companyPiva} · Dati aggregati a fini informativi · Base legale: Art. 6.1.f GDPR (legittimo interesse)
         </p>
+
+        {/* Press kit per giornalisti — citazione standardizzata */}
+        <div className="mt-8 pt-6 border-t border-background/10">
+          <p className="text-xs text-background/55 mb-2 font-semibold uppercase tracking-[0.18em]">
+            Press kit per giornalisti
+          </p>
+          <p className="text-xs text-background/45 max-w-4xl leading-relaxed">
+            <strong className="text-background/65">Italia Cantieri</strong> aggrega dati pubblici da: Open Data Comune di Bologna (1.759 cantieri),
+            portali Maggioli (5 Comuni del Piemonte), Albo Pretorio Comune di Torino, archivi regionali appalti.
+            Per richieste stampa, dati certificati o interviste contattare <a href="mailto:info@italiacantieri.it" className="underline hover:text-background">info@italiacantieri.it</a>.
+            Citazione consigliata: <em>&ldquo;Italia Cantieri – database pubblico cantieri edilizi italiani (italiacantieri.it)&rdquo;</em>.
+          </p>
+        </div>
       </div>
     </footer>
   );

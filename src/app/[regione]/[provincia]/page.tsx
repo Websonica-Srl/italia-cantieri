@@ -13,6 +13,7 @@ import { provinciaCodeFromSlug, provinciaNameFromCode } from '@/lib/province';
 import BreadcrumbCantiere from '@/components/cantieri/BreadcrumbCantiere';
 import CantiereCard from '@/components/cantieri/CantiereCard';
 import StatsBox from '@/components/cantieri/StatsBox';
+import { ogImageUrl } from '@/lib/seo/structured-data';
 
 export const revalidate = 3600;
 
@@ -46,8 +47,17 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const prov = await resolveProvincia(reg, params.provincia);
   if (!prov) return { title: 'Provincia non trovata' };
   const provName = provinciaNameFromCode(prov);
+  // Conta cantieri della provincia per OG count
+  const { total } = await getCantieri({ regione: reg, provincia: prov, limit: 1 });
   const title = `Cantieri in provincia di ${provName} (${reg}) — PDC, SCIA e CILA`;
   const description = `Permessi di costruire, SCIA e CILA nella provincia di ${provName}, ${reg}. Esplora i Comuni e i cantieri pubblicati negli ultimi giorni dagli albi pretori.`;
+  const ogImage = ogImageUrl({
+    title: `Cantieri in provincia di ${provName}`,
+    subtitle: `${reg} · PDC, SCIA, CILA aggiornati dagli albi pretori`,
+    kind: 'regione',
+    count: formatNumber(total),
+    label: 'cantieri tracciati',
+  });
   return {
     title,
     description,
@@ -57,6 +67,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       description,
       url: `/${params.regione}/${params.provincia}`,
       type: 'website',
+      images: [{ url: ogImage, width: 1200, height: 630, alt: `Cantieri provincia di ${provName}` }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `Cantieri in provincia di ${provName} (${reg})`,
+      description,
+      images: [ogImage],
     },
   };
 }

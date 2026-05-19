@@ -11,8 +11,19 @@ import { regioneSlug, formatNumber, formatEuro } from '@/lib/utils';
 import BreadcrumbCantiere from '@/components/cantieri/BreadcrumbCantiere';
 import FAQ from '@/components/cantieri/FAQ';
 import DividerOrnament from '@/components/cantieri/DividerOrnament';
+import { ogImageUrl, datasetLd, safeJsonLd } from '@/lib/seo/structured-data';
+import { siteConfig } from '@/lib/site-config';
 
 export const revalidate = 3600;
+
+// OG image dinamica (popolata in pagina con count reale via metadata async)
+const ogImage = ogImageUrl({
+  title: 'Statistiche cantieri edilizi in Italia',
+  subtitle: 'Distribuzione per regione, tipologia (PDC, SCIA, CILA), categorie e importi',
+  kind: 'stats',
+  count: '8.880',
+  label: 'cantieri analizzati',
+});
 
 export const metadata: Metadata = {
   title: 'Statistiche cantieri edilizi in Italia — Dati nazionali aggregati',
@@ -25,6 +36,14 @@ export const metadata: Metadata = {
       'Distribuzione cantieri per regione, tipologia (PDC, SCIA, CILA), categorie e importi. Numeri aggregati nazionali da fonti pubbliche.',
     url: '/statistiche',
     type: 'website',
+    images: [{ url: ogImage, width: 1200, height: 630, alt: 'Statistiche cantieri edilizi in Italia' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Statistiche cantieri edilizi in Italia',
+    description:
+      'Distribuzione cantieri per regione, tipologia (PDC, SCIA, CILA), categorie e importi.',
+    images: [ogImage],
   },
 };
 
@@ -81,9 +100,65 @@ export default async function StatistichePage() {
   // Max for region bars
   const maxRegione = Math.max(...regioni.map((r) => r.cnt), 1);
 
+  // HIGH-4: Schema Dataset per Google Dataset Search + AI engines
+  const datasetSchema = datasetLd({
+    name: 'Italia Cantieri — Dataset pubblico cantieri edilizi italiani',
+    description: `Aggregazione dei cantieri edilizi pubblicati negli albi pretori comunali e nei portali open data della Pubblica Amministrazione italiana. Include permessi di costruire (PDC), SCIA, CILA con dati geolocalizzati, tipologia titolo, importo lavori, superficie, categoria intervento, data pubblicazione. Copertura attuale: ${stats.totale} cantieri tracciati su ${stats.comuni} Comuni e ${stats.regioni} regioni.`,
+    url: `${siteConfig.baseUrl}/statistiche`,
+    dateModified: new Date().toISOString().split('T')[0],
+    temporalCoverage: '2024-01-01/..',
+    spatialCoverageRegions: regioni.slice(0, 20).map((r) => r.regione),
+    keywords: [
+      'cantieri edilizi',
+      'permessi di costruire',
+      'PDC',
+      'SCIA',
+      'CILA',
+      'open data Italia',
+      'albo pretorio',
+      'edilizia pubblica',
+      'database cantieri',
+      'intelligence edilizia',
+    ],
+    distributions: [
+      {
+        url: `${siteConfig.baseUrl}/api/cantieri`,
+        encodingFormat: 'application/json',
+        name: 'API JSON pubblica cantieri',
+      },
+      {
+        url: `${siteConfig.baseUrl}/sitemap.xml`,
+        encodingFormat: 'application/xml',
+        name: 'Sitemap cantieri (URL list)',
+      },
+    ],
+    variableMeasured: [
+      { name: 'tipo_titolo', description: 'Tipologia atto edilizio (PDC, SCIA, CILA, ecc.)' },
+      { name: 'comune', description: 'Comune italiano in cui è ubicato il cantiere' },
+      { name: 'provincia', description: 'Sigla provinciale ISTAT' },
+      { name: 'regione', description: 'Regione amministrativa italiana' },
+      { name: 'importo_lavori', description: 'Importo dichiarato dei lavori in EUR' },
+      { name: 'superficie_mq', description: 'Superficie totale in metri quadri' },
+      { name: 'data_pubblicazione', description: 'Data di pubblicazione sull\'albo pretorio' },
+      { name: 'fonte_tipo', description: 'Tipologia fonte (open_data_PA, albo_pretorio, ecc.)' },
+      { name: 'categorie', description: 'Categorie di lavori OG/OS dell\'intervento' },
+      { name: 'coordinate', description: 'Coordinate geografiche geocoded (lat/lng)' },
+    ],
+    license: 'https://creativecommons.org/licenses/by/4.0/',
+    recordCount: stats.totale,
+  });
+
   return (
     <section className="pt-32 md:pt-40 pb-12 md:pb-16">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(datasetSchema) }}
+      />
       <div className="container-zen">
+        {/* HIGH-3 Featured Snippet: risposta DIRETTA in posizione visibile sopra hero */}
+        <p className="sr-only">
+          Le statistiche di Italia Cantieri aggregano in tempo reale {formatNumber(stats.totale)} cantieri edilizi pubblicati su {stats.comuni} Comuni e {stats.regioni} regioni italiane. I dati includono permessi di costruire (PDC), SCIA e CILA con tipologia titolo, importo lavori (valore totale tracciato: {formatEuro(stats.importo_totale, { compact: true })}), superficie, categoria di intervento e geolocalizzazione. Fonte: albi pretori comunali e open data della Pubblica Amministrazione italiana, aggiornati ogni ora.
+        </p>
         <BreadcrumbCantiere steps={[{ label: 'Statistiche nazionali' }]} />
 
         {/* HEADER EDITORIAL — typography drammatica */}

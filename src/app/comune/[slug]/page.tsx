@@ -16,6 +16,7 @@ import CantiereCard from '@/components/cantieri/CantiereCard';
 import CrossLinkCorrelati from '@/components/cantieri/CrossLinkCorrelati';
 import BarChart from '@/components/cantieri/BarChart';
 import FAQ from '@/components/cantieri/FAQ';
+import { ogImageUrl } from '@/lib/seo/structured-data';
 
 export const revalidate = 3600;
 
@@ -33,8 +34,16 @@ async function resolveComune(slug: string): Promise<{ comune: string; provincia:
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const comune = await resolveComune(params.slug);
   if (!comune) return { title: 'Comune non trovato' };
+  const { total } = await getCantieri({ comune: comune.comune, limit: 1 });
   const title = `Cantieri edilizi a ${comune.comune} (${comune.provincia}) — Permessi PDC, SCIA e CILA`;
   const description = `Tutti i cantieri attivi a ${comune.comune} (${comune.provincia}, ${comune.regione}): permessi di costruire, SCIA, CILA e bandi pubblici. Dati ufficiali aggiornati ogni giorno dall'albo pretorio comunale.`;
+  const ogImage = ogImageUrl({
+    title: `Cantieri edilizi a ${comune.comune}`,
+    subtitle: `${comune.provincia}, ${comune.regione} · Dati dall'albo pretorio`,
+    kind: 'comune',
+    count: formatNumber(total),
+    label: 'cantieri pubblicati',
+  });
   return {
     title,
     description,
@@ -44,6 +53,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       description,
       url: `/comune/${params.slug}`,
       type: 'website',
+      images: [{ url: ogImage, width: 1200, height: 630, alt: `Cantieri edilizi a ${comune.comune}` }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `Cantieri edilizi a ${comune.comune}`,
+      description,
+      images: [ogImage],
     },
   };
 }

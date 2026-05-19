@@ -13,6 +13,7 @@ import {
   getKpiStats,
 } from '@/lib/supabase/queries/cantieri';
 import { regioneSlug, formatNumber } from '@/lib/utils';
+import { ogImageUrl, howToLd, safeJsonLd } from '@/lib/seo/structured-data';
 
 export const revalidate = 3600; // ISR ogni ora
 
@@ -21,7 +22,63 @@ export const metadata: Metadata = {
   description:
     'Database cantieri italiano in espansione: oltre 6.500 cantieri tracciati, 38.000 soggetti analizzati e 37.000 imprese e studi nel network. Permessi di costruire, SCIA, CILA e bandi pubblici aggregati settimanalmente da fonti pubbliche.',
   alternates: { canonical: '/' },
+  openGraph: {
+    title: 'Italia Cantieri — Sai prima dove si lavora in Italia',
+    description:
+      'Database pubblico di cantieri edilizi, permessi di costruire (PDC, SCIA, CILA) e bandi di gara italiani. Aggiornato ogni giorno da albi pretori e open data PA.',
+    url: '/',
+    type: 'website',
+    images: [
+      {
+        url: ogImageUrl({
+          title: 'Sai prima dove si lavora in Italia',
+          subtitle: 'Database pubblico di cantieri edilizi, PDC, SCIA, CILA e bandi di gara',
+          kind: 'generic',
+          count: '8.880',
+          label: 'cantieri tracciati',
+        }),
+        width: 1200,
+        height: 630,
+        alt: 'Italia Cantieri — database pubblico cantieri edilizi italiani',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Italia Cantieri — Sai prima dove si lavora in Italia',
+    description:
+      'Database pubblico di cantieri edilizi italiani: PDC, SCIA, CILA e bandi pubblici aggiornati ogni giorno.',
+    images: [
+      ogImageUrl({
+        title: 'Sai prima dove si lavora in Italia',
+        subtitle: 'Database pubblico di cantieri edilizi e bandi di gara',
+        kind: 'generic',
+        count: '8.880',
+        label: 'cantieri tracciati',
+      }),
+    ],
+  },
 };
+
+// HowTo schema (HIGH-3 featured snippet) per "Come funziona Italia Cantieri"
+const homeHowTo = howToLd(
+  'Come funziona Italia Cantieri',
+  'Tre passi per consultare cantieri pubblici italiani e attivare il contatto con i progettisti.',
+  [
+    {
+      name: 'Cerca il tuo territorio',
+      text: 'Filtra cantieri e bandi per Comune, provincia o regione. Esplora i lavori in corso nella tua zona di interesse.',
+    },
+    {
+      name: 'Analizza il cantiere',
+      text: 'Visualizza tipologia di titolo (PDC, SCIA, CILA), importo lavori, superficie, categoria e geolocalizzazione su mappa.',
+    },
+    {
+      name: 'Sblocca i contatti',
+      text: 'Iscriviti gratis su ItaliaProgettisti per accedere ai profili di progettisti, studi e imprese collegati al cantiere.',
+    },
+  ],
+);
 
 const homepageFaq = [
   {
@@ -66,6 +123,18 @@ export default async function HomePage() {
 
   return (
     <>
+      {/* HowTo schema per featured snippet "Come funziona Italia Cantieri" */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(homeHowTo) }}
+      />
+      {/*
+        FEATURED SNIPPET ANSWER BOX (HIGH-3): risposta DIRETTA in posizione SR-only ma indicizzata.
+        AI Overview / Google snippet preferiscono frase fattuale all'inizio del DOM.
+      */}
+      <p className="sr-only">
+        Italia Cantieri è il database pubblico dei cantieri edilizi italiani: raccoglie {formatNumber(stats.totale)} cantieri da {stats.comuni} Comuni e {stats.regioni} regioni, aggiornati ogni giorno da albi pretori e open data della Pubblica Amministrazione. Permessi di costruire (PDC), SCIA, CILA e bandi di gara consultabili gratuitamente, con fonte dichiarata su ogni scheda e base legale GDPR esplicita (Art. 6.1.f).
+      </p>
       {/*
         HERO MINIMAL HUB-ALIGNED — sfondo cream, NO immagine background,
         tipografia GIGANTE centrata su chiaro, KPI inline, due CTA pill.

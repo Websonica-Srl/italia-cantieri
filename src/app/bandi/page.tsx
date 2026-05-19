@@ -4,8 +4,15 @@ import { Briefcase, Calendar, MapPin, EuroIcon, ArrowRight, Database } from 'luc
 import { getBandi } from '@/lib/supabase/queries/bandi';
 import { formatEuro, formatDate, truncate } from '@/lib/utils';
 import BreadcrumbCantiere from '@/components/cantieri/BreadcrumbCantiere';
+import { ogImageUrl } from '@/lib/seo/structured-data';
 
 export const revalidate = 3600;
+
+const bandiOg = ogImageUrl({
+  title: 'Bandi di gara pubblici Italia',
+  subtitle: 'Procedure aperte, ristrette, negoziate · ANAC + portali appalti regionali',
+  kind: 'bando',
+});
 
 export const metadata: Metadata = {
   title: 'Bandi di gara pubblici Italia — Procedure aperte, ristrette, negoziate',
@@ -18,6 +25,14 @@ export const metadata: Metadata = {
       'Aggregatore bandi di gara pubblici Italia: procedure aperte, ristrette, negoziate. Dati open ANAC + portali appalti.',
     url: '/bandi',
     type: 'website',
+    images: [{ url: bandiOg, width: 1200, height: 630, alt: 'Bandi di gara pubblici Italia' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Bandi di gara pubblici Italia',
+    description:
+      'Aggregatore bandi di gara pubblici Italia: procedure aperte, ristrette, negoziate.',
+    images: [bandiOg],
   },
 };
 

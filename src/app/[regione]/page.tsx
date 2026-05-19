@@ -16,6 +16,7 @@ import CantiereCard from '@/components/cantieri/CantiereCard';
 import BarChart from '@/components/cantieri/BarChart';
 import FAQ from '@/components/cantieri/FAQ';
 import DividerOrnament from '@/components/cantieri/DividerOrnament';
+import { ogImageUrl } from '@/lib/seo/structured-data';
 
 export const revalidate = 3600;
 
@@ -39,8 +40,17 @@ async function resolveRegione(slug: string): Promise<string | null> {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const reg = await resolveRegione(params.regione);
   if (!reg) return { title: 'Regione non trovata' };
+  // Carica stats per popolare l'OG image
+  const stats = await getRegioneStats(reg);
   const title = `Cantieri edilizi in ${reg} — Permessi PDC, SCIA e CILA`;
   const description = `Tutti i cantieri attivi in ${reg}: permessi di costruire, SCIA, CILA e bandi pubblici aggiornati. Aggregati da albi pretori e open data PA.`;
+  const ogImage = ogImageUrl({
+    title: `Cantieri edilizi in ${reg}`,
+    subtitle: `${stats.province} province · ${stats.comuni} Comuni · Aggiornati ogni giorno`,
+    kind: 'regione',
+    count: formatNumber(stats.totale),
+    label: 'cantieri tracciati',
+  });
   return {
     title,
     description,
@@ -50,6 +60,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       description,
       url: `/${params.regione}`,
       type: 'website',
+      images: [{ url: ogImage, width: 1200, height: 630, alt: `Cantieri edilizi in ${reg}` }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `Cantieri edilizi in ${reg}`,
+      description,
+      images: [ogImage],
     },
   };
 }

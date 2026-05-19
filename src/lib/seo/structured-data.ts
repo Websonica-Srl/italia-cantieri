@@ -164,3 +164,185 @@ export function faqLd(faqs: { q: string; a: string }[]) {
     })),
   };
 }
+
+/**
+ * Schema.org Dataset per /statistiche e altre pagine dati.
+ * Google Dataset Search lo indicizza esplicitamente.
+ */
+export interface DatasetLdInput {
+  name: string;
+  description: string;
+  url: string;
+  /** Es. "2026-05-19" */
+  dateModified?: string;
+  /** Es. "2025-01/2026-12" */
+  temporalCoverage?: string;
+  spatialCoverageRegions?: string[];
+  keywords?: string[];
+  /** URL endpoint API o CSV download */
+  distributions?: { url: string; encodingFormat: string; name?: string }[];
+  /** Variabili misurate (campi del dataset) */
+  variableMeasured?: { name: string; description?: string }[];
+  /** Es. "CC-BY-4.0" o full URL */
+  license?: string;
+  /** Numero record per "size" */
+  recordCount?: number;
+}
+
+export function datasetLd(input: DatasetLdInput) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Dataset',
+    name: input.name,
+    description: input.description,
+    url: input.url,
+    inLanguage: 'it-IT',
+    isAccessibleForFree: true,
+    creator: {
+      '@type': 'Organization',
+      name: siteConfig.companyName,
+      url: siteConfig.baseUrl,
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: siteConfig.name,
+      url: siteConfig.baseUrl,
+    },
+    license: input.license || 'https://creativecommons.org/licenses/by/4.0/',
+    ...(input.dateModified ? { dateModified: input.dateModified } : {}),
+    ...(input.temporalCoverage ? { temporalCoverage: input.temporalCoverage } : {}),
+    ...(input.spatialCoverageRegions && input.spatialCoverageRegions.length > 0
+      ? {
+          spatialCoverage: {
+            '@type': 'Place',
+            name: 'Italia',
+            geo: {
+              '@type': 'GeoShape',
+              addressCountry: 'IT',
+            },
+            containsPlace: input.spatialCoverageRegions.map((r) => ({
+              '@type': 'AdministrativeArea',
+              name: r,
+              addressCountry: 'IT',
+            })),
+          },
+        }
+      : {
+          spatialCoverage: { '@type': 'Place', name: 'Italia' },
+        }),
+    ...(input.keywords && input.keywords.length > 0 ? { keywords: input.keywords } : {}),
+    ...(input.distributions && input.distributions.length > 0
+      ? {
+          distribution: input.distributions.map((d) => ({
+            '@type': 'DataDownload',
+            encodingFormat: d.encodingFormat,
+            contentUrl: d.url,
+            ...(d.name ? { name: d.name } : {}),
+          })),
+        }
+      : {}),
+    ...(input.variableMeasured && input.variableMeasured.length > 0
+      ? {
+          variableMeasured: input.variableMeasured.map((v) => ({
+            '@type': 'PropertyValue',
+            name: v.name,
+            ...(v.description ? { description: v.description } : {}),
+          })),
+        }
+      : {}),
+    ...(input.recordCount ? { size: `${input.recordCount} records` } : {}),
+  };
+}
+
+/**
+ * Schema.org DefinedTermSet + DefinedTerm[] per /glossario.
+ * AI engines (Perplexity, ChatGPT, Bing) usano questo schema
+ * per citare definizioni accurate.
+ */
+export interface GlossaryTerm {
+  termCode: string; // es. "PDC"
+  name: string; // es. "Permesso di Costruire"
+  definition: string;
+  example?: string;
+  /** Path relativo a pagina pertinente, es. /statistiche */
+  relatedPath?: string;
+}
+
+export function glossaryLd(setName: string, terms: GlossaryTerm[]) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'DefinedTermSet',
+    name: setName,
+    url: `${siteConfig.baseUrl}/glossario`,
+    inLanguage: 'it-IT',
+    hasDefinedTerm: terms.map((t) => ({
+      '@type': 'DefinedTerm',
+      '@id': `${siteConfig.baseUrl}/glossario#${t.termCode.toLowerCase()}`,
+      name: t.name,
+      termCode: t.termCode,
+      description: t.definition,
+      inDefinedTermSet: `${siteConfig.baseUrl}/glossario`,
+      ...(t.relatedPath ? { url: `${siteConfig.baseUrl}${t.relatedPath}` } : {}),
+    })),
+  };
+}
+
+/**
+ * HowTo schema.org per spiegazione step "Come funziona italiacantieri.it" e simili.
+ */
+export interface HowToStep {
+  name: string;
+  text: string;
+  url?: string;
+}
+
+export function howToLd(title: string, description: string, steps: HowToStep[]) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'HowTo',
+    name: title,
+    description,
+    inLanguage: 'it-IT',
+    totalTime: 'PT3M',
+    step: steps.map((s, i) => ({
+      '@type': 'HowToStep',
+      position: i + 1,
+      name: s.name,
+      text: s.text,
+      ...(s.url ? { url: s.url } : {}),
+    })),
+  };
+}
+
+/**
+ * Helper per costruire l'URL dell'og:image dinamico (/api/og).
+ * Tutti i parametri vengono URL-encoded automaticamente.
+ *
+ * Restituisce sempre URL ASSOLUTO (richiesto da Open Graph crawler).
+ */
+export interface OgImageParams {
+  title: string;
+  subtitle?: string;
+  kind?:
+    | 'regione'
+    | 'comune'
+    | 'cantiere'
+    | 'bando'
+    | 'stats'
+    | 'glossario'
+    | 'generic'
+    | 'pa'
+    | 'api';
+  count?: string;
+  label?: string;
+}
+
+export function ogImageUrl(params: OgImageParams): string {
+  const qs = new URLSearchParams();
+  qs.set('title', params.title);
+  if (params.subtitle) qs.set('subtitle', params.subtitle);
+  if (params.kind) qs.set('kind', params.kind);
+  if (params.count) qs.set('count', params.count);
+  if (params.label) qs.set('label', params.label);
+  return `${siteConfig.baseUrl}/api/og?${qs.toString()}`;
+}

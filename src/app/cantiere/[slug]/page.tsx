@@ -5,7 +5,7 @@ import { Calendar, MapPin, FileText, Hash, Tag, Database, Building2 } from 'luci
 import { getCantiereBySlug, countFirmsByComune } from '@/lib/supabase/queries/cantieri';
 import { formatDate, formatEuro, formatNumber, regioneSlug, slugify } from '@/lib/utils';
 import { provinciaSlugFromCode, provinciaNameFromCode } from '@/lib/province';
-import { cantiereLd, safeJsonLd } from '@/lib/seo/structured-data';
+import { cantiereLd, safeJsonLd, ogImageUrl } from '@/lib/seo/structured-data';
 import { siteConfig } from '@/lib/site-config';
 import BreadcrumbCantiere from '@/components/cantieri/BreadcrumbCantiere';
 import MappaCantiereSingolo from '@/components/cantieri/MappaCantiereSingolo';
@@ -39,6 +39,16 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       ? `${c.descrizione} — ${tipoTitolo} a ${c.comune} (${c.provincia}, ${c.regione}).${importo} Dati ufficiali dall'albo pretorio comunale.`
       : `${tipoTitolo} pubblicato a ${c.comune} (${c.provincia}, ${c.regione}).${importo} Dati ufficiali dall'albo pretorio. Scopri dettagli, mappa, fonti e contatti professionisti collegati.`
   ).slice(0, 160);
+  const ogImage = ogImageUrl({
+    title: `${tipoTitolo} a ${c.comune}`,
+    subtitle: c.protocollo
+      ? `Prot. ${c.protocollo} · ${c.provincia}, ${c.regione}`
+      : `${c.provincia}, ${c.regione}`,
+    kind: 'cantiere',
+    ...(c.importo_lavori
+      ? { count: formatEuro(c.importo_lavori, { compact: true }), label: 'importo lavori' }
+      : {}),
+  });
   return {
     title,
     description,
@@ -48,6 +58,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       description,
       url: `/cantiere/${c.slug}`,
       type: 'article',
+      images: [{ url: ogImage, width: 1200, height: 630, alt: title }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [ogImage],
     },
   };
 }

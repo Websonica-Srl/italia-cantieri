@@ -1,14 +1,34 @@
 import type { Metadata } from 'next';
 import { ShieldCheck, Database, Eye, UserX, Scale, Mail } from 'lucide-react';
 import { siteConfig } from '@/lib/site-config';
-import { faqLd, safeJsonLd } from '@/lib/seo/structured-data';
+import { faqLd, safeJsonLd, ogImageUrl } from '@/lib/seo/structured-data';
 import BreadcrumbCantiere from '@/components/cantieri/BreadcrumbCantiere';
+
+const trasparenzaOg = ogImageUrl({
+  title: 'Come trattiamo i dati',
+  subtitle: 'Trasparenza GDPR · Fonti pubbliche · k-anonymity 5 · Opt-out 30 giorni',
+  kind: 'generic',
+});
 
 export const metadata: Metadata = {
   title: 'Come trattiamo i dati — Trasparenza GDPR su fonti, base legale e diritti',
   description:
     'Tutto quello che serve sapere sul trattamento dati di Italia Cantieri: fonti pubbliche, base legale GDPR, k-anonymity 5 e modulo opt-out. Risposte chiare entro 30 giorni.',
   alternates: { canonical: '/come-trattiamo-i-dati' },
+  openGraph: {
+    title: 'Come trattiamo i dati — Italia Cantieri',
+    description:
+      'Trasparenza GDPR su Italia Cantieri: fonti pubbliche, base legale, k-anonymity 5, modulo opt-out.',
+    url: '/come-trattiamo-i-dati',
+    type: 'website',
+    images: [{ url: trasparenzaOg, width: 1200, height: 630, alt: 'Come trattiamo i dati' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Come trattiamo i dati — Italia Cantieri',
+    description: 'Trasparenza GDPR: fonti pubbliche, base legale, k-anonymity 5, opt-out.',
+    images: [trasparenzaOg],
+  },
 };
 
 const faqs = [
