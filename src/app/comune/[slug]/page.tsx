@@ -33,10 +33,18 @@ async function resolveComune(slug: string): Promise<{ comune: string; provincia:
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const comune = await resolveComune(params.slug);
   if (!comune) return { title: 'Comune non trovato' };
+  const title = `Cantieri edilizi a ${comune.comune} (${comune.provincia}) — Permessi PDC, SCIA e CILA`;
+  const description = `Tutti i cantieri attivi a ${comune.comune} (${comune.provincia}, ${comune.regione}): permessi di costruire, SCIA, CILA e bandi pubblici. Dati ufficiali aggiornati ogni giorno dall'albo pretorio comunale.`;
   return {
-    title: `Cantieri edilizi a ${comune.comune} (${comune.provincia}) — Permessi PDC, SCIA e CILA`,
-    description: `Tutti i cantieri attivi a ${comune.comune} (${comune.provincia}): permessi di costruire, SCIA, CILA e bandi pubblici. Dati ufficiali aggiornati ogni giorno.`,
+    title,
+    description,
     alternates: { canonical: `/comune/${params.slug}` },
+    openGraph: {
+      title: `Cantieri edilizi a ${comune.comune} — Italia Cantieri`,
+      description,
+      url: `/comune/${params.slug}`,
+      type: 'website',
+    },
   };
 }
 

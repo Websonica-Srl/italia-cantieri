@@ -17,8 +17,15 @@ export const revalidate = 3600;
 export const metadata: Metadata = {
   title: 'Statistiche cantieri edilizi in Italia — Dati nazionali aggregati',
   description:
-    'Statistiche complete sui cantieri edilizi italiani: distribuzione per regione, tipologia (PDC, SCIA, CILA), categorie lavori e importi. Dati ufficiali aggiornati.',
+    'Statistiche complete sui cantieri edilizi italiani: distribuzione per regione, tipologia (PDC, SCIA, CILA), categorie lavori e importi. Dati ufficiali aggiornati settimanalmente.',
   alternates: { canonical: '/statistiche' },
+  openGraph: {
+    title: 'Statistiche cantieri edilizi in Italia — Italia Cantieri',
+    description:
+      'Distribuzione cantieri per regione, tipologia (PDC, SCIA, CILA), categorie e importi. Numeri aggregati nazionali da fonti pubbliche.',
+    url: '/statistiche',
+    type: 'website',
+  },
 };
 
 const statsFaq = [

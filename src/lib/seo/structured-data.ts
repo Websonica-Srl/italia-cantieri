@@ -12,44 +12,79 @@ export function safeJsonLd(obj: any): string {
   return JSON.stringify(obj).replace(/</g, '\\u003c');
 }
 
-/** Organization base */
+/** Organization base — esteso con contactPoint per AEO. */
 export function organizationLd() {
   return {
     '@context': 'https://schema.org',
     '@type': 'Organization',
     name: siteConfig.name,
+    legalName: siteConfig.companyName,
     url: siteConfig.baseUrl,
     description: siteConfig.description,
+    foundingDate: '2026',
+    areaServed: { '@type': 'Country', name: 'Italia' },
+    knowsAbout: [
+      'permessi di costruire',
+      'SCIA edilizia',
+      'CILA edilizia',
+      'bandi di gara pubblici',
+      'open data Pubblica Amministrazione',
+      'cantieri edilizi Italia',
+      'intelligence edilizia',
+    ],
+    contactPoint: [
+      {
+        '@type': 'ContactPoint',
+        contactType: 'Customer Support',
+        email: siteConfig.email,
+        areaServed: 'IT',
+        availableLanguage: ['Italian'],
+      },
+      {
+        '@type': 'ContactPoint',
+        contactType: 'Data Protection Officer',
+        email: siteConfig.dpoEmail,
+        areaServed: 'IT',
+      },
+    ],
     sameAs: siteConfig.network.map((n) => n.url),
   };
 }
 
-/** WebSite con SearchAction */
+/** WebSite con SearchAction. Target = pagina /regioni (entry-point ricerca territoriale). */
 export function websiteLd() {
   return {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
     name: siteConfig.name,
     url: siteConfig.baseUrl,
+    inLanguage: 'it-IT',
+    publisher: {
+      '@type': 'Organization',
+      name: siteConfig.name,
+      url: siteConfig.baseUrl,
+    },
     potentialAction: {
       '@type': 'SearchAction',
-      target: `${siteConfig.baseUrl}/comune/{search_term_string}`,
+      target: {
+        '@type': 'EntryPoint',
+        urlTemplate: `${siteConfig.baseUrl}/regioni?q={search_term_string}`,
+      },
       'query-input': 'required name=search_term_string',
     },
   };
 }
 
 /**
- * Schema.org ConstructionProject (Project + additionalType).
+ * Schema.org ConstructionProject (type diretto per AI engines).
  */
 export function cantiereLd(c: Cantiere) {
   const coords = parseCoordinate(c.coordinate);
   return {
     '@context': 'https://schema.org',
-    '@type': 'Project',
-    additionalType: 'https://schema.org/ConstructionProject',
+    '@type': 'ConstructionProject',
     name: c.descrizione || `${c.tipo_titolo || 'Cantiere'} – ${c.protocollo || c.comune}`,
-    description: c.descrizione,
+    description: c.descrizione || `${c.tipo_titolo || 'Cantiere edilizio'} pubblicato a ${c.comune}, ${c.regione}.`,
     identifier: c.protocollo || c.id,
     url: `${siteConfig.baseUrl}/cantiere/${c.slug}`,
     location: {

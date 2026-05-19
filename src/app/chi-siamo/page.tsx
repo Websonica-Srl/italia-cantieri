@@ -7,9 +7,15 @@ import TrustBadges from '@/components/cantieri/TrustBadges';
 import FAQ from '@/components/cantieri/FAQ';
 
 export const metadata: Metadata = {
-  title: `Chi siamo — ${siteConfig.name} | Trasparenza, open data, network ItaliaProgettisti`,
+  title: 'Chi siamo — Trasparenza, open data e network ItaliaProgettisti',
   description: `${siteConfig.name} aggrega i cantieri edilizi pubblici italiani da fonti ufficiali. Servizio editoriale di Websonica S.r.l., parte del network ItaliaProgettisti.`,
   alternates: { canonical: '/chi-siamo' },
+  openGraph: {
+    title: 'Chi siamo — Italia Cantieri',
+    description: `${siteConfig.name} aggrega i cantieri edilizi pubblici italiani da fonti ufficiali. Servizio editoriale di Websonica S.r.l.`,
+    url: '/chi-siamo',
+    type: 'website',
+  },
 };
 
 const chiSiamoFaq = [

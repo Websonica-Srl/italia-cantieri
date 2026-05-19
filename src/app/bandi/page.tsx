@@ -8,10 +8,17 @@ import BreadcrumbCantiere from '@/components/cantieri/BreadcrumbCantiere';
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: 'Bandi di gara pubblici Italia — Italia Cantieri',
+  title: 'Bandi di gara pubblici Italia — Procedure aperte, ristrette, negoziate',
   description:
-    'Aggregatore bandi di gara pubblici in Italia. Procedure aperte, ristrette, negoziate. Dati open ANAC + portali appalti.',
+    'Aggregatore bandi di gara pubblici in Italia: procedure aperte, ristrette, negoziate. Dati open ANAC e portali appalti regionali aggiornati ogni giorno.',
   alternates: { canonical: '/bandi' },
+  openGraph: {
+    title: 'Bandi di gara pubblici Italia — Italia Cantieri',
+    description:
+      'Aggregatore bandi di gara pubblici Italia: procedure aperte, ristrette, negoziate. Dati open ANAC + portali appalti.',
+    url: '/bandi',
+    type: 'website',
+  },
 };
 
 export default async function BandiPage() {

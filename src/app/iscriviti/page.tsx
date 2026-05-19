@@ -9,11 +9,18 @@ import {
 } from '@/lib/images/unsplash';
 
 export const metadata: Metadata = {
-  title: 'Iscriviti gratis al network ItaliaProgettisti | Italia Cantieri',
+  title: 'Iscriviti gratis al network ItaliaProgettisti',
   description:
     'Scegli il percorso più adatto a te: impresa edile, studio di progettazione o professionista. Registrazione gratuita al HUB ItaliaProgettisti in 30 secondi.',
   alternates: { canonical: '/iscriviti' },
   robots: { index: true, follow: true },
+  openGraph: {
+    title: 'Iscriviti gratis al network ItaliaProgettisti — Italia Cantieri',
+    description:
+      'Impresa edile, studio di progettazione o professionista: registrazione gratuita al HUB ItaliaProgettisti in 30 secondi.',
+    url: '/iscriviti',
+    type: 'website',
+  },
 };
 
 interface IscriviiPageProps {

@@ -29,17 +29,26 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   if (!c) return { title: 'Cantiere non trovato' };
   const tipoTitolo = c.tipo_titolo || 'Cantiere edilizio';
   const title = `${tipoTitolo} a ${c.comune} (${c.provincia})${c.protocollo ? ` — Prot. ${c.protocollo}` : ''}`;
-  const importo = c.importo_lavori ? ` Importo ${formatEuro(c.importo_lavori, { compact: true })}.` : '';
+  const importo = c.importo_lavori ? ` Importo lavori ${formatEuro(c.importo_lavori, { compact: true })}.` : '';
+  // Description policy: descrizione (se diversa dal tipo_titolo) ha priorità,
+  // altrimenti compone descrittiva con comune, regione, importo.
+  const hasMeaningfulDesc =
+    c.descrizione && c.descrizione.trim().toLowerCase() !== tipoTitolo.trim().toLowerCase();
   const description = (
-    c.descrizione
-      ? `${c.descrizione}${importo} Dati ufficiali pubblicati dall'albo pretorio comunale.`
-      : `${tipoTitolo} pubblicato a ${c.comune}, ${c.regione}.${importo} Scopri dettagli, mappa e contatti professionisti.`
+    hasMeaningfulDesc
+      ? `${c.descrizione} — ${tipoTitolo} a ${c.comune} (${c.provincia}, ${c.regione}).${importo} Dati ufficiali dall'albo pretorio comunale.`
+      : `${tipoTitolo} pubblicato a ${c.comune} (${c.provincia}, ${c.regione}).${importo} Dati ufficiali dall'albo pretorio. Scopri dettagli, mappa, fonti e contatti professionisti collegati.`
   ).slice(0, 160);
   return {
     title,
     description,
     alternates: { canonical: `/cantiere/${c.slug}` },
-    openGraph: { title, description, type: 'article' },
+    openGraph: {
+      title,
+      description,
+      url: `/cantiere/${c.slug}`,
+      type: 'article',
+    },
   };
 }
 

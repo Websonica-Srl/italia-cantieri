@@ -39,10 +39,18 @@ async function resolveRegione(slug: string): Promise<string | null> {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const reg = await resolveRegione(params.regione);
   if (!reg) return { title: 'Regione non trovata' };
+  const title = `Cantieri edilizi in ${reg} — Permessi PDC, SCIA e CILA`;
+  const description = `Tutti i cantieri attivi in ${reg}: permessi di costruire, SCIA, CILA e bandi pubblici aggiornati. Aggregati da albi pretori e open data PA.`;
   return {
-    title: `Cantieri edilizi in ${reg} — Permessi PDC, SCIA e CILA`,
-    description: `Tutti i cantieri attivi in ${reg}: permessi di costruire, SCIA, CILA e bandi pubblici aggiornati. Aggregati da albi pretori e open data PA.`,
+    title,
+    description,
     alternates: { canonical: `/${params.regione}` },
+    openGraph: {
+      title: `Cantieri edilizi in ${reg} — Italia Cantieri`,
+      description,
+      url: `/${params.regione}`,
+      type: 'website',
+    },
   };
 }
 

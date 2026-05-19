@@ -46,10 +46,18 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const prov = await resolveProvincia(reg, params.provincia);
   if (!prov) return { title: 'Provincia non trovata' };
   const provName = provinciaNameFromCode(prov);
+  const title = `Cantieri in provincia di ${provName} (${reg}) — PDC, SCIA e CILA`;
+  const description = `Permessi di costruire, SCIA e CILA nella provincia di ${provName}, ${reg}. Esplora i Comuni e i cantieri pubblicati negli ultimi giorni dagli albi pretori.`;
   return {
-    title: `Cantieri provincia di ${provName} (${reg}) — Italia Cantieri`,
-    description: `Permessi di costruire e SCIA nella provincia di ${provName}, regione ${reg}.`,
+    title,
+    description,
     alternates: { canonical: `/${params.regione}/${params.provincia}` },
+    openGraph: {
+      title: `Cantieri provincia di ${provName} (${reg}) — Italia Cantieri`,
+      description,
+      url: `/${params.regione}/${params.provincia}`,
+      type: 'website',
+    },
   };
 }
 
