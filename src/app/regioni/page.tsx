@@ -35,7 +35,7 @@ export default async function RegioniPage() {
   const totale = regioni.reduce((s, r) => s + r.cnt, 0);
 
   return (
-    <section className="py-12 md:py-16">
+    <section className="pt-32 md:pt-40 pb-12 md:pb-16">
       <div className="container-zen">
         <BreadcrumbCantiere steps={[{ label: 'Regioni' }]} />
         <h1 className="heading-section mb-3">Cantieri edilizi per regione</h1>

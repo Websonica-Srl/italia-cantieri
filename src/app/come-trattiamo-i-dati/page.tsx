@@ -46,7 +46,7 @@ export default function ComeTrattiamoIDatiPage() {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(faqLd(faqs)) }} />
-      <section className="py-12 md:py-16">
+      <section className="pt-32 md:pt-40 pb-12 md:pb-16">
         <div className="container-zen max-w-4xl">
           <BreadcrumbCantiere steps={[{ label: 'Trasparenza dati' }]} />
 

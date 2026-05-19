@@ -75,7 +75,7 @@ export default async function CantierePage({ params }: PageProps) {
         dangerouslySetInnerHTML={{ __html: safeJsonLd(cantiereLd(c)) }}
       />
       <ScrollProgress />
-      <section className="pt-24 md:pt-28 pb-10 md:pb-14 relative isolate">
+      <section className="pt-32 md:pt-40 pb-10 md:pb-14 relative isolate">
         {/* Soft gradient backdrop hero */}
         <div
           aria-hidden="true"
@@ -117,7 +117,10 @@ export default async function CantierePage({ params }: PageProps) {
                 </span>
               ))}
             </div>
-            <h1 className="heading-cinematic mb-4 text-foreground" style={{ fontSize: 'clamp(2rem, 4.5vw + 0.5rem, 3.75rem)' }}>
+            <h1
+              className="font-black tracking-[-0.035em] leading-[1.05] mb-5 text-foreground text-balance break-words"
+              style={{ fontSize: 'clamp(1.65rem, 2.6vw + 0.8rem, 2.75rem)' }}
+            >
               {c.descrizione || `${c.tipo_titolo || 'Cantiere edilizio'} a ${c.comune}`}
             </h1>
             <p className="body-default text-muted-foreground inline-flex items-center gap-2 flex-wrap">

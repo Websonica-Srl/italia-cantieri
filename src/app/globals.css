@@ -453,6 +453,154 @@
     to   { transform: scale(1.10); }
   }
 
+  /* === HERO DRAMMATICO HUB-ALIGNED === */
+
+  /* Hero display: typography GIGANTE, editorial */
+  .heading-display {
+    font-family: var(--font-heading);
+    font-weight: 900;
+    letter-spacing: -0.055em;
+    line-height: 0.86;
+    font-size: clamp(3rem, 9.5vw + 0.5rem, 9rem);
+    text-wrap: balance;
+  }
+
+  /* Hero overlay full-bleed: gradient dark cinematico */
+  .hero-overlay-fullbleed {
+    background-image:
+      radial-gradient(
+        ellipse 80% 60% at 50% 110%,
+        hsl(0 0% 4% / 0.92) 0%,
+        hsl(0 0% 4% / 0.55) 50%,
+        hsl(0 0% 4% / 0.30) 100%
+      ),
+      linear-gradient(
+        180deg,
+        hsl(0 0% 4% / 0.35) 0%,
+        hsl(0 0% 4% / 0.20) 25%,
+        hsl(0 0% 4% / 0.55) 75%,
+        hsl(0 0% 4% / 0.85) 100%
+      );
+  }
+
+  /* Hero noise grain (premium feel) — fixed pseudo, GPU safe */
+  .hero-grain::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.06;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence baseFrequency='0.85' numOctaves='2' seed='3'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.6 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+    background-size: 220px;
+  }
+
+  /* KPI hero numbers: editorial tabular */
+  .kpi-hero {
+    font-family: var(--font-heading);
+    font-weight: 900;
+    letter-spacing: -0.05em;
+    line-height: 0.88;
+    font-variant-numeric: tabular-nums;
+    font-size: clamp(2.5rem, 4.5vw + 1rem, 5rem);
+  }
+  .kpi-hero-label {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+  }
+
+  /* === MICRO-VIZ INLINE === */
+
+  /* Mini donut chart CSS-only via conic-gradient */
+  .mini-donut {
+    --donut-size: 72px;
+    --donut-thickness: 11px;
+    width: var(--donut-size);
+    height: var(--donut-size);
+    border-radius: 50%;
+    position: relative;
+    background: conic-gradient(
+      hsl(var(--foreground)) 0 var(--donut-p1, 0%),
+      hsl(var(--foreground) / 0.55) var(--donut-p1, 0%) var(--donut-p2, 0%),
+      hsl(var(--accent-construction)) var(--donut-p2, 0%) 100%
+    );
+  }
+  .mini-donut::after {
+    content: '';
+    position: absolute;
+    inset: var(--donut-thickness);
+    background: hsl(var(--card));
+    border-radius: 50%;
+  }
+
+  /* Sparkline bar inline (CSS only) */
+  .spark-bar {
+    display: inline-flex;
+    align-items: flex-end;
+    gap: 2px;
+    height: 28px;
+  }
+  .spark-bar > i {
+    display: block;
+    width: 4px;
+    background: currentColor;
+    opacity: 0.85;
+    border-radius: 1px;
+  }
+
+  /* === HUB-ALIGNED HEADER SCROLLED STATE === */
+  .header-scrolled {
+    background: hsl(var(--background) / 0.82);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    border-bottom-color: hsl(var(--border));
+    box-shadow: 0 1px 0 0 hsl(var(--background)), 0 8px 32px -16px hsl(0 0% 6.7% / 0.08);
+  }
+
+  /* === EDITORIAL LINE-ART ICONS (numerazione card 01/02/03) === */
+  .ghost-number {
+    font-family: var(--font-heading);
+    font-weight: 900;
+    letter-spacing: -0.06em;
+    line-height: 0.9;
+    font-variant-numeric: tabular-nums;
+    color: hsl(var(--foreground) / 0.10);
+    user-select: none;
+    transition: color 400ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .group:hover .ghost-number {
+    color: hsl(var(--foreground) / 0.18);
+  }
+
+  /* Footer stylized logo: outline typography */
+  .footer-logo-display {
+    font-family: var(--font-heading);
+    font-weight: 900;
+    letter-spacing: -0.06em;
+    line-height: 0.85;
+    font-size: clamp(4rem, 12vw + 1rem, 12rem);
+    -webkit-text-stroke: 1.5px hsl(0 0% 100% / 0.32);
+    color: transparent;
+    text-wrap: balance;
+  }
+  .footer-logo-display .accent {
+    -webkit-text-stroke: 1.5px hsl(28 95% 60% / 0.75);
+  }
+
+  /* CTA architettonica split layout */
+  .cta-arch-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+  @media (min-width: 1024px) {
+    .cta-arch-grid {
+      grid-template-columns: 1.05fr 1fr;
+    }
+  }
+
   /* Article CTA inline boxes (inserted by article-optimizer skill) */
   .article-cta-box {
     margin: 2.5rem 0;

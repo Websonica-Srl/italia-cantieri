@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 
 export default function PrivacyPage() {
   return (
-    <section className="py-12 md:py-16">
+    <section className="pt-32 md:pt-40 pb-12 md:pb-16">
       <div className="container-zen max-w-3xl">
         <BreadcrumbCantiere steps={[{ label: 'Privacy Policy' }]} />
         <h1 className="heading-section mb-3">Privacy Policy</h1>

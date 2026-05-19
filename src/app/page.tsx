@@ -1,20 +1,17 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowRight, MapPin, ShieldCheck } from 'lucide-react';
+import { ArrowRight, MapPin, ShieldCheck, Sparkles } from 'lucide-react';
 import SearchComune from '@/components/cantieri/SearchComune';
 import CantiereCard from '@/components/cantieri/CantiereCard';
-import StatsBox from '@/components/cantieri/StatsBox';
 import FAQ from '@/components/cantieri/FAQ';
-import TrustBadges from '@/components/cantieri/TrustBadges';
-import TrustStrip from '@/components/cantieri/TrustStrip';
 import IntentSplitCards from '@/components/cantieri/IntentSplitCards';
 import IntentSplitCTA from '@/components/cantieri/IntentSplitCTA';
 import SectionWrapper from '@/components/cantieri/SectionWrapper';
 import DividerOrnament from '@/components/cantieri/DividerOrnament';
 import { getCantieri, getCantieriByRegione, getGlobalStats, getKpiStats } from '@/lib/supabase/queries/cantieri';
-import { regioneSlug, formatNumber } from '@/lib/utils';
-import { HERO_CONSTRUCTION } from '@/lib/images/unsplash';
+import { regioneSlug, formatNumber, formatEuro } from '@/lib/utils';
+import { HERO_CONSTRUCTION, URBAN_RENOVATION } from '@/lib/images/unsplash';
 
 export const revalidate = 3600; // ISR ogni ora
 
@@ -56,19 +53,32 @@ export default async function HomePage() {
   const [stats, kpi, recenti, regioni] = await Promise.all([
     getGlobalStats(),
     getKpiStats(),
-    getCantieri({ limit: 12, orderBy: 'data_pubblicazione', orderDirection: 'desc' }),
+    getCantieri({ limit: 9, orderBy: 'data_pubblicazione', orderDirection: 'desc' }),
     getCantieriByRegione(),
   ]);
 
+  // Filtra "Italia" placeholder se presente
+  const regioniReali = regioni.filter((r) => r.regione && r.regione.toLowerCase() !== 'italia');
+  const regioniDisplay = regioniReali.slice(0, 12);
+  const featuredRegione = regioniDisplay[0];
+  const restRegioni = regioniDisplay.slice(1);
+  // Placeholder card "tutte le altre regioni" se ne mostriamo poche
+  const showAddMore = restRegioni.length < 5;
+
   return (
     <>
-      {/* HERO — cinematic, sfondo cantiere italiano (Unsplash) */}
+      {/*
+        HERO FULL-BLEED EDITORIAL — HUB-aligned
+        Typography GIGANTE centrato, KPI inline sotto, no card stats separato.
+        Pattern skill: high-end-visual-design (Editorial Luxury archetype),
+        impeccable (heavy whitespace + display tracking).
+      */}
       <section
-        className="hero-grid relative overflow-hidden isolate"
-        style={{ minHeight: 'clamp(560px, 78vh, 820px)' }}
+        className="hero-grid hero-grain relative overflow-hidden isolate -mt-20"
+        style={{ minHeight: 'clamp(720px, 100vh, 1024px)' }}
         aria-labelledby="hero-heading"
       >
-        {/* Background image */}
+        {/* Background image full-bleed */}
         <div className="absolute inset-0 -z-10">
           <Image
             src={HERO_CONSTRUCTION.src}
@@ -79,91 +89,86 @@ export default async function HomePage() {
             className="object-cover object-center ken-burns"
           />
         </div>
-        {/* Overlay scuro cinematic per leggibilità testo bianco */}
-        <div aria-hidden="true" className="hero-overlay absolute inset-0 -z-10" />
+        {/* Overlay full-bleed cinematic */}
+        <div aria-hidden="true" className="hero-overlay-fullbleed absolute inset-0 -z-10" />
 
-        <div className="container-zen relative h-full flex flex-col justify-end pt-28 md:pt-36 pb-16 md:pb-24">
-          <div className="max-w-3xl">
-            <p className="eyebrow eyebrow-light mb-6">
+        <div className="container-zen relative h-full flex flex-col justify-center min-h-[100dvh] pt-36 pb-20 md:pt-44 md:pb-28">
+          <div className="max-w-6xl mx-auto text-center">
+            {/* Eyebrow editorial */}
+            <p className="eyebrow eyebrow-light mb-8 mx-auto animate-reveal-mask" style={{ animationDelay: '120ms' }}>
               <ShieldCheck className="h-3.5 w-3.5" strokeWidth={2} />
-              <span>Dati pubblici · Aggiornati settimanalmente · GDPR</span>
-            </p>
-            <h1 id="hero-heading" className="heading-cinematic text-white mb-6">
-              Sai{' '}
-              <span className="text-white/60 italic font-extrabold">prima</span>
-              <br className="hidden sm:block" />
-              dove si lavora in Italia.
-            </h1>
-            <p className="body-large text-white/85 max-w-2xl mb-10">
-              <span className="stat-display text-white text-3xl md:text-4xl mr-1.5">
-                {formatNumber(stats.totale)}
-              </span>
-              cantieri edilizi e bandi pubblici aggregati settimanalmente da albi pretori
-              comunali e open data della PA. Intercetta le opere prima dei competitor.
+              <span>Database cantieri Italia · Fonti pubbliche · GDPR</span>
             </p>
 
-            <div className="rounded-3xl bg-background/95 backdrop-blur-md p-2 md:p-3 ring-1 ring-foreground/5 shadow-2xl">
-              <SearchComune placeholder="Cerca il tuo Comune (es. Milano, Bologna, Torino)..." />
+            {/* Display headline GIGANTE */}
+            <h1
+              id="hero-heading"
+              className="heading-display text-white mb-10 animate-reveal-mask"
+              style={{ animationDelay: '200ms' }}
+            >
+              Sai{' '}
+              <em className="italic font-black not-italic-fallback" style={{ color: 'hsl(28 95% 60%)', fontStyle: 'italic' }}>
+                prima
+              </em>
+              <br />
+              dove si lavora<br className="md:hidden" /> in Italia.
+            </h1>
+
+            {/* Sub-headline elegante */}
+            <p
+              className="text-lg md:text-2xl text-white/85 font-light leading-relaxed max-w-3xl mx-auto mb-12 md:mb-16 text-pretty animate-reveal-mask"
+              style={{ animationDelay: '300ms' }}
+            >
+              Permessi di costruire, SCIA e bandi pubblici aggregati settimanalmente da
+              albi pretori e open data della PA. Intercetta le opere prima dei competitor.
+            </p>
+
+            {/* Search hero — pill premium */}
+            <div
+              className="max-w-3xl mx-auto mb-12 animate-reveal-mask"
+              style={{ animationDelay: '400ms' }}
+            >
+              <div className="rounded-[2rem] bg-background/95 backdrop-blur-md p-2 md:p-2.5 ring-1 ring-foreground/5 shadow-[0_28px_80px_-20px_rgba(0,0,0,0.55)]">
+                <SearchComune placeholder="Cerca il tuo Comune (es. Milano, Bologna, Torino)..." />
+              </div>
+              <div className="mt-5 text-sm text-white/70">
+                Citta popolari:{' '}
+                <Link href="/comune/milano" className="text-white underline-offset-4 hover:underline transition-colors">Milano</Link>{' · '}
+                <Link href="/comune/bologna" className="text-white underline-offset-4 hover:underline transition-colors">Bologna</Link>{' · '}
+                <Link href="/comune/torino" className="text-white underline-offset-4 hover:underline transition-colors">Torino</Link>{' · '}
+                <Link href="/regioni" className="text-white/80 hover:text-white underline-offset-4 hover:underline transition-colors">tutte le regioni</Link>
+              </div>
             </div>
 
-            <div className="mt-6 text-sm text-white/75">
-              Citta popolari:{' '}
-              <Link href="/comune/milano" className="text-white underline-offset-4 hover:underline transition-colors">Milano</Link>{' · '}
-              <Link href="/comune/bologna" className="text-white underline-offset-4 hover:underline transition-colors">Bologna</Link>{' · '}
-              <Link href="/comune/torino" className="text-white underline-offset-4 hover:underline transition-colors">Torino</Link>{' · '}
-              <Link href="/regioni" className="text-white underline-offset-4 hover:underline transition-colors">tutte le regioni</Link>
+            {/* KPI INLINE sotto hero — pattern HUB italiaprogettisti */}
+            <div
+              className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-10 max-w-5xl mx-auto pt-8 md:pt-12 border-t border-white/15 animate-reveal-mask"
+              style={{ animationDelay: '520ms' }}
+            >
+              {[
+                { value: formatNumber(stats.totale), label: 'Cantieri tracciati' },
+                { value: formatNumber(kpi.soggetti), label: 'Soggetti analizzati' },
+                { value: stats.regioni.toString(), label: 'Regioni coperte' },
+                { value: 'GDPR', label: 'Trasparenza piena' },
+              ].map((k) => (
+                <div key={k.label} className="text-center md:text-left">
+                  <div className="kpi-hero text-white">{k.value}</div>
+                  <div className="kpi-hero-label text-white/65 mt-3">{k.label}</div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
       </section>
 
-      {/* Trust badges in barra separata, sfondo neutro */}
-      <section className="border-y border-border bg-background/95">
-        <div className="container-zen py-6">
-          <TrustBadges variant="row" />
-        </div>
-      </section>
-
-      {/* TRUST STRIP - social proof quantitativo above-fold (numeri LIVE dal DB) */}
-      <TrustStrip
-        totaleCantieri={kpi.cantieri}
-        totaleSoggetti={kpi.soggetti}
-        totaleFirms={kpi.firms}
-      />
-
-      {/* STATS GLOBALI - vertical rhythm coerente con SectionWrapper */}
-      <SectionWrapper
-        id="stats"
-        spacing="compact"
-        align="center"
-        eyebrow="Numeri verificati"
-        title="Il database pubblico cantieri piu completo d'Italia"
-        subtitle="Numeri reali, dati verificati, fonti dichiarate. Costruito per chi nell'edilizia ci lavora ogni giorno."
-        headerMaxW="lg"
-      >
-        <StatsBox
-          items={[
-            { label: 'Cantieri attivi tracciati', value: stats.totale, format: 'number' },
-            { label: 'Regioni coperte', value: stats.regioni, format: 'number' },
-            { label: 'Comuni nel database', value: stats.comuni, format: 'number' },
-            {
-              label: 'Valore opere tracciate',
-              value: stats.importo_totale,
-              format: 'euro',
-              helper: 'su cantieri con importo dichiarato',
-            },
-          ]}
-        />
-      </SectionWrapper>
-
-      {/* INTENT-SPLIT CARDS (R7 HIGH) - subito sotto stats per orientare il visitatore */}
+      {/* INTENT-SPLIT CARDS — line-art editorial, no foto stock */}
       <IntentSplitCards />
 
       <DividerOrnament variant="dots" spacing="tight" />
 
-      {/* RECENTI - rhythm aumentato, action pill premium */}
+      {/* RECENTI - sempre pulito */}
       <SectionWrapper
-        spacing="compact"
+        spacing="default"
         tone="muted"
         eyebrow="Aggiornamenti recenti"
         title="Ultimi cantieri pubblicati"
@@ -171,13 +176,12 @@ export default async function HomePage() {
         action={
           <Link
             href="/statistiche"
-            className="group inline-flex items-center gap-1.5 text-sm font-medium text-foreground rounded-full border border-border bg-white px-5 py-2.5 transition-all hover:border-foreground/30 hover:-translate-y-0.5 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            className="group inline-flex items-center gap-1.5 text-sm font-medium text-foreground rounded-full border border-border bg-white pl-5 pr-2 py-1.5 transition-all hover:border-foreground/30 hover:-translate-y-0.5 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
           >
             Vedi tutte le statistiche
-            <ArrowRight
-              className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5"
-              strokeWidth={2}
-            />
+            <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-foreground/5 transition-all duration-300 group-hover:bg-foreground group-hover:text-background group-hover:translate-x-0.5">
+              <ArrowRight className="h-3.5 w-3.5" strokeWidth={2} />
+            </span>
           </Link>
         }
       >
@@ -188,7 +192,10 @@ export default async function HomePage() {
         </div>
       </SectionWrapper>
 
-      {/* COME FUNZIONA - card con step number "ghost" tipografico (anti-3-card-generic) */}
+      {/*
+        COME FUNZIONA — editorial pattern: numerazione 01/02/03 grande ghost +
+        linea verticale divider tra step (visual rhythm). Skill: impeccable.
+      */}
       <SectionWrapper
         spacing="default"
         align="center"
@@ -197,7 +204,7 @@ export default async function HomePage() {
         subtitle="Dalla ricerca territoriale all'attivazione del contatto diretto. Tutto in un flusso lineare."
         headerMaxW="lg"
       >
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-7">
+        <div className="relative grid grid-cols-1 md:grid-cols-3 gap-0 md:gap-0">
           {[
             {
               step: '01',
@@ -217,30 +224,36 @@ export default async function HomePage() {
               body:
                 'Iscriviti gratis su ItaliaProgettisti per accedere ai profili di progettisti, studi e imprese collegati al cantiere.',
             },
-          ].map((s) => (
+          ].map((s, i) => (
             <div
               key={s.step}
-              className="card-zen card-hover-premium p-6 md:p-8 group"
+              className={[
+                'group relative p-8 md:p-12 transition-colors duration-500',
+                i > 0 ? 'md:border-l border-t md:border-t-0 border-border' : '',
+              ].join(' ')}
             >
-              <div className="mb-6 flex items-baseline gap-4">
-                <span className="text-5xl md:text-6xl font-black leading-none tracking-tighter text-foreground/12 tabular-nums select-none">
-                  {s.step}
-                </span>
+              <div className="flex items-baseline gap-5 mb-8">
+                <span className="ghost-number text-[5rem] md:text-[6.5rem]">{s.step}</span>
                 <span
                   aria-hidden="true"
-                  className="h-px flex-1 bg-border group-hover:bg-foreground/30 transition-colors duration-300"
+                  className="h-px flex-1 bg-border group-hover:bg-foreground/30 transition-colors duration-500"
                 />
               </div>
-              <h3 className="font-bold mb-3 text-xl tracking-tight">{s.title}</h3>
-              <p className="text-sm text-secondary-text leading-relaxed">{s.body}</p>
+              <h3 className="font-black mb-4 text-xl md:text-2xl tracking-[-0.025em]">{s.title}</h3>
+              <p className="text-[15px] text-secondary-text leading-relaxed text-pretty max-w-sm">{s.body}</p>
             </div>
           ))}
         </div>
       </SectionWrapper>
 
-      {/* REGIONI - card con arrow-on-hover reveal */}
+      {/*
+        REGIONI - bento layout asimmetrico:
+        - 1 card FEATURED grande (col-span-2) con immagine architettonica
+        - 11 card piccole regione con count + comuni inline + arrow reveal
+        Skill: high-end-visual-design (Asymmetrical Bento archetype).
+      */}
       <SectionWrapper
-        spacing="compact"
+        spacing="default"
         tone="muted"
         eyebrow="Esplora il territorio"
         title="Cantieri edilizi per regione"
@@ -248,47 +261,111 @@ export default async function HomePage() {
         action={
           <Link
             href="/regioni"
-            className="group inline-flex items-center gap-1.5 text-sm font-medium text-foreground rounded-full border border-border bg-white px-5 py-2.5 transition-all hover:border-foreground/30 hover:-translate-y-0.5 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            className="group inline-flex items-center gap-1.5 text-sm font-medium text-foreground rounded-full border border-border bg-white pl-5 pr-2 py-1.5 transition-all hover:border-foreground/30 hover:-translate-y-0.5 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
           >
             Vedi tutte le regioni
-            <ArrowRight
-              className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5"
-              strokeWidth={2}
-            />
+            <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-foreground/5 transition-all duration-300 group-hover:bg-foreground group-hover:text-background group-hover:translate-x-0.5">
+              <ArrowRight className="h-3.5 w-3.5" strokeWidth={2} />
+            </span>
           </Link>
         }
       >
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
-          {regioni.slice(0, 12).map((r) => (
+          {/* FEATURED tile: regione leader con visual */}
+          {featuredRegione && (
+            <Link
+              href={`/${regioneSlug(featuredRegione.regione)}`}
+              className="group relative col-span-2 row-span-2 overflow-hidden rounded-[2rem] border border-border bg-foreground text-background transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-1 hover:shadow-[0_24px_60px_-20px_rgba(0,0,0,0.35)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              aria-label={`Esplora ${featuredRegione.regione}`}
+            >
+              <Image
+                src={URBAN_RENOVATION.src}
+                alt={URBAN_RENOVATION.alt}
+                fill
+                sizes="(max-width: 768px) 100vw, 50vw"
+                className="object-cover object-center opacity-30 transition-all duration-700 group-hover:opacity-40 group-hover:scale-[1.04]"
+              />
+              <div className="absolute inset-0 bg-gradient-to-br from-foreground/95 via-foreground/85 to-foreground/65" />
+              <div className="relative flex flex-col justify-between h-full p-7 md:p-10 min-h-[280px]">
+                <div>
+                  <p className="kpi-hero-label text-background/65 mb-4 inline-flex items-center gap-2">
+                    <Sparkles className="h-3 w-3" strokeWidth={1.75} />
+                    Regione in testa
+                  </p>
+                  <div className="text-5xl md:text-7xl font-black tracking-[-0.05em] leading-[0.85] tabular-nums text-background mb-3">
+                    {formatNumber(featuredRegione.cnt)}
+                  </div>
+                  <p className="text-base md:text-lg text-background/75">cantieri attivi tracciati</p>
+                </div>
+                <div className="flex items-end justify-between gap-4 mt-8">
+                  <h3 className="text-2xl md:text-3xl font-black tracking-[-0.035em]">{featuredRegione.regione}</h3>
+                  <span className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-background/15 backdrop-blur-sm transition-all duration-300 group-hover:bg-construction group-hover:text-foreground group-hover:translate-x-1 group-hover:-translate-y-0.5">
+                    <ArrowRight className="h-4 w-4" strokeWidth={2} />
+                  </span>
+                </div>
+              </div>
+            </Link>
+          )}
+          {restRegioni.map((r) => (
             <Link
               key={r.regione}
               href={`/${regioneSlug(r.regione)}`}
-              className="group card-zen card-hover-premium p-5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              className="group relative overflow-hidden rounded-3xl border border-border bg-white p-5 md:p-6 transition-all duration-400 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-1 hover:border-foreground/30 hover:shadow-[0_18px_40px_-18px_rgba(17,17,17,0.18)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               aria-label={`Vedi tutti i cantieri in ${r.regione}`}
             >
-              <div className="flex items-center justify-between gap-2 mb-2">
-                <div className="flex items-center gap-2 min-w-0">
-                  <MapPin
-                    className="h-3.5 w-3.5 flex-shrink-0 text-muted-foreground group-hover:text-foreground transition-colors"
-                    strokeWidth={1.5}
-                  />
-                  <span className="font-semibold truncate group-hover:text-foreground transition-colors">
-                    {r.regione}
-                  </span>
-                </div>
+              <div className="flex items-start justify-between gap-2 mb-4">
+                <MapPin
+                  className="h-4 w-4 flex-shrink-0 text-muted-foreground group-hover:text-foreground transition-colors"
+                  strokeWidth={1.5}
+                />
                 <ArrowRight
-                  className="h-3 w-3 flex-shrink-0 text-muted-foreground/50 opacity-0 -translate-x-1 transition-all duration-300 group-hover:opacity-100 group-hover:translate-x-0 group-hover:text-foreground"
+                  className="h-3.5 w-3.5 flex-shrink-0 text-muted-foreground/50 opacity-0 -translate-x-1 transition-all duration-300 group-hover:opacity-100 group-hover:translate-x-0 group-hover:text-foreground"
                   strokeWidth={2}
                 />
               </div>
-              <div className="text-xs text-muted-foreground tabular-nums">{formatNumber(r.cnt)} cantieri attivi</div>
+              <div className="font-bold text-[15px] tracking-tight text-foreground mb-2 line-clamp-1">{r.regione}</div>
+              <div className="text-3xl md:text-4xl font-black tracking-[-0.04em] leading-none tabular-nums text-foreground">
+                {formatNumber(r.cnt)}
+              </div>
+              <div className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground mt-2">cantieri</div>
             </Link>
           ))}
+          {/*
+           * Placeholder editorial: regioni in arrivo.
+           * Mostra "coverage" piuttosto che lasciare grid vuoto.
+           * Skill: redesign-existing-projects (no empty states).
+           */}
+          {showAddMore && (
+            <>
+              {['Lombardia', 'Lazio', 'Veneto', 'Toscana', 'Campania', 'Liguria'].map((r) => (
+                <div
+                  key={r}
+                  className="relative overflow-hidden rounded-3xl border border-dashed border-border bg-white/40 p-5 md:p-6"
+                  aria-hidden="true"
+                >
+                  <div className="flex items-start justify-between gap-2 mb-4">
+                    <MapPin
+                      className="h-4 w-4 flex-shrink-0 text-muted-foreground/40"
+                      strokeWidth={1.5}
+                    />
+                    <span className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground/55 font-semibold">
+                      In arrivo
+                    </span>
+                  </div>
+                  <div className="font-bold text-[15px] tracking-tight text-foreground/40 mb-2 line-clamp-1">{r}</div>
+                  <div className="text-3xl md:text-4xl font-black tracking-[-0.04em] leading-none tabular-nums text-foreground/25">
+                    soon
+                  </div>
+                  <div className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground/40 mt-2">copertura prossima</div>
+                </div>
+              ))}
+            </>
+          )}
         </div>
       </SectionWrapper>
 
       {/* FAQ - spacing aumentato per ritmo */}
-      <section className="py-16 md:py-24">
+      <section className="py-20 md:py-28">
         <div className="container-zen max-w-4xl">
           <FAQ
             title="Domande frequenti su Italia Cantieri"
@@ -298,7 +375,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* R5 HIGH: CTA REGISTRAZIONE - DIVISO IMPRESA vs STUDIO */}
+      {/* CTA architettonica finale HUB-aligned (split immagine + content) */}
       <IntentSplitCTA />
     </>
   );

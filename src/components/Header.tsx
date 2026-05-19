@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Menu, X, ArrowRight, HardHat } from 'lucide-react';
 
 const navItems = [
@@ -17,55 +17,93 @@ const HUB_REGISTER =
 
 export default function Header() {
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 24);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-background/85 backdrop-blur-md border-b border-border/50 supports-[backdrop-filter]:bg-background/70">
+    <header
+      className={[
+        'fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]',
+        scrolled
+          ? 'header-scrolled border-b border-border'
+          : 'bg-background/0 border-b border-transparent',
+      ].join(' ')}
+    >
       <div className="container-zen">
-        <div className="flex items-center justify-between py-4">
-          {/* Logo */}
+        <div
+          className={[
+            'flex items-center justify-between transition-[padding] duration-500',
+            scrolled ? 'py-3' : 'py-5',
+          ].join(' ')}
+        >
+          {/* Logo - mark sempre visibile su scroll, esegue compress lieve */}
           <Link
             href="/"
-            className="flex items-center gap-2.5 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            className="flex items-center gap-3 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 group/logo"
             aria-label="Italia Cantieri — homepage"
           >
             <span
               aria-hidden="true"
-              className="inline-flex h-9 w-9 md:h-10 md:w-10 items-center justify-center rounded-2xl bg-foreground text-background"
+              className={[
+                'inline-flex items-center justify-center rounded-2xl bg-foreground text-background transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]',
+                scrolled ? 'h-9 w-9' : 'h-10 w-10 md:h-11 md:w-11',
+              ].join(' ')}
             >
-              <HardHat className="h-4 w-4 md:h-5 md:w-5" strokeWidth={2} />
+              <HardHat
+                className={scrolled ? 'h-4 w-4' : 'h-5 w-5 md:h-[22px] md:w-[22px]'}
+                strokeWidth={2}
+              />
             </span>
-            <h1 className="text-xl md:text-2xl font-black tracking-tighter text-foreground leading-none">
-              Italia<span className="text-foreground/55">Cantieri</span>
-            </h1>
+            <span className="leading-none">
+              <span
+                className={[
+                  'block font-black tracking-[-0.04em] text-foreground transition-all duration-500',
+                  scrolled ? 'text-lg md:text-xl' : 'text-xl md:text-[1.6rem]',
+                ].join(' ')}
+              >
+                Italia<span className="text-foreground/55">Cantieri</span>
+              </span>
+              <span className="hidden md:block text-[10px] uppercase tracking-[0.22em] text-muted-foreground mt-0.5">
+                Network ItaliaProgettisti
+              </span>
+            </span>
           </Link>
 
           {/* Navigation Desktop */}
           <nav
-            className="hidden md:flex items-center space-x-7 lg:space-x-8"
+            className="hidden md:flex items-center gap-7 lg:gap-9"
             aria-label="Navigazione principale"
           >
             {navItems.map((i) => (
               <Link
                 key={i.href}
                 href={i.href}
-                className="text-foreground/80 hover:text-foreground transition-colors font-medium text-sm relative after:absolute after:left-0 after:right-0 after:bottom-[-6px] after:h-[2px] after:bg-foreground after:scale-x-0 after:origin-left after:transition-transform after:duration-200 hover:after:scale-x-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+                className="text-foreground/75 hover:text-foreground transition-colors font-medium text-sm relative after:absolute after:left-0 after:right-0 after:bottom-[-8px] after:h-[2px] after:bg-foreground after:scale-x-0 after:origin-left after:transition-transform after:duration-300 after:ease-[cubic-bezier(0.22,1,0.36,1)] hover:after:scale-x-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
               >
                 {i.label}
               </Link>
             ))}
           </nav>
 
-          {/* CTA */}
-          <div className="flex items-center space-x-3">
+          {/* CTA pill premium with nested icon island */}
+          <div className="flex items-center gap-3">
             <a
               href={HUB_REGISTER}
               target="_blank"
               rel="noopener noreferrer"
-              className="hidden md:inline-flex btn-primary group hover:scale-[1.02] hover:shadow-md transition-all duration-200"
+              className="hidden md:inline-flex group items-center gap-2 rounded-full bg-foreground text-background pl-5 pr-1.5 py-1.5 text-sm font-semibold transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 active:scale-[0.98]"
               aria-label="Iscriviti gratis al network ItaliaProgettisti"
             >
               Iscriviti gratis
-              <ArrowRight className="ml-1.5 h-4 w-4 transition-transform group-hover:translate-x-0.5" strokeWidth={2} />
+              <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-background/15 transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-0.5 group-hover:-translate-y-px group-hover:bg-construction group-hover:text-foreground">
+                <ArrowRight className="h-3.5 w-3.5" strokeWidth={2.25} />
+              </span>
             </a>
 
             {/* Mobile menu trigger */}

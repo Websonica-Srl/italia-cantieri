@@ -82,8 +82,8 @@ export default async function RegionePage({ params }: PageProps) {
     <>
       {/* HERO regione — immagine contestuale Unsplash */}
       <section
-        className="relative overflow-hidden isolate"
-        style={{ minHeight: 'clamp(420px, 55vh, 600px)' }}
+        className="relative overflow-hidden isolate -mt-20"
+        style={{ minHeight: 'clamp(480px, 65vh, 680px)' }}
         aria-labelledby="regione-hero-heading"
       >
         <div className="absolute inset-0 -z-10">

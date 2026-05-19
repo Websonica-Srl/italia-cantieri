@@ -60,7 +60,7 @@ export default async function ProvinciaPage({ params }: PageProps) {
   const importoTotale = recenti.data.reduce((s, c) => s + (Number(c.importo_lavori) || 0), 0);
 
   return (
-    <section className="py-12 md:py-16">
+    <section className="pt-32 md:pt-40 pb-12 md:pb-16">
       <div className="container-zen">
         <BreadcrumbCantiere
           steps={[

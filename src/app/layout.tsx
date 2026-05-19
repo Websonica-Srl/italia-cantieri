@@ -61,7 +61,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <GoogleAnalytics gaId={siteConfig.tracking.gaId} />
         <MetaPixel pixelId={siteConfig.tracking.metaPixelId} />
         <Header />
-        <main id="main-content" className="pt-20 min-h-screen">{children}</main>
+        <main id="main-content" className="min-h-screen">{children}</main>
         <Footer />
         <CookieBanner gaId={siteConfig.tracking.gaId} />
         <noscript>

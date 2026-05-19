@@ -33,7 +33,7 @@ export default async function BandoPage({ params }: PageProps) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: safeJsonLd(bandoLd(b)) }}
       />
-      <section className="py-12 md:py-16">
+      <section className="pt-32 md:pt-40 pb-12 md:pb-16">
         <div className="container-zen max-w-5xl">
           <BreadcrumbCantiere steps={[{ label: 'Bandi', href: '/bandi' }, { label: b.cig || b.slug }]} />
 

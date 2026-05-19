@@ -75,7 +75,7 @@ export default async function ComunePage({ params }: PageProps) {
   ];
 
   return (
-    <section className="py-12 md:py-16">
+    <section className="pt-32 md:pt-40 pb-12 md:pb-16">
       <div className="container-zen">
         <BreadcrumbCantiere
           steps={[
