@@ -26,15 +26,26 @@ export default function DatiPremiumLocked({ slug, comune }: Props) {
   return (
     <section
       aria-labelledby="dati-premium-heading"
-      className="relative rounded-3xl border border-border bg-white p-6 md:p-8 overflow-hidden"
+      className="relative rounded-3xl border border-border bg-card p-6 md:p-8 overflow-hidden shadow-diffusion"
     >
-      <div className="flex items-center gap-2 mb-2">
-        <div className="inline-flex h-9 w-9 items-center justify-center rounded-2xl bg-foreground/5">
-          <Lock className="h-4 w-4 text-foreground" strokeWidth={2} aria-hidden="true" />
+      {/* Decorative construction accent line (top) */}
+      <div
+        aria-hidden="true"
+        className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-construction/70 to-transparent"
+      />
+
+      <div className="flex items-center gap-3 mb-2">
+        <div className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-foreground text-background shadow-sm">
+          <Lock className="h-4 w-4" strokeWidth={2} aria-hidden="true" />
         </div>
-        <h2 id="dati-premium-heading" className="text-base md:text-lg font-bold">
-          Dati riservati al network ItaliaProgettisti
-        </h2>
+        <div>
+          <p className="eyebrow eyebrow-construction mb-1.5">
+            <span>Network ItaliaProgettisti</span>
+          </p>
+          <h2 id="dati-premium-heading" className="text-base md:text-lg font-bold leading-tight">
+            Sblocca i dati dei professionisti collegati
+          </h2>
+        </div>
       </div>
       <p className="text-sm text-secondary-text mb-6 leading-relaxed">
         Queste informazioni sono disponibili agli iscritti del HUB professionale.

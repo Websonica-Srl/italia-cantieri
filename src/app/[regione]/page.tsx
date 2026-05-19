@@ -1,7 +1,8 @@
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { MapPin, ArrowRight, Bell } from 'lucide-react';
+import { MapPin, ArrowRight, Bell, ShieldCheck } from 'lucide-react';
 import {
   getCantieri,
   getCantieriByProvincia,
@@ -14,6 +15,8 @@ import StatsBox from '@/components/cantieri/StatsBox';
 import CantiereCard from '@/components/cantieri/CantiereCard';
 import BarChart from '@/components/cantieri/BarChart';
 import FAQ from '@/components/cantieri/FAQ';
+import DividerOrnament from '@/components/cantieri/DividerOrnament';
+import { getRegionHero } from '@/lib/images/unsplash';
 
 export const revalidate = 3600;
 
@@ -73,16 +76,58 @@ export default async function RegionePage({ params }: PageProps) {
     },
   ];
 
-  return (
-    <section className="py-12 md:py-16">
-      <div className="container-zen">
-        <BreadcrumbCantiere steps={[{ label: 'Regioni', href: '/regioni' }, { label: regioneNome }]} />
-        <h1 className="heading-section mb-3">Cantieri edilizi in {regioneNome}</h1>
-        <p className="body-default text-muted-foreground mb-10 max-w-2xl">
-          {formatNumber(stats.totale)} cantieri attivi tracciati in {regioneNome}, distribuiti su {stats.province} province
-          e {stats.comuni} Comuni. Permessi di costruire, SCIA e CILA aggiornati ogni giorno da fonti pubbliche.
-        </p>
+  const hero = getRegionHero(regioneNome);
 
+  return (
+    <>
+      {/* HERO regione — immagine contestuale Unsplash */}
+      <section
+        className="relative overflow-hidden isolate"
+        style={{ minHeight: 'clamp(420px, 55vh, 600px)' }}
+        aria-labelledby="regione-hero-heading"
+      >
+        <div className="absolute inset-0 -z-10">
+          <Image
+            src={hero.src}
+            alt={`${regioneNome} — ${hero.alt}`}
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover object-center"
+          />
+        </div>
+        <div aria-hidden="true" className="hero-overlay absolute inset-0 -z-10" />
+
+        <div className="container-zen relative h-full flex flex-col justify-end pt-28 md:pt-32 pb-12 md:pb-16">
+          <div className="max-w-3xl">
+            <div className="mb-5 text-white/85">
+              <BreadcrumbCantiere
+                steps={[{ label: 'Regioni', href: '/regioni' }, { label: regioneNome }]}
+                inverted
+              />
+            </div>
+            <p className="eyebrow eyebrow-light mb-5">
+              <ShieldCheck className="h-3.5 w-3.5" strokeWidth={2} />
+              <span>Dati pubblici · Aggiornati ogni giorno</span>
+            </p>
+            <h1 id="regione-hero-heading" className="heading-cinematic text-white mb-5">
+              Cantieri edilizi
+              <br className="hidden sm:block" />
+              in <span className="text-white/65">{regioneNome}</span>.
+            </h1>
+            <p className="body-large text-white/85 max-w-2xl">
+              <span className="stat-display text-white text-2xl md:text-3xl mr-1.5">
+                {formatNumber(stats.totale)}
+              </span>
+              cantieri attivi in {regioneNome}, distribuiti su {stats.province} province
+              e {stats.comuni} Comuni. Permessi PDC, SCIA e CILA aggiornati da fonti pubbliche.
+            </p>
+          </div>
+        </div>
+      </section>
+
+    <section className="py-16 md:py-24">
+      <div className="container-zen">
         <StatsBox
           items={[
             { label: 'Cantieri attivi', value: stats.totale, format: 'number' },
@@ -94,71 +139,110 @@ export default async function RegionePage({ params }: PageProps) {
 
         {/* TOP CATEGORIE */}
         {stats.top_categorie.length > 0 && (
-          <div className="mt-12 rounded-2xl border border-border bg-white p-6">
-            <h2 className="text-lg font-semibold mb-1">Categorie di lavori piu frequenti in {regioneNome}</h2>
-            <p className="text-sm text-muted-foreground mb-4">
-              Distribuzione per tipologia di intervento sui cantieri tracciati.
-            </p>
+          <div className="mt-16 md:mt-20 rounded-[2rem] border border-border bg-white p-6 md:p-8">
+            <div className="mb-6 max-w-2xl">
+              <p className="mb-3 inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                <span aria-hidden="true" className="h-px w-6 bg-foreground/30" />
+                Distribuzione
+              </p>
+              <h2 className="text-xl md:text-2xl font-bold mb-2 tracking-tight">Categorie di lavori piu frequenti in {regioneNome}</h2>
+              <p className="text-sm text-muted-foreground">
+                Distribuzione per tipologia di intervento sui cantieri tracciati.
+              </p>
+            </div>
             <BarChart data={stats.top_categorie.map((c) => ({ label: c.categoria, value: c.cnt }))} />
           </div>
         )}
 
-        {/* PROVINCE */}
-        <div className="mt-12">
-          <h2 className="text-xl font-semibold mb-1">Cantieri per provincia in {regioneNome}</h2>
-          <p className="text-sm text-muted-foreground mb-6">
-            Seleziona una provincia per esplorare i Comuni e i singoli cantieri pubblicati.
-          </p>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+        <DividerOrnament variant="dots" spacing="default" />
+
+        {/* PROVINCE - card con arrow reveal on hover */}
+        <div>
+          <div className="mb-8 max-w-2xl">
+            <p className="mb-3 inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+              <span aria-hidden="true" className="h-px w-6 bg-foreground/30" />
+              Esplora province
+            </p>
+            <h2 className="text-xl md:text-2xl font-bold mb-2 tracking-tight">Cantieri per provincia in {regioneNome}</h2>
+            <p className="text-sm text-muted-foreground">
+              Seleziona una provincia per esplorare i Comuni e i singoli cantieri pubblicati.
+            </p>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
             {province.map((p) => (
               <Link
                 key={p.provincia}
                 href={`/${params.regione}/${provinciaSlug(p.provincia)}`}
                 aria-label={`Vedi i cantieri in provincia di ${p.provincia}`}
-                className="rounded-xl border border-border bg-white p-4 hover:shadow-md hover:-translate-y-0.5 transition-all"
+                className="group rounded-2xl border border-border bg-white p-4 md:p-5 transition-all duration-300 hover:-translate-y-0.5 hover:border-foreground/25 hover:shadow-[0_12px_30px_-12px_rgba(17,17,17,0.14)]"
               >
-                <div className="flex items-center gap-2 mb-1">
-                  <MapPin className="h-3.5 w-3.5 text-muted-foreground" />
-                  <span className="font-semibold uppercase tracking-wider text-sm">{p.provincia}</span>
+                <div className="flex items-center justify-between gap-2 mb-1.5">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <MapPin className="h-3.5 w-3.5 flex-shrink-0 text-muted-foreground group-hover:text-foreground transition-colors" strokeWidth={1.5} />
+                    <span className="font-semibold uppercase tracking-wider text-sm truncate">{p.provincia}</span>
+                  </div>
+                  <ArrowRight
+                    className="h-3 w-3 flex-shrink-0 text-muted-foreground/50 opacity-0 -translate-x-1 transition-all duration-300 group-hover:opacity-100 group-hover:translate-x-0 group-hover:text-foreground"
+                    strokeWidth={2}
+                  />
                 </div>
-                <div className="text-xs text-muted-foreground">{formatNumber(p.cnt)} cantieri</div>
+                <div className="text-xs text-muted-foreground tabular-nums">{formatNumber(p.cnt)} cantieri</div>
               </Link>
             ))}
           </div>
         </div>
 
+        <DividerOrnament variant="dots" spacing="default" />
+
         {/* CANTIERI RECENTI */}
-        <div className="mt-12">
-          <div className="flex items-end justify-between mb-6 flex-wrap gap-3">
-            <div>
-              <h2 className="text-xl font-semibold">Ultimi cantieri pubblicati in {regioneNome}</h2>
-              <p className="text-sm text-muted-foreground mt-1">
+        <div>
+          <div className="flex items-end justify-between mb-8 flex-wrap gap-3">
+            <div className="max-w-2xl">
+              <p className="mb-3 inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                <span aria-hidden="true" className="h-px w-6 bg-foreground/30" />
+                Ultimi pubblicati
+              </p>
+              <h2 className="text-xl md:text-2xl font-bold tracking-tight">Ultimi cantieri pubblicati in {regioneNome}</h2>
+              <p className="text-sm text-muted-foreground mt-2">
                 Permessi e SCIA arrivati di recente dagli albi pretori comunali.
               </p>
             </div>
             <Link
               href="/regioni"
-              className="text-sm font-medium text-primary hover:underline inline-flex items-center gap-1"
+              className="group inline-flex items-center gap-1.5 text-sm font-medium text-foreground rounded-full border border-border bg-white px-5 py-2.5 transition-all hover:border-foreground/30 hover:-translate-y-0.5 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             >
-              Cambia regione <ArrowRight className="h-3.5 w-3.5" />
+              Cambia regione
+              <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" strokeWidth={2} />
             </Link>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
             {recenti.data.map((c) => (
               <CantiereCard key={c.id} cantiere={c} />
             ))}
           </div>
         </div>
 
-        {/* CTA ALERT */}
-        <div className="mt-16 rounded-2xl bg-foreground text-background p-8 md:p-10">
-          <div className="flex items-start gap-4">
-            <Bell className="h-6 w-6 flex-shrink-0 mt-1" />
-            <div className="flex-1">
-              <h2 className="text-xl md:text-2xl font-bold mb-2">
+        <DividerOrnament variant="line" spacing="default" />
+
+        {/* CTA ALERT - tinted radial backdrop */}
+        <div className="relative overflow-hidden rounded-[2rem] bg-foreground text-background p-8 md:p-12">
+          <div
+            aria-hidden="true"
+            className="absolute -top-20 -right-20 h-72 w-72 rounded-full bg-background/[0.06] blur-3xl pointer-events-none"
+          />
+          <div className="relative flex items-start gap-5">
+            <span className="inline-flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-background/10 border border-background/15">
+              <Bell className="h-5 w-5" strokeWidth={1.75} />
+            </span>
+            <div className="flex-1 max-w-2xl">
+              <p className="mb-3 inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-background/60">
+                <span aria-hidden="true" className="h-px w-6 bg-background/30" />
+                Alert personalizzati
+              </p>
+              <h2 className="text-2xl md:text-3xl font-bold mb-3 tracking-tight leading-tight">
                 Vuoi ricevere ogni nuovo cantiere in {regioneNome}?
               </h2>
-              <p className="text-sm md:text-base opacity-80 mb-5 leading-relaxed">
+              <p className="text-sm md:text-base opacity-80 mb-7 leading-relaxed">
                 Attiva gli alert email gratuiti: ricevi una notifica appena viene pubblicato un nuovo permesso di
                 costruire, SCIA o bando di gara in {regioneNome}. Filtrabili per provincia, importo e categoria.
               </p>
@@ -166,9 +250,10 @@ export default async function RegionePage({ params }: PageProps) {
                 href="https://www.italiaprogettisti.com/register"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-2 rounded-full bg-background text-foreground px-5 py-2.5 text-sm font-medium hover:opacity-90 transition-opacity"
+                className="group inline-flex items-center justify-center gap-2 rounded-full bg-background text-foreground px-6 py-3 text-sm font-semibold transition-all duration-200 hover:scale-[1.02] hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-background focus-visible:ring-offset-2 focus-visible:ring-offset-foreground"
               >
                 Iscriviti gratis e attiva gli alert
+                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" strokeWidth={2} />
               </a>
             </div>
           </div>
@@ -180,5 +265,6 @@ export default async function RegionePage({ params }: PageProps) {
         />
       </div>
     </section>
+    </>
   );
 }

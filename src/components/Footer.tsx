@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { siteConfig } from '@/lib/site-config';
-import { Mail, Database } from 'lucide-react';
+import { Mail, Database, HardHat } from 'lucide-react';
 
 export default function Footer() {
   return (
@@ -9,7 +9,17 @@ export default function Footer() {
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
           {/* Brand */}
           <div className="lg:col-span-1">
-            <h3 className="text-2xl font-semibold mb-4">ItaliaCantieri</h3>
+            <div className="flex items-center gap-2.5 mb-4">
+              <span
+                aria-hidden="true"
+                className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-background/10 ring-1 ring-background/20"
+              >
+                <HardHat className="h-5 w-5" strokeWidth={2} />
+              </span>
+              <h3 className="text-2xl font-black tracking-tighter">
+                Italia<span className="opacity-65">Cantieri</span>
+              </h3>
+            </div>
             <p className="text-sm opacity-80 mb-4 leading-relaxed">
               Sai prima dove si lavora in Italia. Cantieri edilizi pubblici e bandi di gara aggregati da fonti
               ufficiali, aggiornati ogni giorno.

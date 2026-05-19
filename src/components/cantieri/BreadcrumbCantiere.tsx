@@ -6,7 +6,14 @@ export interface BreadcrumbStep {
   href?: string;
 }
 
-export default function BreadcrumbCantiere({ steps }: { steps: BreadcrumbStep[] }) {
+export default function BreadcrumbCantiere({
+  steps,
+  inverted = false,
+}: {
+  steps: BreadcrumbStep[];
+  /** Modalità su sfondo scuro (hero immagine). Usa testo bianco. */
+  inverted?: boolean;
+}) {
   // JSON-LD BreadcrumbList
   const itemListElement = [
     { '@type': 'ListItem', position: 1, name: 'Italia Cantieri', item: 'https://www.italiacantieri.it/' },
@@ -30,10 +37,22 @@ export default function BreadcrumbCantiere({ steps }: { steps: BreadcrumbStep[] 
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(ld).replace(/</g, '\\u003c') }}
       />
-      <nav aria-label="Breadcrumb" className="mb-6">
-        <ol className="flex items-center flex-wrap gap-1 text-sm text-muted-foreground">
+      <nav
+        aria-label="Breadcrumb"
+        className={inverted ? 'mb-0' : 'mb-6'}
+      >
+        <ol
+          className={`flex items-center flex-wrap gap-1 text-sm ${
+            inverted ? 'text-white/75' : 'text-muted-foreground'
+          }`}
+        >
           <li>
-            <Link href="/" className="hover:text-foreground transition-colors inline-flex items-center gap-1">
+            <Link
+              href="/"
+              className={`transition-colors inline-flex items-center gap-1 ${
+                inverted ? 'hover:text-white' : 'hover:text-foreground'
+              }`}
+            >
               <Home className="h-3.5 w-3.5" />
               <span className="sr-only">Italia Cantieri</span>
             </Link>
@@ -42,11 +61,22 @@ export default function BreadcrumbCantiere({ steps }: { steps: BreadcrumbStep[] 
             <li key={i} className="flex items-center gap-1">
               <ChevronRight className="h-3.5 w-3.5 flex-shrink-0" />
               {s.href && i < steps.length - 1 ? (
-                <Link href={s.href} className="hover:text-foreground transition-colors">
+                <Link
+                  href={s.href}
+                  className={`transition-colors ${
+                    inverted ? 'hover:text-white' : 'hover:text-foreground'
+                  }`}
+                >
                   {s.label}
                 </Link>
               ) : (
-                <span className="text-foreground font-medium truncate max-w-[300px]">{s.label}</span>
+                <span
+                  className={`font-medium truncate max-w-[300px] ${
+                    inverted ? 'text-white' : 'text-foreground'
+                  }`}
+                >
+                  {s.label}
+                </span>
               )}
             </li>
           ))}

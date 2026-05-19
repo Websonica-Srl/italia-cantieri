@@ -1,6 +1,12 @@
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import Link from 'next/link';
 import { HardHat, DraftingCompass, User, ArrowRight, ShieldCheck, Zap, Mail } from 'lucide-react';
+import {
+  URBAN_CRANE,
+  ARCHITECT_BLUEPRINT,
+  URBAN_RENOVATION,
+} from '@/lib/images/unsplash';
 
 export const metadata: Metadata = {
   title: 'Iscriviti gratis al network ItaliaProgettisti | Italia Cantieri',
@@ -26,12 +32,13 @@ const OPTIONS = [
     benefits: [
       'Alert email su nuovi cantieri della tua zona',
       'Mappa dei lavori entro 20 km dalla sede',
-      'Profilo impresa visibile a 8.000+ progettisti',
+      'Profilo impresa visibile ai progettisti del network ItaliaProgettisti',
       'Esportazione CSV dati committenti',
     ],
     hubPath: 'register',
     hubParams: '&intent=impresa&type=COMPANY',
     cta: 'Registra la mia impresa',
+    image: URBAN_CRANE,
   },
   {
     id: 'studio',
@@ -41,13 +48,14 @@ const OPTIONS = [
     pitch: 'Cerco nuovi committenti e voglio far conoscere il mio studio.',
     benefits: [
       'Alert su cantieri in fase progettuale',
-      '36.000+ committenti potenziali in database',
+      '38.000+ soggetti analizzati dai cantieri pubblici',
       'Profilo studio + portfolio digitale pubblicabile',
-      'Network di 850+ studi già iscritti',
+      'Accesso al network ItaliaProgettisti',
     ],
     hubPath: 'register',
     hubParams: '&intent=studio&type=STUDIO',
     cta: 'Registra il mio studio',
+    image: ARCHITECT_BLUEPRINT,
   },
   {
     id: 'professionista',
@@ -64,6 +72,7 @@ const OPTIONS = [
     hubPath: 'register',
     hubParams: '&intent=professionista&type=FREELANCE',
     cta: 'Registrami gratis',
+    image: URBAN_RENOVATION,
   },
 ];
 
@@ -80,15 +89,22 @@ export default function IscriviPage({ searchParams }: IscriviiPageProps) {
 
   return (
     <>
-      <section className="py-12 md:py-16 bg-gradient-to-b from-secondary/40 to-background">
-        <div className="container-zen text-center max-w-3xl">
-          <span className="inline-flex items-center gap-2 rounded-full bg-background border border-border px-4 py-1.5 text-xs font-medium text-secondary-text mb-6">
-            <ShieldCheck className="h-3.5 w-3.5" strokeWidth={1.5} /> Registrazione gratuita · Senza carta · 30 secondi
-          </span>
-          <h1 className="heading-hero mb-5">
-            Cosa cerchi su <span className="text-foreground/60">ItaliaProgettisti?</span>
+      <section className="pt-28 md:pt-32 pb-12 md:pb-16 bg-gradient-to-b from-secondary/60 via-background to-background relative overflow-hidden">
+        <div
+          aria-hidden="true"
+          className="absolute -top-32 left-1/2 -translate-x-1/2 h-[420px] w-[820px] rounded-full bg-construction/[0.06] blur-3xl pointer-events-none"
+        />
+        <div className="container-zen relative max-w-4xl">
+          <p className="eyebrow eyebrow-construction mb-6">
+            <Zap className="h-3 w-3" strokeWidth={2.5} />
+            <span>Registrazione gratuita · Senza carta · 30 secondi</span>
+          </p>
+          <h1 className="heading-cinematic mb-6">
+            Cosa cerchi su
+            <br className="hidden sm:block" />
+            <span className="text-foreground/55">ItaliaProgettisti</span>?
           </h1>
-          <p className="body-large text-secondary-text">{contextCopy}</p>
+          <p className="body-large text-secondary-text max-w-2xl">{contextCopy}</p>
         </div>
       </section>
 
@@ -105,38 +121,58 @@ export default function IscriviPage({ searchParams }: IscriviiPageProps) {
               return (
                 <article
                   key={opt.id}
-                  className={`group relative flex flex-col rounded-3xl border-2 bg-white p-6 md:p-7 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl ${
-                    isPreselected ? 'border-foreground shadow-lg' : 'border-border hover:border-foreground/40'
+                  className={`group relative flex flex-col rounded-3xl border-2 bg-card overflow-hidden shadow-diffusion transition-all duration-500 ease-out hover:-translate-y-1.5 ${
+                    isPreselected ? 'border-foreground shadow-xl' : 'border-border hover:border-foreground/40'
                   }`}
                 >
                   {isPreselected && (
-                    <span className="absolute -top-3 left-6 inline-flex items-center gap-1 rounded-full bg-foreground text-background px-3 py-1 text-[10px] font-bold uppercase tracking-wide">
+                    <span className="absolute top-4 right-4 z-10 inline-flex items-center gap-1 rounded-full bg-foreground text-background px-3 py-1 text-[10px] font-bold uppercase tracking-wide shadow-md">
                       Consigliato per te
                     </span>
                   )}
-                  <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-foreground text-background mb-5">
-                    <Icon className="h-6 w-6" strokeWidth={1.75} />
+                  {/* Header image */}
+                  <div className="relative aspect-[16/10] overflow-hidden bg-secondary">
+                    <Image
+                      src={opt.image.src}
+                      alt={opt.image.alt}
+                      fill
+                      sizes="(max-width: 768px) 100vw, 33vw"
+                      className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.06]"
+                    />
+                    <div
+                      aria-hidden="true"
+                      className="absolute inset-0 bg-gradient-to-t from-foreground/60 via-foreground/15 to-transparent"
+                    />
+                    <div className="absolute top-4 left-4 inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-background/95 text-foreground shadow-md backdrop-blur-sm">
+                      <Icon className="h-5 w-5" strokeWidth={2} />
+                    </div>
                   </div>
-                  <h2 className="font-bold text-lg md:text-xl mb-2 tracking-tight">{opt.titleClean}</h2>
-                  <p className="text-sm text-secondary-text leading-relaxed mb-5">{opt.pitch}</p>
-                  <ul className="space-y-2 mb-6 text-sm text-foreground/85 flex-grow">
-                    {opt.benefits.map((b) => (
-                      <li key={b} className="flex items-start gap-2">
-                        <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-foreground/40 flex-shrink-0" />
-                        {b}
-                      </li>
-                    ))}
-                  </ul>
-                  <a
-                    href={hubUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-foreground text-background px-5 py-3 font-semibold transition-all duration-200 hover:scale-[1.02] hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                    aria-label={opt.cta}
-                  >
-                    {opt.cta}
-                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" strokeWidth={2} />
-                  </a>
+
+                  {/* Body */}
+                  <div className="flex flex-col flex-1 p-6 md:p-7">
+                    <h2 className="font-bold text-lg md:text-xl mb-2 tracking-tight">{opt.titleClean}</h2>
+                    <p className="text-sm text-secondary-text leading-relaxed mb-5">{opt.pitch}</p>
+                    <ul className="space-y-2 mb-6 text-sm text-foreground/85 flex-grow">
+                      {opt.benefits.map((b) => (
+                        <li key={b} className="flex items-start gap-2">
+                          <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-construction flex-shrink-0" />
+                          {b}
+                        </li>
+                      ))}
+                    </ul>
+                    <a
+                      href={hubUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-foreground text-background px-5 py-3 font-semibold transition-all duration-200 hover:scale-[1.02] hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                      aria-label={opt.cta}
+                    >
+                      {opt.cta}
+                      <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-background/15 transition-transform group-hover:translate-x-0.5">
+                        <ArrowRight className="h-3.5 w-3.5" strokeWidth={2} />
+                      </span>
+                    </a>
+                  </div>
                 </article>
               );
             })}

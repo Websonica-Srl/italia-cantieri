@@ -22,7 +22,7 @@ export default function IntentSplitCTA() {
       <div className="container-zen relative">
         <div className="text-center max-w-2xl mx-auto mb-12">
           <span className="inline-flex items-center gap-2 rounded-full bg-background/10 border border-background/20 px-4 py-1.5 text-xs font-medium mb-6">
-            <Users className="h-3.5 w-3.5" strokeWidth={2} /> 8.000+ professionisti già nel network
+            <Users className="h-3.5 w-3.5" strokeWidth={2} /> Database in espansione · Network ItaliaProgettisti
           </span>
           <h2
             id="intent-split-heading"
@@ -53,7 +53,7 @@ export default function IntentSplitCTA() {
               </li>
               <li className="flex items-start gap-2">
                 <span className="mt-1 h-1.5 w-1.5 rounded-full bg-foreground/40 flex-shrink-0" />
-                Profilo impresa visibile a 8.000+ progettisti
+                Profilo impresa visibile ai progettisti del network ItaliaProgettisti
               </li>
               <li className="flex items-start gap-2">
                 <span className="mt-1 h-1.5 w-1.5 rounded-full bg-foreground/40 flex-shrink-0" />

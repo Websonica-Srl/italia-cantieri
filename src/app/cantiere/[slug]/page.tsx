@@ -14,6 +14,8 @@ import FAQ from '@/components/cantieri/FAQ';
 import UnlockPremiumCTA from '@/components/cantieri/UnlockPremiumCTA';
 import DatiPremiumLocked from '@/components/cantieri/DatiPremiumLocked';
 import CantieriSimiliVicini from '@/components/cantieri/CantieriSimiliVicini';
+import ScrollProgress from '@/components/cantieri/ScrollProgress';
+import DividerOrnament from '@/components/cantieri/DividerOrnament';
 
 export const revalidate = 3600;
 
@@ -72,7 +74,18 @@ export default async function CantierePage({ params }: PageProps) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: safeJsonLd(cantiereLd(c)) }}
       />
-      <section className="py-10 md:py-14">
+      <ScrollProgress />
+      <section className="pt-24 md:pt-28 pb-10 md:pb-14 relative isolate">
+        {/* Soft gradient backdrop hero */}
+        <div
+          aria-hidden="true"
+          className="absolute inset-x-0 top-0 h-[420px] -z-10 bg-gradient-to-b from-secondary/60 via-background to-background"
+        />
+        <div
+          aria-hidden="true"
+          className="absolute right-[-10%] top-12 h-[320px] w-[520px] -z-10 rounded-full bg-construction/[0.05] blur-3xl pointer-events-none"
+        />
+
         <div className="container-zen max-w-5xl">
           <BreadcrumbCantiere
             steps={[
@@ -84,39 +97,39 @@ export default async function CantierePage({ params }: PageProps) {
             ]}
           />
 
-          {/* HEADER */}
-          <div className="mb-6 md:mb-8">
-            <div className="flex flex-wrap items-center gap-2 mb-4">
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-primary text-primary-foreground px-3 py-1 text-xs font-semibold">
-                <FileText className="h-3 w-3" /> {c.tipo_titolo || 'Cantiere edilizio'}
+          {/* HEADER premium */}
+          <div className="mb-8 md:mb-10">
+            <div className="flex flex-wrap items-center gap-2 mb-5">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-foreground text-background px-3.5 py-1.5 text-xs font-bold uppercase tracking-wide shadow-sm">
+                <FileText className="h-3 w-3" strokeWidth={2.5} /> {c.tipo_titolo || 'Cantiere edilizio'}
               </span>
               {c.stato && (
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-secondary text-foreground px-3 py-1 text-xs font-medium border border-border">
-                  Stato: {c.stato}
+                <span className="eyebrow eyebrow-construction">
+                  <span>Stato · {c.stato}</span>
                 </span>
               )}
-              {c.categorie?.map((cat) => (
+              {c.categorie?.slice(0, 3).map((cat) => (
                 <span
                   key={cat}
-                  className="inline-flex items-center gap-1.5 rounded-full bg-secondary text-foreground/80 px-3 py-1 text-xs"
+                  className="inline-flex items-center gap-1.5 rounded-full bg-background text-foreground/80 px-3 py-1 text-xs border border-border"
                 >
                   <Tag className="h-3 w-3" /> {cat}
                 </span>
               ))}
             </div>
-            <h1 className="heading-section mb-3 tracking-tight">
+            <h1 className="heading-cinematic mb-4 text-foreground" style={{ fontSize: 'clamp(2rem, 4.5vw + 0.5rem, 3.75rem)' }}>
               {c.descrizione || `${c.tipo_titolo || 'Cantiere edilizio'} a ${c.comune}`}
             </h1>
-            <p className="text-muted-foreground inline-flex items-center gap-1.5 flex-wrap">
-              <MapPin className="h-4 w-4" strokeWidth={1.5} />
+            <p className="body-default text-muted-foreground inline-flex items-center gap-2 flex-wrap">
+              <MapPin className="h-4 w-4" strokeWidth={1.75} />
               {indirizzoCompleto ? `${indirizzoCompleto}, ` : ''}
               <Link
                 href={`/comune/${slugify(c.comune)}`}
-                className="text-foreground hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm"
+                className="text-foreground hover:underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm font-semibold"
               >
                 {c.comune}
               </Link>{' '}
-              ({c.provincia}, {c.regione})
+              <span className="text-muted-foreground/80">({c.provincia}, {c.regione})</span>
             </p>
           </div>
 
@@ -132,9 +145,12 @@ export default async function CantierePage({ params }: PageProps) {
 
           {/* GRID DATI */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6 mb-10">
-            <div className="rounded-3xl border border-border bg-white p-6 transition-shadow duration-200 hover:shadow-sm">
-              <h2 className="text-base font-semibold mb-4 inline-flex items-center gap-2">
-                <FileText className="h-4 w-4" /> Dati amministrativi
+            <div className="rounded-3xl border border-border bg-card p-6 md:p-7 shadow-diffusion transition-all duration-300 hover:border-foreground/20">
+              <h2 className="text-base font-bold mb-4 inline-flex items-center gap-2 tracking-tight">
+                <span className="inline-flex h-7 w-7 items-center justify-center rounded-xl bg-foreground/5">
+                  <FileText className="h-3.5 w-3.5" strokeWidth={2} />
+                </span>
+                Dati amministrativi
               </h2>
               <dl className="space-y-3 text-sm">
                 {c.protocollo && (
@@ -164,9 +180,12 @@ export default async function CantierePage({ params }: PageProps) {
               </dl>
             </div>
 
-            <div className="rounded-3xl border border-border bg-white p-6 transition-shadow duration-200 hover:shadow-sm">
-              <h2 className="text-base font-semibold mb-4 inline-flex items-center gap-2">
-                <Building2 className="h-4 w-4" /> Dati tecnici ed economici
+            <div className="rounded-3xl border border-border bg-card p-6 md:p-7 shadow-diffusion transition-all duration-300 hover:border-foreground/20">
+              <h2 className="text-base font-bold mb-4 inline-flex items-center gap-2 tracking-tight">
+                <span className="inline-flex h-7 w-7 items-center justify-center rounded-xl bg-construction/15 text-construction">
+                  <Building2 className="h-3.5 w-3.5" strokeWidth={2} />
+                </span>
+                Dati tecnici ed economici
               </h2>
               <dl className="space-y-3 text-sm">
                 {c.importo_lavori ? (
@@ -190,6 +209,8 @@ export default async function CantierePage({ params }: PageProps) {
             </div>
           </div>
 
+          <DividerOrnament variant="line" spacing="tight" />
+
           {/* R2 HIGH: DATI PREMIUM LOCKED PREVIEW */}
           <div className="mb-10">
             <DatiPremiumLocked slug={c.slug} comune={c.comune} />
@@ -199,6 +220,8 @@ export default async function CantierePage({ params }: PageProps) {
           <div className="mb-10">
             <CantieriSimiliVicini currentSlug={c.slug} comune={c.comune} />
           </div>
+
+          <DividerOrnament variant="label" label="Trasparenza e fonti" spacing="tight" />
 
           {/* FONTE */}
           <div className="rounded-3xl border border-border bg-secondary/50 p-5 mb-10">

@@ -1,17 +1,24 @@
 import { Star, Users, Building2, FileText } from 'lucide-react';
+import { formatNumber } from '@/lib/utils';
 
 interface Props {
   totaleCantieri?: number;
-  totaleRegioni?: number;
-  totaleComuni?: number;
+  totaleSoggetti?: number;
+  totaleFirms?: number;
 }
 
 /**
  * R8 (incluso in batch HIGH): trust strip per homepage.
- * Mostra social proof + numeri network ItaliaProgettisti + rating.
- * Numeri sono volutamente conservativi: si possono leggere come "almeno X" o "X+".
+ * Mostra social proof + numeri reali del DB (cantieri, soggetti analizzati, firms nel network).
+ *
+ * I numeri sono LIVE dal DB tramite getKpiStats() chiamato nelle pagine server component.
+ * Fallback conservativi se i prop non sono passati (no query a vuoto sul componente).
  */
-export default function TrustStrip({ totaleCantieri, totaleRegioni, totaleComuni }: Props) {
+export default function TrustStrip({ totaleCantieri, totaleSoggetti, totaleFirms }: Props) {
+  const cantieriLabel = totaleCantieri ? `${formatNumber(totaleCantieri)}+` : '6.500+';
+  const soggettiLabel = totaleSoggetti ? formatNumber(totaleSoggetti) : '38.000+';
+  const firmsLabel = totaleFirms ? `${formatNumber(totaleFirms)}+` : '37.000+';
+
   return (
     <section
       aria-labelledby="trust-strip-heading"
@@ -22,29 +29,29 @@ export default function TrustStrip({ totaleCantieri, totaleRegioni, totaleComuni
           id="trust-strip-heading"
           className="text-center text-xs uppercase tracking-widest text-muted-foreground mb-6 font-semibold"
         >
-          Già 850+ studi e imprese si affidano al network ItaliaProgettisti
+          Database cantieri italiano in espansione — fonti pubbliche verificate
         </p>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
           <Stat
-            icon={Users}
-            value="8.000+"
-            label="Professionisti registrati"
-          />
-          <Stat
-            icon={Building2}
-            value="850+"
-            label="Studi & imprese attive"
-          />
-          <Stat
             icon={FileText}
-            value={totaleCantieri ? `${(totaleCantieri / 1000).toFixed(0)}k+` : '36k+'}
+            value={cantieriLabel}
             label="Cantieri tracciati"
           />
           <Stat
+            icon={Users}
+            value={soggettiLabel}
+            label="Soggetti analizzati"
+          />
+          <Stat
+            icon={Building2}
+            value={firmsLabel}
+            label="Imprese & studi nel network"
+          />
+          <Stat
             icon={Star}
-            value="4.8/5"
-            label="Soddisfazione utenti"
+            value="GDPR"
+            label="Compliance & trasparenza"
             highlight
           />
         </div>

@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import { Menu, X, ArrowRight } from 'lucide-react';
+import { Menu, X, ArrowRight, HardHat } from 'lucide-react';
 
 const navItems = [
   { label: 'Cantieri per regione', href: '/regioni' },
@@ -25,11 +25,17 @@ export default function Header() {
           {/* Logo */}
           <Link
             href="/"
-            className="flex items-center rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            className="flex items-center gap-2.5 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             aria-label="Italia Cantieri — homepage"
           >
-            <h1 className="text-2xl md:text-3xl font-black tracking-tighter text-foreground leading-none">
-              ItaliaCantieri
+            <span
+              aria-hidden="true"
+              className="inline-flex h-9 w-9 md:h-10 md:w-10 items-center justify-center rounded-2xl bg-foreground text-background"
+            >
+              <HardHat className="h-4 w-4 md:h-5 md:w-5" strokeWidth={2} />
+            </span>
+            <h1 className="text-xl md:text-2xl font-black tracking-tighter text-foreground leading-none">
+              Italia<span className="text-foreground/55">Cantieri</span>
             </h1>
           </Link>
 
