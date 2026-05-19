@@ -20,9 +20,9 @@ export default function StatsBox({ items, columns = 4 }: { items: StatItem[]; co
               ? formatNumber(s.value)
               : s.value;
         return (
-          <div key={i} className="rounded-2xl border border-border bg-white p-6">
-            <div className="text-3xl font-extrabold tracking-tight text-foreground">{v}</div>
-            <div className="mt-1 text-sm font-medium text-foreground/70">{s.label}</div>
+          <div key={i} className="card-zen p-6">
+            <div className="text-3xl md:text-4xl font-black tracking-tighter text-foreground">{v}</div>
+            <div className="mt-1.5 text-sm font-medium text-secondary-text">{s.label}</div>
             {s.helper && <div className="mt-1 text-xs text-muted-foreground">{s.helper}</div>}
           </div>
         );

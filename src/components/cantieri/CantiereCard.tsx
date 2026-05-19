@@ -16,10 +16,10 @@ export default function CantiereCard({ cantiere, compact = false }: Props) {
   return (
     <Link
       href={`/cantiere/${cantiere.slug}`}
-      className="group block rounded-2xl border border-border bg-white p-5 hover:shadow-lg hover:-translate-y-0.5 transition-all"
+      className="group block card-zen card-hover p-5"
     >
       <div className="flex items-start justify-between gap-3 mb-3">
-        <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/5 px-2.5 py-1 text-xs font-medium text-primary border border-primary/10">
+        <span className="inline-flex items-center gap-1.5 rounded-full bg-secondary px-2.5 py-1 text-xs font-medium text-foreground border border-border">
           <FileText className="h-3 w-3" />
           {titolo}
         </span>
@@ -46,14 +46,14 @@ export default function CantiereCard({ cantiere, compact = false }: Props) {
         </span>
       </div>
 
-      <div className="flex items-center justify-between pt-3 border-t border-border/50">
+      <div className="flex items-center justify-between pt-3 border-t border-border">
         <div className="flex items-center gap-3 text-xs text-muted-foreground">
           {cantiere.importo_lavori && (
-            <span className="font-medium text-foreground">{formatEuro(cantiere.importo_lavori, { compact: true })}</span>
+            <span className="font-semibold text-foreground">{formatEuro(cantiere.importo_lavori, { compact: true })}</span>
           )}
           {cantiere.superficie_mq && <span>{Math.round(Number(cantiere.superficie_mq))} m²</span>}
         </div>
-        <span className="inline-flex items-center gap-1 text-xs font-medium text-primary opacity-0 group-hover:opacity-100 transition-opacity">
+        <span className="inline-flex items-center gap-1 text-xs font-medium text-foreground opacity-0 group-hover:opacity-100 transition-opacity">
           Dettagli <ArrowRight className="h-3 w-3" />
         </span>
       </div>
