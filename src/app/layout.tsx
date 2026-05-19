@@ -51,12 +51,38 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body>
+        {/* Skip link per accessibilità keyboard */}
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:rounded-full focus:bg-foreground focus:text-background focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+        >
+          Salta al contenuto principale
+        </a>
         <GoogleAnalytics gaId={siteConfig.tracking.gaId} />
         <MetaPixel pixelId={siteConfig.tracking.metaPixelId} />
         <Header />
-        <main className="pt-20 min-h-screen">{children}</main>
+        <main id="main-content" className="pt-20 min-h-screen">{children}</main>
         <Footer />
         <CookieBanner gaId={siteConfig.tracking.gaId} />
+        <noscript>
+          <div
+            style={{
+              position: 'fixed',
+              bottom: 0,
+              left: 0,
+              right: 0,
+              padding: '12px 16px',
+              background: '#111',
+              color: '#fff',
+              textAlign: 'center',
+              fontSize: '13px',
+              zIndex: 999,
+            }}
+          >
+            Italia Cantieri funziona meglio con JavaScript attivo. La ricerca avanzata richiede JS, ma puoi
+            comunque consultare cantieri, regioni e bandi.
+          </div>
+        </noscript>
       </body>
     </html>
   );

@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { Calendar, MapPin, FileText, Hash, Tag, Database, Building2, Bell, Users } from 'lucide-react';
+import { Calendar, MapPin, FileText, Hash, Tag, Database, Building2 } from 'lucide-react';
 import { getCantiereBySlug, countFirmsByComune } from '@/lib/supabase/queries/cantieri';
 import { formatDate, formatEuro, formatNumber, regioneSlug, provinciaSlug, slugify } from '@/lib/utils';
 import { cantiereLd, safeJsonLd } from '@/lib/seo/structured-data';
@@ -11,6 +11,9 @@ import MappaCantiereSingolo from '@/components/cantieri/MappaCantiereSingolo';
 import RichiediRimozioneCTA from '@/components/cantieri/RichiediRimozioneCTA';
 import CrossLinkCorrelati from '@/components/cantieri/CrossLinkCorrelati';
 import FAQ from '@/components/cantieri/FAQ';
+import UnlockPremiumCTA from '@/components/cantieri/UnlockPremiumCTA';
+import DatiPremiumLocked from '@/components/cantieri/DatiPremiumLocked';
+import CantieriSimiliVicini from '@/components/cantieri/CantieriSimiliVicini';
 
 export const revalidate = 3600;
 
@@ -69,7 +72,7 @@ export default async function CantierePage({ params }: PageProps) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: safeJsonLd(cantiereLd(c)) }}
       />
-      <section className="py-12 md:py-16">
+      <section className="py-10 md:py-14">
         <div className="container-zen max-w-5xl">
           <BreadcrumbCantiere
             steps={[
@@ -82,7 +85,7 @@ export default async function CantierePage({ params }: PageProps) {
           />
 
           {/* HEADER */}
-          <div className="mb-8">
+          <div className="mb-6 md:mb-8">
             <div className="flex flex-wrap items-center gap-2 mb-4">
               <span className="inline-flex items-center gap-1.5 rounded-full bg-primary text-primary-foreground px-3 py-1 text-xs font-semibold">
                 <FileText className="h-3 w-3" /> {c.tipo_titolo || 'Cantiere edilizio'}
@@ -101,17 +104,25 @@ export default async function CantierePage({ params }: PageProps) {
                 </span>
               ))}
             </div>
-            <h1 className="heading-section mb-3">
+            <h1 className="heading-section mb-3 tracking-tight">
               {c.descrizione || `${c.tipo_titolo || 'Cantiere edilizio'} a ${c.comune}`}
             </h1>
-            <p className="text-muted-foreground inline-flex items-center gap-1.5">
-              <MapPin className="h-4 w-4" />
+            <p className="text-muted-foreground inline-flex items-center gap-1.5 flex-wrap">
+              <MapPin className="h-4 w-4" strokeWidth={1.5} />
               {indirizzoCompleto ? `${indirizzoCompleto}, ` : ''}
-              <Link href={`/comune/${slugify(c.comune)}`} className="text-foreground hover:underline">
+              <Link
+                href={`/comune/${slugify(c.comune)}`}
+                className="text-foreground hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm"
+              >
                 {c.comune}
               </Link>{' '}
               ({c.provincia}, {c.regione})
             </p>
+          </div>
+
+          {/* R1 HIGH: CTA SBLOCCA - ABOVE-THE-FOLD */}
+          <div className="mb-8 md:mb-10">
+            <UnlockPremiumCTA slug={c.slug} comune={c.comune} />
           </div>
 
           {/* MAPPA */}
@@ -120,8 +131,8 @@ export default async function CantierePage({ params }: PageProps) {
           </div>
 
           {/* GRID DATI */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
-            <div className="rounded-2xl border border-border bg-white p-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6 mb-10">
+            <div className="rounded-3xl border border-border bg-white p-6 transition-shadow duration-200 hover:shadow-sm">
               <h2 className="text-base font-semibold mb-4 inline-flex items-center gap-2">
                 <FileText className="h-4 w-4" /> Dati amministrativi
               </h2>
@@ -153,21 +164,21 @@ export default async function CantierePage({ params }: PageProps) {
               </dl>
             </div>
 
-            <div className="rounded-2xl border border-border bg-white p-6">
+            <div className="rounded-3xl border border-border bg-white p-6 transition-shadow duration-200 hover:shadow-sm">
               <h2 className="text-base font-semibold mb-4 inline-flex items-center gap-2">
                 <Building2 className="h-4 w-4" /> Dati tecnici ed economici
               </h2>
               <dl className="space-y-3 text-sm">
                 {c.importo_lavori ? (
-                  <div className="flex gap-3"><dt className="w-40 flex-shrink-0 text-muted-foreground">Importo lavori</dt><dd className="font-semibold text-lg">{formatEuro(c.importo_lavori)}</dd></div>
+                  <div className="flex gap-3"><dt className="w-40 flex-shrink-0 text-muted-foreground">Importo lavori</dt><dd className="font-semibold text-lg tabular-nums">{formatEuro(c.importo_lavori)}</dd></div>
                 ) : (
                   <div className="flex gap-3"><dt className="w-40 flex-shrink-0 text-muted-foreground">Importo lavori</dt><dd className="text-muted-foreground">non dichiarato</dd></div>
                 )}
                 {c.superficie_mq && (
-                  <div className="flex gap-3"><dt className="w-40 flex-shrink-0 text-muted-foreground">Superficie</dt><dd className="font-medium">{formatNumber(c.superficie_mq)} m²</dd></div>
+                  <div className="flex gap-3"><dt className="w-40 flex-shrink-0 text-muted-foreground">Superficie</dt><dd className="font-medium tabular-nums">{formatNumber(c.superficie_mq)} m²</dd></div>
                 )}
                 {c.cubatura_mc && (
-                  <div className="flex gap-3"><dt className="w-40 flex-shrink-0 text-muted-foreground">Cubatura</dt><dd className="font-medium">{formatNumber(c.cubatura_mc)} m³</dd></div>
+                  <div className="flex gap-3"><dt className="w-40 flex-shrink-0 text-muted-foreground">Cubatura</dt><dd className="font-medium tabular-nums">{formatNumber(c.cubatura_mc)} m³</dd></div>
                 )}
                 {c.unita_abitative !== null && c.unita_abitative !== undefined && (
                   <div className="flex gap-3"><dt className="w-40 flex-shrink-0 text-muted-foreground">Unita abitative</dt><dd className="font-medium">{c.unita_abitative}</dd></div>
@@ -179,42 +190,18 @@ export default async function CantierePage({ params }: PageProps) {
             </div>
           </div>
 
-          {/* CTA SBLOCCA CONTATTI */}
-          <div className="mb-10 rounded-2xl border-2 border-primary/20 bg-primary/5 p-6 md:p-8">
-            <div className="flex items-start gap-4">
-              <Users className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
-              <div className="flex-1">
-                <h2 className="text-lg md:text-xl font-bold mb-2">
-                  Vuoi i contatti del progettista o dell&apos;impresa di questo cantiere?
-                </h2>
-                <p className="text-sm text-foreground/80 mb-5 leading-relaxed">
-                  I profili di progettisti, studi e imprese collegati ai cantieri di {c.comune} sono disponibili nel
-                  network ItaliaProgettisti. Iscriviti gratis per consultare contatti, portfolio e referenze.
-                </p>
-                <div className="flex flex-wrap gap-3">
-                  <a
-                    href="https://www.italiaprogettisti.com/register"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center justify-center gap-2 rounded-full bg-primary text-primary-foreground px-5 py-2.5 text-sm font-medium hover:opacity-90 transition-opacity"
-                  >
-                    Sblocca i contatti gratis
-                  </a>
-                  <a
-                    href="https://www.italiaprogettisti.com/register"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center justify-center gap-2 rounded-full border border-foreground/20 text-foreground px-5 py-2.5 text-sm font-medium hover:bg-foreground/5 transition-colors"
-                  >
-                    <Bell className="h-4 w-4" /> Attiva alert su {c.comune}
-                  </a>
-                </div>
-              </div>
-            </div>
+          {/* R2 HIGH: DATI PREMIUM LOCKED PREVIEW */}
+          <div className="mb-10">
+            <DatiPremiumLocked slug={c.slug} comune={c.comune} />
+          </div>
+
+          {/* CANTIERI SIMILI VICINI (engagement + crosslink SEO) */}
+          <div className="mb-10">
+            <CantieriSimiliVicini currentSlug={c.slug} comune={c.comune} />
           </div>
 
           {/* FONTE */}
-          <div className="rounded-2xl border border-border bg-secondary/50 p-5 mb-10">
+          <div className="rounded-3xl border border-border bg-secondary/50 p-5 mb-10">
             <h2 className="text-sm font-semibold mb-2 inline-flex items-center gap-2">
               <Database className="h-4 w-4" /> Trasparenza e fonte dei dati
             </h2>
@@ -230,7 +217,10 @@ export default async function CantierePage({ params }: PageProps) {
               <p className="text-xs opacity-80 pt-2">
                 Base legale: Art. 6.1.f GDPR (legittimo interesse alla trasparenza pubblica) + Art. 14 GDPR (informativa
                 per dati raccolti da terzi). Maggiori dettagli alla{' '}
-                <Link href="/come-trattiamo-i-dati" className="underline">
+                <Link
+                  href="/come-trattiamo-i-dati"
+                  className="underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm"
+                >
                   pagina trasparenza dati
                 </Link>
                 .
@@ -243,8 +233,8 @@ export default async function CantierePage({ params }: PageProps) {
             <RichiediRimozioneCTA cantiereId={c.id} protocollo={c.protocollo || undefined} comune={c.comune} />
           </div>
 
-          {/* CROSS LINK */}
-          <CrossLinkCorrelati comune={c.comune} countImprese={firmCount} />
+          {/* CROSS LINK (R9 potenziato) */}
+          <CrossLinkCorrelati comune={c.comune} countImprese={firmCount} cantiereSlug={c.slug} />
 
           <FAQ
             title="Domande frequenti su questo cantiere"

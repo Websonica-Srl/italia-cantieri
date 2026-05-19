@@ -1,11 +1,14 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { ArrowRight, MapPin, FileText, BarChart3, ShieldCheck, Zap, Users } from 'lucide-react';
+import { ArrowRight, MapPin, ShieldCheck } from 'lucide-react';
 import SearchComune from '@/components/cantieri/SearchComune';
 import CantiereCard from '@/components/cantieri/CantiereCard';
 import StatsBox from '@/components/cantieri/StatsBox';
 import FAQ from '@/components/cantieri/FAQ';
 import TrustBadges from '@/components/cantieri/TrustBadges';
+import TrustStrip from '@/components/cantieri/TrustStrip';
+import IntentSplitCards from '@/components/cantieri/IntentSplitCards';
+import IntentSplitCTA from '@/components/cantieri/IntentSplitCTA';
 import { getCantieri, getCantieriByRegione, getGlobalStats } from '@/lib/supabase/queries/cantieri';
 import { regioneSlug, formatNumber } from '@/lib/utils';
 
@@ -14,7 +17,7 @@ export const revalidate = 3600; // ISR ogni ora
 export const metadata: Metadata = {
   title: 'Italia Cantieri — Sai PRIMA dove si lavora in Italia | Cantieri edilizi e bandi pubblici',
   description:
-    'Oltre 5.900 cantieri edilizi attivi in Italia: permessi di costruire, SCIA, CILA e bandi pubblici aggiornati ogni giorno. Intercetta le opere prima dei competitor.',
+    'Oltre 5.900 cantieri edilizi attivi in Italia: permessi di costruire, SCIA, CILA e bandi pubblici aggregati ogni giorno. Intercetta le opere prima dei competitor.',
   alternates: { canonical: '/' },
 };
 
@@ -55,10 +58,15 @@ export default async function HomePage() {
   return (
     <>
       {/* HERO */}
-      <section className="relative overflow-hidden pt-12 md:pt-20 pb-16 md:pb-20 bg-gradient-to-b from-secondary/40 to-background">
-        <div className="container-zen text-center">
-          <p className="inline-flex items-center gap-2 rounded-full bg-background border border-border px-4 py-1.5 text-xs font-medium text-secondary-text mb-6">
-            <ShieldCheck className="h-3.5 w-3.5" strokeWidth={1.5} /> Dati pubblici verificati · Aggiornati ogni giorno · GDPR-compliant
+      <section className="relative overflow-hidden pt-14 md:pt-24 pb-16 md:pb-20 bg-gradient-to-b from-secondary/40 to-background">
+        {/* Subtle decorative gradient */}
+        <div
+          aria-hidden="true"
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[600px] w-[600px] rounded-full bg-foreground/[0.015] blur-3xl pointer-events-none"
+        />
+        <div className="container-zen text-center relative">
+          <p className="inline-flex items-center gap-2 rounded-full bg-background border border-border px-4 py-1.5 text-xs font-medium text-secondary-text mb-6 shadow-sm">
+            <ShieldCheck className="h-3.5 w-3.5" strokeWidth={1.75} /> Dati pubblici verificati · Aggiornati ogni giorno · GDPR-compliant
           </p>
           <h1 className="heading-hero mb-6 max-w-4xl mx-auto">
             Sai <span className="text-foreground/60">PRIMA</span> dove si lavora in Italia.
@@ -83,6 +91,9 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* TRUST STRIP - social proof quantitativo above-fold */}
+      <TrustStrip totaleCantieri={stats.totale} />
 
       {/* STATS GLOBALI */}
       <section className="py-12 md:py-16">
@@ -109,6 +120,9 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {/* INTENT-SPLIT CARDS (R7 HIGH) - subito sotto stats per orientare il visitatore */}
+      <IntentSplitCards />
+
       {/* RECENTI */}
       <section className="py-12 md:py-16 bg-secondary/30">
         <div className="container-zen">
@@ -121,9 +135,10 @@ export default async function HomePage() {
             </div>
             <Link
               href="/statistiche"
-              className="text-sm font-medium text-foreground hover:underline inline-flex items-center gap-1"
+              className="text-sm font-medium text-foreground hover:underline inline-flex items-center gap-1 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm"
             >
-              Vedi tutte le statistiche <ArrowRight className="h-3.5 w-3.5" />
+              Vedi tutte le statistiche
+              <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
             </Link>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -144,36 +159,37 @@ export default async function HomePage() {
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="card-zen p-6">
-              <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-secondary text-foreground text-lg font-black mb-4">
-                1
+            {[
+              {
+                step: '1',
+                title: 'Cerca il tuo territorio',
+                body:
+                  'Filtra cantieri e bandi per Comune, provincia o regione. Esplora i lavori in corso esattamente dove operi.',
+              },
+              {
+                step: '2',
+                title: 'Analizza il cantiere',
+                body:
+                  'Visualizza tipologia di titolo (PDC, SCIA, CILA), importo lavori, superficie, categoria e geolocalizzazione su mappa.',
+              },
+              {
+                step: '3',
+                title: 'Sblocca i contatti',
+                body:
+                  'Iscriviti gratis su ItaliaProgettisti per accedere ai profili di progettisti, studi e imprese collegati al cantiere.',
+              },
+            ].map((s) => (
+              <div
+                key={s.step}
+                className="card-zen p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-md"
+              >
+                <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-secondary text-foreground text-lg font-black mb-4 tabular-nums">
+                  {s.step}
+                </div>
+                <h3 className="font-semibold mb-2 text-lg tracking-tight">{s.title}</h3>
+                <p className="text-sm text-secondary-text leading-relaxed">{s.body}</p>
               </div>
-              <h3 className="font-semibold mb-2 text-lg">Cerca il tuo territorio</h3>
-              <p className="text-sm text-secondary-text leading-relaxed">
-                Filtra cantieri e bandi per Comune, provincia o regione. Esplora i lavori in corso esattamente dove
-                operi.
-              </p>
-            </div>
-            <div className="card-zen p-6">
-              <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-secondary text-foreground text-lg font-black mb-4">
-                2
-              </div>
-              <h3 className="font-semibold mb-2 text-lg">Analizza il cantiere</h3>
-              <p className="text-sm text-secondary-text leading-relaxed">
-                Visualizza tipologia di titolo (PDC, SCIA, CILA), importo lavori, superficie, categoria e
-                geolocalizzazione su mappa.
-              </p>
-            </div>
-            <div className="card-zen p-6">
-              <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-secondary text-foreground text-lg font-black mb-4">
-                3
-              </div>
-              <h3 className="font-semibold mb-2 text-lg">Sblocca i contatti</h3>
-              <p className="text-sm text-secondary-text leading-relaxed">
-                Iscriviti gratis su ItaliaProgettisti per accedere ai profili di progettisti, studi e imprese collegati
-                al cantiere.
-              </p>
-            </div>
+            ))}
           </div>
         </div>
       </section>
@@ -190,9 +206,10 @@ export default async function HomePage() {
             </div>
             <Link
               href="/regioni"
-              className="text-sm font-medium text-foreground hover:underline inline-flex items-center gap-1"
+              className="text-sm font-medium text-foreground hover:underline inline-flex items-center gap-1 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm"
             >
-              Vedi tutte le regioni <ArrowRight className="h-3.5 w-3.5" />
+              Vedi tutte le regioni
+              <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
             </Link>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -200,14 +217,14 @@ export default async function HomePage() {
               <Link
                 key={r.regione}
                 href={`/${regioneSlug(r.regione)}`}
-                className="card-zen card-hover p-5"
+                className="card-zen card-hover p-5 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                 aria-label={`Vedi tutti i cantieri in ${r.regione}`}
               >
                 <div className="flex items-center gap-2 mb-1.5">
                   <MapPin className="h-3.5 w-3.5 text-muted-foreground" strokeWidth={1.5} />
-                  <span className="font-semibold">{r.regione}</span>
+                  <span className="font-semibold group-hover:text-foreground transition-colors">{r.regione}</span>
                 </div>
-                <div className="text-xs text-muted-foreground">{formatNumber(r.cnt)} cantieri attivi</div>
+                <div className="text-xs text-muted-foreground tabular-nums">{formatNumber(r.cnt)} cantieri attivi</div>
               </Link>
             ))}
           </div>
@@ -225,43 +242,8 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* CTA REGISTRAZIONE */}
-      <section className="py-16 md:py-24 bg-foreground text-background">
-        <div className="container-zen text-center max-w-3xl">
-          <span className="inline-flex items-center gap-2 rounded-full bg-background/10 border border-background/20 px-4 py-1.5 text-xs font-medium mb-6">
-            <Users className="h-3.5 w-3.5" /> 8.000+ professionisti gia iscritti al network
-          </span>
-          <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight mb-4">
-            Trasforma i cantieri pubblici in clienti reali.
-          </h2>
-          <p className="text-lg opacity-80 mb-8 leading-relaxed">
-            Sei un progettista, uno studio o un&apos;impresa edile? Iscriviti gratuitamente al network
-            ItaliaProgettisti per ricevere alert sui cantieri vicini, sbloccare i contatti dei committenti e farti
-            trovare da chi sta progettando le prossime opere.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <a
-              href="https://www.italiaprogettisti.com/register"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-2 rounded-full bg-background text-foreground px-6 py-3 font-medium hover:opacity-90 transition-opacity"
-            >
-              <Zap className="h-4 w-4" /> Iscriviti gratis a ItaliaProgettisti
-            </a>
-            <a
-              href="https://www.italiaprogettisti.com/abbonamenti"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-2 rounded-full border border-background/30 text-background px-6 py-3 font-medium hover:bg-background/10 transition-colors"
-            >
-              <BarChart3 className="h-4 w-4" /> Scopri i piani Premium
-            </a>
-          </div>
-          <p className="text-xs opacity-60 mt-6">
-            Dati provenienti da fonti pubbliche, trattati nel rispetto del GDPR (Art. 6.1.f legittimo interesse).
-          </p>
-        </div>
-      </section>
+      {/* R5 HIGH: CTA REGISTRAZIONE - DIVISO IMPRESA vs STUDIO */}
+      <IntentSplitCTA />
     </>
   );
 }
