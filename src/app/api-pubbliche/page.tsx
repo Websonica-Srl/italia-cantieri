@@ -77,7 +77,7 @@ const sampleResponse = `{
 
 const license = [
   { label: 'Dati', value: 'CC BY 4.0' },
-  { label: 'Attribuzione', value: 'italiacantieri.it (Websonica S.r.l.)' },
+  { label: 'Attribuzione', value: 'italiacantieri.it (AZIENDA 365 SRL)' },
   { label: 'Uso commerciale', value: 'Permesso con attribuzione' },
   { label: 'Modifiche', value: 'Permesse con menzione fonte' },
 ];
@@ -201,7 +201,7 @@ export default function ApiPubblichePage() {
           <p className="text-sm text-muted-foreground">
             Esempio di attribuzione richiesta:{' '}
             <code className="text-xs px-2 py-1 bg-background rounded">
-              Dati: italiacantieri.it (Websonica S.r.l.), CC BY 4.0
+              Dati: italiacantieri.it (AZIENDA 365 SRL), CC BY 4.0
             </code>
           </p>
         </div>

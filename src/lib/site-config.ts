@@ -40,9 +40,9 @@ export const siteConfig: SiteConfig = {
   description:
     'Italia Cantieri è il database pubblico dei cantieri edilizi italiani: permessi di costruire, SCIA, CILA, bandi pubblici. Dati open data PA aggregati con piena trasparenza GDPR.',
   email: 'info@italiacantieri.it',
-  dpoEmail: 'a.riolfo@websonica.net',
-  companyName: 'Websonica S.r.l.',
-  companyPiva: 'P.IVA 03789340046',
+  dpoEmail: 'privacy@italiaprogettisti.com',
+  companyName: 'AZIENDA 365 SRL',
+  companyPiva: 'P.IVA 02724340746',
   network: [
     { name: 'Italia Progettisti', url: 'https://www.italiaprogettisti.com' },
     { name: 'Italia Domus', url: 'https://www.italiadomus.it' },

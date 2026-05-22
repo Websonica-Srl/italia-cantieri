@@ -8,11 +8,11 @@ import FAQ from '@/components/cantieri/FAQ';
 
 export const metadata: Metadata = {
   title: 'Chi siamo — Trasparenza, open data e network ItaliaProgettisti',
-  description: `${siteConfig.name} aggrega i cantieri edilizi pubblici italiani da fonti ufficiali. Servizio editoriale di Websonica S.r.l., parte del network ItaliaProgettisti.`,
+  description: `${siteConfig.name} aggrega i cantieri edilizi pubblici italiani da fonti ufficiali. Servizio editoriale di AZIENDA 365 SRL, parte del network ItaliaProgettisti.`,
   alternates: { canonical: '/chi-siamo' },
   openGraph: {
     title: 'Chi siamo — Italia Cantieri',
-    description: `${siteConfig.name} aggrega i cantieri edilizi pubblici italiani da fonti ufficiali. Servizio editoriale di Websonica S.r.l.`,
+    description: `${siteConfig.name} aggrega i cantieri edilizi pubblici italiani da fonti ufficiali. Servizio editoriale di AZIENDA 365 SRL`,
     url: '/chi-siamo',
     type: 'website',
   },
@@ -21,7 +21,7 @@ export const metadata: Metadata = {
 const chiSiamoFaq = [
   {
     q: 'Chi gestisce Italia Cantieri?',
-    a: 'Italia Cantieri e un servizio editoriale di Websonica S.r.l. (P.IVA 03789340046), parte del network ItaliaProgettisti che dal 2024 connette progettisti, studi e imprese edili in tutta Italia.',
+    a: 'Italia Cantieri e un servizio editoriale di AZIENDA 365 SRL (P.IVA 02724340746), parte del network ItaliaProgettisti che dal 2024 connette progettisti, studi e imprese edili in tutta Italia.',
   },
   {
     q: 'Perche e nato Italia Cantieri?',

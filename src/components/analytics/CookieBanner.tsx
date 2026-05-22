@@ -9,7 +9,12 @@ interface CookieConsent {
   analytics: boolean;
   marketing: boolean;
   timestamp: string;
+  policy_version?: string;
 }
+
+const POLICY_VERSION = "2026-05-22";
+const CONSENT_MAX_AGE_MS = 1000 * 60 * 60 * 24 * 182;
+const CONSENT_ENDPOINT = "https://www.italiaprogettisti.com/api/consent";
 
 const defaultConsent: CookieConsent = {
   necessary: true,
@@ -29,7 +34,17 @@ export default function CookieBanner({ gaId }: CookieBannerProps) {
 
   useEffect(() => {
     const savedConsent = localStorage.getItem("cookie_consent");
-    if (!savedConsent) {
+    let valid = false;
+    if (savedConsent) {
+      try {
+        const c = JSON.parse(savedConsent) as CookieConsent;
+        const ageMs = c.timestamp ? Date.now() - new Date(c.timestamp).getTime() : Infinity;
+        valid = c.policy_version === POLICY_VERSION && ageMs < CONSENT_MAX_AGE_MS;
+      } catch {
+        valid = false;
+      }
+    }
+    if (!valid) {
       const timer = setTimeout(() => setIsVisible(true), 1000);
       return () => clearTimeout(timer);
     }
@@ -39,9 +54,24 @@ export default function CookieBanner({ gaId }: CookieBannerProps) {
     const consentWithTimestamp = {
       ...newConsent,
       timestamp: new Date().toISOString(),
+      policy_version: POLICY_VERSION,
     };
     localStorage.setItem("cookie_consent", JSON.stringify(consentWithTimestamp));
     setIsVisible(false);
+    try {
+      fetch(CONSENT_ENDPOINT, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type: "cookie",
+          choices: { analytics: newConsent.analytics, marketing: newConsent.marketing },
+          policy_version: POLICY_VERSION,
+        }),
+        keepalive: true,
+      }).catch(() => {});
+    } catch {
+      /* noop */
+    }
     window.dispatchEvent(new Event("cookieConsentUpdate"));
 
     if (!newConsent.analytics) {

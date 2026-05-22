@@ -95,7 +95,7 @@ export default async function ComunePage({ params }: PageProps) {
     },
     {
       q: `Sono il proprietario di un cantiere e non voglio comparire. Cosa faccio?`,
-      a: `Hai diritto di richiedere opt-out: scrivi al nostro DPO (a.riolfo@websonica.net) o usa il pulsante "Richiedi rimozione" presente in ogni scheda. Valutiamo la richiesta entro 30 giorni come previsto dal GDPR.`,
+      a: `Hai diritto di richiedere opt-out: scrivi al nostro DPO (privacy@italiaprogettisti.com) o usa il pulsante "Richiedi rimozione" presente in ogni scheda. Valutiamo la richiesta entro 30 giorni come previsto dal GDPR.`,
     },
   ];
 

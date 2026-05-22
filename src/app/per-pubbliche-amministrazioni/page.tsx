@@ -8,7 +8,7 @@ import { ogImageUrl, safeJsonLd } from '@/lib/seo/structured-data';
 export const metadata: Metadata = {
   title: 'Per Pubbliche Amministrazioni — Partnership, embed e press kit',
   description:
-    'Italia Cantieri valorizza i dati open dei Comuni italiani. Embed widget, citazioni standardizzate, dataset CSV, partnership PA. Servizio pubblico no-profit gestito da Websonica S.r.l.',
+    'Italia Cantieri valorizza i dati open dei Comuni italiani. Embed widget, citazioni standardizzate, dataset CSV, partnership PA. Servizio pubblico no-profit gestito da AZIENDA 365 SRL',
   alternates: { canonical: '/per-pubbliche-amministrazioni' },
   openGraph: {
     title: 'Per Pubbliche Amministrazioni — Italia Cantieri',
@@ -73,7 +73,7 @@ const press = [
   },
   {
     quote:
-      'Italia Cantieri e un servizio editoriale di Websonica S.r.l. che aggrega i cantieri edilizi pubblicati ai sensi del D.Lgs. 33/2013 (Trasparenza), gestendo i dati personali secondo GDPR e tecniche di k-anonymity per i cantieri privati.',
+      'Italia Cantieri e un servizio editoriale di AZIENDA 365 SRL che aggrega i cantieri edilizi pubblicati ai sensi del D.Lgs. 33/2013 (Trasparenza), gestendo i dati personali secondo GDPR e tecniche di k-anonymity per i cantieri privati.',
     context: 'Profilo lungo 300 caratteri',
   },
 ];
@@ -152,7 +152,7 @@ export default function PerPubblicheAmministrazioniPage() {
           <p className="text-sm text-muted-foreground mb-8">
             Aggiornato {new Date().toLocaleDateString('it-IT', { day: 'numeric', month: 'long', year: 'numeric' })}.
             Usate liberamente questi numeri citando la fonte:{' '}
-            <em>italiacantieri.it (Websonica S.r.l.)</em>.
+            <em>italiacantieri.it (AZIENDA 365 SRL)</em>.
           </p>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-8 mb-12">
