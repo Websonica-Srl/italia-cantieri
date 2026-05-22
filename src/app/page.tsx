@@ -174,14 +174,14 @@ export default async function HomePage() {
 
             {/* Search pill su sfondo chiaro */}
             <div className="mt-12 md:mt-16 max-w-2xl mx-auto">
-              <SearchComune placeholder="Cerca il tuo Comune (es. Milano, Bologna, Torino)..." />
+              <SearchComune placeholder="Cerca il tuo Comune (es. Alessandria, Bologna, Moncalieri)..." />
               <p className="mt-5 text-sm text-muted-foreground">
                 Citta popolari:{' '}
-                <Link href="/comune/torino" className="text-foreground underline-offset-4 hover:underline transition-colors">Torino</Link>
+                <Link href="/comune/alessandria" className="text-foreground underline-offset-4 hover:underline transition-colors">Alessandria</Link>
+                {' · '}
+                <Link href="/comune/moncalieri" className="text-foreground underline-offset-4 hover:underline transition-colors">Moncalieri</Link>
                 {' · '}
                 <Link href="/comune/bologna" className="text-foreground underline-offset-4 hover:underline transition-colors">Bologna</Link>
-                {' · '}
-                <Link href="/comune/alessandria" className="text-foreground underline-offset-4 hover:underline transition-colors">Alessandria</Link>
                 {' · '}
                 <Link href="/regioni" className="text-muted-foreground hover:text-foreground underline-offset-4 hover:underline transition-colors">tutte le regioni</Link>
               </p>

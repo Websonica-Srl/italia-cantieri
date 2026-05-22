@@ -384,24 +384,15 @@ export async function searchComuni(
 }
 
 /** Lista distinct comuni per sitemap (max 5000). */
-export async function getAllComuni(limit = 5000): Promise<{ comune: string; provincia: string; regione: string }[]> {
+export async function getAllComuni(limit = 5000): Promise<{ comune: string; provincia: string; regione: string; count?: number }[]> {
   const supabase: any = createServerClient();
-  const { data, error } = await supabase
-    .from('cantieri_pubblici')
-    .select('comune, provincia, regione')
-    .eq('is_active', true)
-    .limit(20000);
+  // RPC che ritorna i comuni DISTINTI (no cap sulle righe grezze: fix /comune 404 per i comuni
+  // le cui righe cadevano oltre la finestra .limit(20000) su 24.726+ cantieri).
+  const { data, error } = await supabase.rpc('get_comuni_attivi');
   if (error || !data) return [];
-  const seen = new Set<string>();
-  const out: { comune: string; provincia: string; regione: string }[] = [];
-  for (const r of data as any[]) {
-    const key = (r.comune || '').toLowerCase();
-    if (seen.has(key)) continue;
-    seen.add(key);
-    out.push({ comune: r.comune, provincia: r.provincia, regione: r.regione });
-    if (out.length >= limit) break;
-  }
-  return out;
+  return (data as any[])
+    .slice(0, limit)
+    .map((r) => ({ comune: r.comune, provincia: r.provincia, regione: r.regione, count: Number(r.n) || undefined }));
 }
 
 /** Lista distinct province per regione. */

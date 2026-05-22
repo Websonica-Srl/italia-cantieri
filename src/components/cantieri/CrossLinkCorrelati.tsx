@@ -14,7 +14,8 @@ export default function CrossLinkCorrelati({ comune, countImprese, cantiereSlug 
   if (!comune) return null;
   const slug = slugify(comune);
   const utm = `utm_source=italiacantieri&utm_medium=crosslink&utm_campaign=esplora_${slug}`;
-  const hubUrl = `https://www.italiaprogettisti.com/comune/${slug}?${utm}`;
+  // Link INTERNO alla pagina comune di italiacantieri (resta sul sito; il HUB non ha /comune).
+  const comuneUrl = `/comune/${slug}`;
   const unlockUrl = cantiereSlug
     ? `https://www.italiaprogettisti.com/register?intent=unlock&cantiere=${encodeURIComponent(
         cantiereSlug,
@@ -59,13 +60,11 @@ export default function CrossLinkCorrelati({ comune, countImprese, cantiereSlug 
 
         <div className="flex flex-col gap-2 md:min-w-[220px]">
           <a
-            href={hubUrl}
-            target="_blank"
-            rel="noopener noreferrer"
+            href={comuneUrl}
             className="group inline-flex items-center justify-center gap-2 rounded-full bg-foreground text-background px-5 py-3 text-sm font-semibold transition-all duration-200 hover:scale-[1.03] hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-            aria-label={`Esplora studi e imprese a ${comune}`}
+            aria-label={`Esplora i cantieri a ${comune}`}
           >
-            Esplora ora a {comune}
+            Esplora i cantieri a {comune}
             <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" strokeWidth={2} />
           </a>
           <a
