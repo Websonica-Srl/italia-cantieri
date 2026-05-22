@@ -10,7 +10,7 @@ const navItems = [
   { label: 'Statistiche', href: '/statistiche' },
   { label: 'Glossario', href: '/glossario' },
   { label: 'Chi siamo', href: '/chi-siamo' },
-  { label: 'Trasparenza dati', href: '/come-trattiamo-i-dati' },
+  { label: 'Privacy', href: '/legal/privacy' },
 ];
 
 const HUB_REGISTER =

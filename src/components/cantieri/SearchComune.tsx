@@ -19,7 +19,7 @@ interface Props {
 }
 
 export default function SearchComune({
-  placeholder = 'Cerca un comune (es. Milano, Torino, Bologna...)',
+  placeholder = 'Cerca un comune (es. Alessandria, Bologna, Moncalieri...)',
   variant = 'hero',
 }: Props) {
   const [query, setQuery] = useState('');
@@ -157,8 +157,19 @@ export default function SearchComune({
       )}
 
       {open && !loading && query.length >= 2 && results.length === 0 && (
-        <div className="absolute top-full mt-2 left-0 right-0 z-50 bg-popover rounded-3xl border border-border shadow-xl p-5 text-sm text-muted-foreground">
-          Nessun comune trovato per &ldquo;{query}&rdquo;. Prova con un nome diverso.
+        <div className="absolute top-full mt-2 left-0 right-0 z-50 bg-popover rounded-3xl border border-border shadow-xl p-5 text-sm">
+          <p className="text-foreground font-medium mb-1">
+            &ldquo;{query}&rdquo; non è ancora tra i comuni coperti.
+          </p>
+          <p className="text-muted-foreground mb-3">
+            Stiamo ampliando la copertura ogni settimana. Aree disponibili oggi:
+          </p>
+          <div className="flex flex-wrap gap-2">
+            <a href="/comune/alessandria" className="rounded-full bg-secondary px-3 py-1.5 text-xs font-medium hover:bg-foreground hover:text-background transition-colors">Alessandria</a>
+            <a href="/comune/bologna" className="rounded-full bg-secondary px-3 py-1.5 text-xs font-medium hover:bg-foreground hover:text-background transition-colors">Bologna</a>
+            <a href="/comune/moncalieri" className="rounded-full bg-secondary px-3 py-1.5 text-xs font-medium hover:bg-foreground hover:text-background transition-colors">Moncalieri</a>
+            <a href="/regioni" className="rounded-full border border-border px-3 py-1.5 text-xs font-medium hover:bg-secondary transition-colors">Tutte le regioni →</a>
+          </div>
         </div>
       )}
     </div>

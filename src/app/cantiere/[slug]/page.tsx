@@ -251,38 +251,13 @@ export default async function CantierePage({ params }: PageProps) {
             <CantieriSimiliVicini currentSlug={c.slug} comune={c.comune} />
           </div>
 
-          <DividerOrnament variant="label" label="Trasparenza e fonti" spacing="tight" />
-
-          {/* FONTE */}
-          <div className="rounded-3xl border border-border bg-secondary/50 p-5 mb-10">
-            <h2 className="text-sm font-semibold mb-2 inline-flex items-center gap-2">
-              <Database className="h-4 w-4" /> Trasparenza e fonte dei dati
-            </h2>
-            <div className="text-sm text-secondary-text space-y-1">
-              <p>
-                <strong>Tipo fonte:</strong> {c.fonte_tipo || 'open data PA'}
-              </p>
-              {c.fonte_pubblicazione_data && (
-                <p>
-                  <strong>Pubblicato dalla fonte il:</strong> {formatDate(c.fonte_pubblicazione_data)}
-                </p>
-              )}
-              <p className="text-xs opacity-80 pt-2">
-                Base legale: Art. 6.1.f GDPR (legittimo interesse alla trasparenza pubblica) + Art. 14 GDPR (informativa
-                per dati raccolti da terzi). Maggiori dettagli alla{' '}
-                <Link
-                  href="/come-trattiamo-i-dati"
-                  className="underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm"
-                >
-                  pagina trasparenza dati
-                </Link>
-                .
-              </p>
-            </div>
-          </div>
-
-          {/* OPT-OUT */}
+          {/* TRASPARENZA + OPT-OUT — un'unica card discreta (fonte minima + diritti) */}
           <div className="mb-10">
+            <p className="text-xs text-secondary-text mb-3">
+              Fonte: {c.fonte_tipo || 'open data PA'}
+              {c.fonte_pubblicazione_data ? ` · pubblicato il ${formatDate(c.fonte_pubblicazione_data)}` : ''}
+              {' · '}dati pubblici trattati nel rispetto del GDPR.
+            </p>
             <RichiediRimozioneCTA cantiereId={c.id} protocollo={c.protocollo || undefined} comune={c.comune} />
           </div>
 

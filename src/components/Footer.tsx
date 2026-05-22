@@ -67,8 +67,7 @@ export default function Footer() {
             <div>
               <h4 className="kpi-hero-label text-background/55 mb-5">Trasparenza</h4>
               <ul className="space-y-3.5 text-sm">
-                <li><FooterLink href="/come-trattiamo-i-dati">Come trattiamo i dati</FooterLink></li>
-                <li><FooterLink href="/come-trattiamo-i-dati#opt-out">Opt-out / rimozione</FooterLink></li>
+                <li><FooterLink href="/legal/privacy#opposizione">Opt-out / rimozione</FooterLink></li>
                 <li><FooterLink href="/legal/privacy">Privacy Policy</FooterLink></li>
                 <li><FooterLink href="/legal/cookie">Cookie Policy</FooterLink></li>
                 <li><FooterLink href="/legal/termini">Termini di servizio</FooterLink></li>

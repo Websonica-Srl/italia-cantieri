@@ -34,6 +34,12 @@ const nextConfig = {
       } catch {}
     }
 
+    // Privacy unica: la vecchia pagina "come trattiamo i dati" confluisce nella Privacy Policy.
+    redirects.push(
+      { source: '/come-trattiamo-i-dati', destination: '/legal/privacy', permanent: true },
+      { source: '/come-trattiamo-i-dati/:path*', destination: '/legal/privacy', permanent: true },
+    );
+
     return redirects;
   },
 };
