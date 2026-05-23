@@ -42,12 +42,12 @@ export async function getBandi(filters: BandiFilters = {}): Promise<{ data: Band
   const { regione, cig, importo_min, q, limit = 20, offset = 0 } = filters;
   // SAFE COLUMNS: escludiamo raw_data, fonte_url, crediti_costo (LAYER 1 trasparenza).
   let query = supabase
-    .from('bandi_gara')
+    .from('bandi_gara_public')
     .select(
       'id, slug, cig, cup, numero_bando, tipo_procedura, oggetto, descrizione_completa, importo_base, importo_aggiudicazione, data_pubblicazione, scadenza_offerte, data_aggiudicazione, stazione_appaltante, comune, provincia, regione, categorie, cpv_principale, stato, aggiudicatario_ragione_sociale_raw',
       { count: 'exact' },
-    )
-    .eq('visibilita_pubblica', true);
+    );
+  // NB: bandi_gara_public filtra già visibilita_pubblica + espone solo colonne safe (no piva/raw_data).
 
   if (regione) query = query.ilike('regione', regione);
   if (cig) query = query.eq('cig', cig);
@@ -68,12 +68,11 @@ export async function getBandi(filters: BandiFilters = {}): Promise<{ data: Band
 export async function getBandoBySlug(slug: string): Promise<Bando | null> {
   const supabase: any = createServerClient();
   const { data, error } = await supabase
-    .from('bandi_gara')
+    .from('bandi_gara_public')
     .select(
       'id, slug, cig, cup, numero_bando, tipo_procedura, oggetto, descrizione_completa, importo_base, importo_aggiudicazione, data_pubblicazione, scadenza_offerte, data_aggiudicazione, stazione_appaltante, comune, provincia, regione, categorie, cpv_principale, stato, aggiudicatario_ragione_sociale_raw',
     )
     .eq('slug', slug)
-    .eq('visibilita_pubblica', true)
     .maybeSingle();
   if (error) {
     console.error('[bandi] getBandoBySlug error:', error.message);
@@ -85,9 +84,8 @@ export async function getBandoBySlug(slug: string): Promise<Bando | null> {
 export async function getAllBandiSlugs(limit = 2000): Promise<{ slug: string; updated_at: string }[]> {
   const supabase: any = createServerClient();
   const { data, error } = await supabase
-    .from('bandi_gara')
+    .from('bandi_gara_public')
     .select('slug, updated_at')
-    .eq('visibilita_pubblica', true)
     .order('updated_at', { ascending: false })
     .limit(limit);
   if (error) return [];
