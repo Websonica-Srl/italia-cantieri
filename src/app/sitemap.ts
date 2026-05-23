@@ -6,7 +6,6 @@ import {
   getAllComuni,
   getAllCantieriSlugs,
 } from '@/lib/supabase/queries/cantieri';
-import { getAllBandiSlugs } from '@/lib/supabase/queries/bandi';
 import { regioneSlug, slugify } from '@/lib/utils';
 import { provinciaSlugFromCode } from '@/lib/province';
 
@@ -74,14 +73,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.5,
   }));
 
-  // Bandi (max 2000)
-  const bandi = await getAllBandiSlugs(2000);
-  const bandoPages: MetadataRoute.Sitemap = bandi.map((b) => ({
-    url: `${baseUrl}/bando/${b.slug}`,
-    lastModified: b.updated_at ? new Date(b.updated_at) : now,
-    changeFrequency: 'weekly',
-    priority: 0.6,
-  }));
+  // Le schede bando vivono sul portale dedicato bandigaredappalto.it (canonica lì):
+  // non le elenchiamo qui per evitare contenuto duplicato. La pagina /bandi resta
+  // come teaser editoriale (inclusa nelle staticPages).
 
-  return [...staticPages, ...regionPages, ...provinciaPages, ...comunePages, ...cantierePages, ...bandoPages];
+  return [...staticPages, ...regionPages, ...provinciaPages, ...comunePages, ...cantierePages];
 }

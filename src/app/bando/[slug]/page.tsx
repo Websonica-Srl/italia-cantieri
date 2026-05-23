@@ -13,13 +13,18 @@ interface PageProps {
   params: { slug: string };
 }
 
+// Portale dedicato bandi (canonica della rete). italiacantieri rimanda lì per non
+// duplicare le schede bando (anti-cannibalizzazione SEO) e spingere l'autorità sul nuovo dominio.
+const PORTALE_BANDI = 'https://www.bandigaredappalto.it';
+
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const b = await getBandoBySlug(params.slug);
   if (!b) return { title: 'Bando non trovato' };
   return {
     title: `${b.oggetto?.slice(0, 80) || 'Bando di gara'} — Italia Cantieri`,
     description: (b.descrizione_completa || b.oggetto || '').slice(0, 160),
-    alternates: { canonical: `/bando/${b.slug}` },
+    // Canonica sul portale dedicato (la scheda completa vive su bandigaredappalto.it).
+    alternates: { canonical: `${PORTALE_BANDI}/bandi/${b.slug}` },
   };
 }
 
