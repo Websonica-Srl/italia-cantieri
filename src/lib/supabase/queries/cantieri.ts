@@ -8,6 +8,7 @@
  * - Layer 2: cantieri_aggregati_anonimi (k-anonymity 5).
  */
 import { createServerClient } from '../client';
+import { resolveProvincia } from '@websonica/cantieri-core';
 
 export interface Cantiere {
   id: string;
@@ -356,44 +357,20 @@ export async function getAggregatiAnonimiByComune(comune: string): Promise<{
 /** Autocomplete comuni (per search box). Restituisce anche un count
  *  approssimato di cantieri per comune (numero di record matchati nel
  *  limite di lookup) - utile come hint visivo in autocomplete. */
-// Nome provincia (lowercase) -> sigla. Permette di cercare "torino" e trovare i comuni
-// della provincia di Torino (Moncalieri, Settimo Torinese, ...), anche se "Torino" città non è coperta.
-const PROVINCE_NAME_TO_CODE: Record<string, string> = {
-  // Piemonte
-  torino: 'TO', alessandria: 'AL', asti: 'AT', cuneo: 'CN', biella: 'BI', novara: 'NO',
-  vercelli: 'VC', 'verbano-cusio-ossola': 'VB',
-  // Liguria
-  genova: 'GE', savona: 'SV', imperia: 'IM', 'la spezia': 'SP',
-  // Emilia-Romagna
-  bologna: 'BO', modena: 'MO', parma: 'PR', 'reggio emilia': 'RE', ferrara: 'FE',
-  ravenna: 'RA', 'forli-cesena': 'FC', 'forlì-cesena': 'FC', rimini: 'RN', piacenza: 'PC',
-  // Lombardia
-  milano: 'MI', varese: 'VA', bergamo: 'BG', brescia: 'BS', como: 'CO', lecco: 'LC',
-  lodi: 'LO', mantova: 'MN', pavia: 'PV', cremona: 'CR', sondrio: 'SO',
-  'monza e della brianza': 'MB', monza: 'MB',
-  // Toscana
-  firenze: 'FI', siena: 'SI', pisa: 'PI', livorno: 'LI', arezzo: 'AR', lucca: 'LU',
-  pistoia: 'PT', prato: 'PO', grosseto: 'GR', 'massa-carrara': 'MS',
-  // Altre metropoli comuni di ricerca
-  roma: 'RM', napoli: 'NA', venezia: 'VE', verona: 'VR', padova: 'PD', vicenza: 'VI',
-  treviso: 'TV', bari: 'BA', palermo: 'PA', catania: 'CT', cagliari: 'CA',
-};
-
 export async function searchComuni(
   q: string,
   limit = 10,
 ): Promise<{ comune: string; provincia: string; regione: string; count?: number }[]> {
   if (!q || q.length < 2) return [];
   const supabase: any = createServerClient();
-  const qn = q.trim().toLowerCase();
 
   // NB: in supabase-js i filtri (.ilike/.eq) vanno DOPO .select().
   const base = () => supabase.from('cantieri_pubblici').select('comune, provincia, regione').eq('is_active', true);
 
   // 1) match per nome comune
   const queries: Promise<any>[] = [base().ilike('comune', `${q}%`).limit(400)];
-  // 2) match per provincia (es. "torino" -> tutti i comuni con provincia=TO)
-  const provCode = PROVINCE_NAME_TO_CODE[qn];
+  // 2) match per provincia (es. "torino" -> tutti i comuni con provincia=TO) via cantieri-core (107 province)
+  const provCode = resolveProvincia(q)?.sigla;
   if (provCode) {
     queries.push(base().eq('provincia', provCode).limit(400));
   }
