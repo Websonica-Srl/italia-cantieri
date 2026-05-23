@@ -387,17 +387,18 @@ export async function searchComuni(
   const supabase: any = createServerClient();
   const qn = q.trim().toLowerCase();
 
-  const select = (qb: any) => qb.select('comune, provincia, regione').eq('is_active', true).limit(400);
+  // NB: in supabase-js i filtri (.ilike/.eq) vanno DOPO .select().
+  const base = () => supabase.from('cantieri_pubblici').select('comune, provincia, regione').eq('is_active', true);
 
   // 1) match per nome comune
-  const queries: Promise<any>[] = [select(supabase.from('cantieri_pubblici').ilike('comune', `${q}%`))];
+  const queries: Promise<any>[] = [base().ilike('comune', `${q}%`).limit(400)];
   // 2) match per provincia (es. "torino" -> tutti i comuni con provincia=TO)
   const provCode = PROVINCE_NAME_TO_CODE[qn];
   if (provCode) {
-    queries.push(select(supabase.from('cantieri_pubblici').eq('provincia', provCode)));
+    queries.push(base().eq('provincia', provCode).limit(400));
   }
   // 3) match per regione (es. "piemonte", "lombardia")
-  queries.push(select(supabase.from('cantieri_pubblici').ilike('regione', `${q}%`)));
+  queries.push(base().ilike('regione', `${q}%`).limit(400));
 
   const results = await Promise.all(queries);
   const rows: any[] = [];
