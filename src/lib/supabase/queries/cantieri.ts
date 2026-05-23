@@ -356,22 +356,56 @@ export async function getAggregatiAnonimiByComune(comune: string): Promise<{
 /** Autocomplete comuni (per search box). Restituisce anche un count
  *  approssimato di cantieri per comune (numero di record matchati nel
  *  limite di lookup) - utile come hint visivo in autocomplete. */
+// Nome provincia (lowercase) -> sigla. Permette di cercare "torino" e trovare i comuni
+// della provincia di Torino (Moncalieri, Settimo Torinese, ...), anche se "Torino" città non è coperta.
+const PROVINCE_NAME_TO_CODE: Record<string, string> = {
+  // Piemonte
+  torino: 'TO', alessandria: 'AL', asti: 'AT', cuneo: 'CN', biella: 'BI', novara: 'NO',
+  vercelli: 'VC', 'verbano-cusio-ossola': 'VB',
+  // Liguria
+  genova: 'GE', savona: 'SV', imperia: 'IM', 'la spezia': 'SP',
+  // Emilia-Romagna
+  bologna: 'BO', modena: 'MO', parma: 'PR', 'reggio emilia': 'RE', ferrara: 'FE',
+  ravenna: 'RA', 'forli-cesena': 'FC', 'forlì-cesena': 'FC', rimini: 'RN', piacenza: 'PC',
+  // Lombardia
+  milano: 'MI', varese: 'VA', bergamo: 'BG', brescia: 'BS', como: 'CO', lecco: 'LC',
+  lodi: 'LO', mantova: 'MN', pavia: 'PV', cremona: 'CR', sondrio: 'SO',
+  'monza e della brianza': 'MB', monza: 'MB',
+  // Toscana
+  firenze: 'FI', siena: 'SI', pisa: 'PI', livorno: 'LI', arezzo: 'AR', lucca: 'LU',
+  pistoia: 'PT', prato: 'PO', grosseto: 'GR', 'massa-carrara': 'MS',
+  // Altre metropoli comuni di ricerca
+  roma: 'RM', napoli: 'NA', venezia: 'VE', verona: 'VR', padova: 'PD', vicenza: 'VI',
+  treviso: 'TV', bari: 'BA', palermo: 'PA', catania: 'CT', cagliari: 'CA',
+};
+
 export async function searchComuni(
   q: string,
   limit = 10,
 ): Promise<{ comune: string; provincia: string; regione: string; count?: number }[]> {
   if (!q || q.length < 2) return [];
   const supabase: any = createServerClient();
-  const { data, error } = await supabase
-    .from('cantieri_pubblici')
-    .select('comune, provincia, regione')
-    .ilike('comune', `${q}%`)
-    .eq('is_active', true)
-    .limit(400);
-  if (error || !data) return [];
+  const qn = q.trim().toLowerCase();
+
+  const select = (qb: any) => qb.select('comune, provincia, regione').eq('is_active', true).limit(400);
+
+  // 1) match per nome comune
+  const queries: Promise<any>[] = [select(supabase.from('cantieri_pubblici').ilike('comune', `${q}%`))];
+  // 2) match per provincia (es. "torino" -> tutti i comuni con provincia=TO)
+  const provCode = PROVINCE_NAME_TO_CODE[qn];
+  if (provCode) {
+    queries.push(select(supabase.from('cantieri_pubblici').eq('provincia', provCode)));
+  }
+  // 3) match per regione (es. "piemonte", "lombardia")
+  queries.push(select(supabase.from('cantieri_pubblici').ilike('regione', `${q}%`)));
+
+  const results = await Promise.all(queries);
+  const rows: any[] = [];
+  for (const r of results) if (!r.error && r.data) rows.push(...r.data);
+
   // Deduplica per comune (case-insensitive) e conta occorrenze come hint
   const seenMap = new Map<string, { comune: string; provincia: string; regione: string; count: number }>();
-  for (const r of data as any[]) {
+  for (const r of rows) {
     const key = (r.comune || '').toLowerCase();
     const existing = seenMap.get(key);
     if (existing) {
@@ -380,7 +414,10 @@ export async function searchComuni(
       seenMap.set(key, { comune: r.comune, provincia: r.provincia, regione: r.regione, count: 1 });
     }
   }
-  return Array.from(seenMap.values()).slice(0, limit);
+  // Ordina per numero cantieri desc (i comuni più rilevanti in alto)
+  return Array.from(seenMap.values())
+    .sort((a, b) => b.count - a.count)
+    .slice(0, limit);
 }
 
 /** Lista distinct comuni per sitemap (max 5000). */

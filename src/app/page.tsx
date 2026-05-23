@@ -212,7 +212,7 @@ export default async function HomePage() {
                 { value: stats.regioni.toString(), label: 'Regioni coperte' },
                 { value: 'GDPR', label: 'Trasparenza piena' },
               ].map((k) => (
-                <div key={k.label} className="text-center md:text-left">
+                <div key={k.label} className="text-center">
                   <div
                     className="font-black tracking-[-0.05em] leading-none tabular-nums text-foreground"
                     style={{ fontSize: 'clamp(2rem, 3.5vw + 0.5rem, 3.75rem)' }}
