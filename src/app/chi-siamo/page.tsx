@@ -43,7 +43,7 @@ export default function ChiSiamoPage() {
       <div className="container-zen max-w-3xl">
         <BreadcrumbCantiere steps={[{ label: 'Chi siamo' }]} />
         <h1 className="heading-section mb-4">
-          Rendiamo trasparente l&apos;edilizia italiana.
+          Vediamo il lavoro del territorio. Lo trasformiamo in opportunita.
         </h1>
         <p className="body-large text-muted-foreground mb-10">
           {siteConfig.name} e l&apos;aggregatore pubblico dei cantieri edilizi italiani: un servizio editoriale di{' '}

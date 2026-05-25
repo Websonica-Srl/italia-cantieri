@@ -21,7 +21,7 @@ const ogImage = ogImageUrl({
   title: 'Statistiche cantieri edilizi in Italia',
   subtitle: 'Distribuzione per regione, tipologia (PDC, SCIA, CILA), categorie e importi',
   kind: 'stats',
-  count: '8.880',
+  count: '~24.748',
   label: 'cantieri analizzati',
 });
 
@@ -168,12 +168,12 @@ export default async function StatistichePage() {
             Intelligence pubblica
           </p>
           <h1 className="font-black tracking-[-0.05em] leading-[0.88] text-[2.75rem] md:text-[5.5rem] mb-8 text-balance">
-            Statistiche cantieri<br className="hidden md:block" />
-            <span className="text-foreground/50">edilizi in Italia.</span>
+            I numeri del lavoro edilizio<br className="hidden md:block" />
+            <span className="text-foreground/50">italiano, letti per te.</span>
           </h1>
           <p className="text-lg md:text-2xl text-muted-foreground leading-relaxed max-w-3xl text-pretty">
-            Numeri aggregati nazionali su <span className="font-bold text-foreground tabular-nums">{formatNumber(stats.totale)}</span> cantieri pubblici italiani.
-            Aggiornati in tempo reale, fonti dichiarate.
+            Volumi di permessi e cantieri per territorio e tipologia, nel tempo. L&apos;intelligence
+            aggregata, in chiaro: <span className="font-bold text-foreground tabular-nums">{formatNumber(stats.totale)}</span> cantieri letti come tendenze, non come righe.
           </p>
         </div>
 

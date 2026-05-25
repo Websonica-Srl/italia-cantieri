@@ -43,11 +43,11 @@ export default function PrivacyPage() {
           <h2>3. Finalità e base giuridica</h2>
           <ul>
             <li>
-              Pubblicazione dati cantieri ai fini di trasparenza pubblica e libertà di informazione: <strong>Art. 6.1.f
+              Pubblicazione dati cantieri ai fini di trasparenza pubblica e libertà di informazione: <strong>Art. 6, par. 1, lett. f)
               GDPR</strong> (legittimo interesse).
             </li>
             <li>
-              Analisi anonima del traffico per migliorare il servizio: <strong>Art. 6.1.a GDPR</strong> (consenso).
+              Analisi anonima del traffico per migliorare il servizio: <strong>Art. 6, par. 1, lett. a) GDPR</strong> (consenso).
             </li>
             <li>
               Gestione richieste GDPR e contatti DPO: <strong>Art. 6.1.c GDPR</strong> (obbligo legale).

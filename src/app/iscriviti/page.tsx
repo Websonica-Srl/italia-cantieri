@@ -55,7 +55,7 @@ const OPTIONS = [
     pitch: 'Cerco nuovi committenti e voglio far conoscere il mio studio.',
     benefits: [
       'Alert su cantieri in fase progettuale',
-      '38.000+ soggetti analizzati dai cantieri pubblici',
+      'Profili professionali collegati ai cantieri della tua zona',
       'Profilo studio + portfolio digitale pubblicabile',
       'Accesso al network ItaliaProgettisti',
     ],
@@ -104,7 +104,7 @@ export default function IscriviPage({ searchParams }: IscriviiPageProps) {
         <div className="container-zen relative max-w-4xl">
           <p className="eyebrow eyebrow-construction mb-6">
             <Zap className="h-3 w-3" strokeWidth={2.5} />
-            <span>Registrazione gratuita · Senza carta · 30 secondi</span>
+            <span>Registrazione gratuita · Nessun vincolo · 30 secondi</span>
           </p>
           <h1 className="heading-cinematic mb-6">
             Cosa cerchi su
@@ -197,7 +197,7 @@ export default function IscriviPage({ searchParams }: IscriviiPageProps) {
                 </h3>
                 <p className="text-sm text-secondary-text leading-relaxed mb-4">
                   Inserisci la tua email e ti avvisiamo quando il sistema crediti e le funzioni Premium saranno
-                  disponibili. Nessun impegno, nessuna carta richiesta.
+                  disponibili. Gratis per iniziare, nessun vincolo.
                 </p>
                 <form
                   action="https://www.italiaprogettisti.com/register"

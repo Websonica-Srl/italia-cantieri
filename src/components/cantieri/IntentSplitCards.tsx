@@ -22,7 +22,7 @@ const CARDS = [
     pitch:
       'Trova committenti nel momento piu caldo: quando il permesso e appena stato rilasciato e il cantiere sta per partire.',
     bullets: [
-      { icon: FileSearch, label: '6.500+ cantieri tracciati' },
+      { icon: FileSearch, label: 'Cantieri in fase progettuale' },
       { icon: BellRing, label: 'Profilo studio + portfolio digitale' },
     ],
     href: '/iscriviti?intent=studio',

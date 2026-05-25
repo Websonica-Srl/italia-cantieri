@@ -66,7 +66,7 @@ export default function UnlockPremiumCTA({ slug, comune, variant = 'card' }: Pro
             <span className="inline-flex items-center gap-1">
               <ShieldCheck className="h-3 w-3" strokeWidth={2} /> Gratis
             </span>
-            <span>· Senza carta</span>
+            <span>· Nessun vincolo</span>
             <span>· Magic link</span>
           </div>
         </div>

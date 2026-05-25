@@ -206,8 +206,8 @@ export default async function ComunePage({ params }: PageProps) {
                 Sii il primo a sapere quando si apre un cantiere a {meta.comune}.
               </h2>
               <p className="text-sm md:text-base opacity-80 mb-5 leading-relaxed">
-                Attiva gli alert email gratuiti: ti notifichiamo ogni nuovo permesso di costruire o SCIA pubblicato a{' '}
-                {meta.comune}. Una mail, zero spam, opportunita reali.
+                Attiva il radar gratuito: ti avvisiamo a ogni nuovo permesso o SCIA pubblicato a{' '}
+                {meta.comune}, filtrabile per tipologia e fascia di importo. Solo le notifiche che ti servono.
               </p>
               <a
                 href="https://www.italiaprogettisti.com/register"

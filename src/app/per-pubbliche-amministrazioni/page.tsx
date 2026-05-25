@@ -21,8 +21,8 @@ export const metadata: Metadata = {
           title: 'Per Pubbliche Amministrazioni',
           subtitle: 'Partnership, embed, press kit',
           kind: 'generic',
-          count: '9.733',
-          label: 'cantieri pubblicati',
+          count: '~24.748',
+          label: 'cantieri tracciati',
         }),
         width: 1200,
         height: 630,
@@ -50,13 +50,13 @@ const partnerships = [
 ];
 
 const pressKit = [
-  { label: 'Cantieri totali pubblicati', value: '9.733' },
-  { label: 'Soggetti analizzati', value: '56.535' },
-  { label: 'Imprese e studi nel network', value: '41.262' },
-  { label: 'Comuni integrati', value: '6' },
-  { label: 'Regioni coperte', value: '3' },
-  { label: 'Fonte primaria Bologna', value: '1.759 cantieri' },
+  { label: 'Cantieri tracciati', value: '~24.748' },
+  { label: 'Regioni coperte', value: '5' },
+  { label: 'Comuni coperti', value: '23' },
   { label: 'Conformita', value: 'GDPR + k-anon 5' },
+  { label: 'Fonti', value: 'Albi pretori + open data PA' },
+  { label: 'Dati personali PF', value: 'Mai pubblicati' },
+  { label: 'Licenza dati aggregati', value: 'CC BY 4.0' },
   { label: 'Aggiornamento dataset', value: 'Settimanale' },
 ];
 
@@ -68,7 +68,7 @@ const press = [
   },
   {
     quote:
-      'Dal 2026 sono 9.733 i cantieri edilizi italiani pubblicati su italiacantieri.it, con copertura attuale di sei Comuni in Piemonte, Emilia-Romagna e Lombardia.',
+      'Sono circa 24.748 i cantieri edilizi italiani tracciati su italiacantieri.it, con copertura attuale di 23 Comuni in 5 regioni e in progressiva espansione.',
     context: 'Riassunto dati 200 caratteri',
   },
   {

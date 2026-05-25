@@ -471,7 +471,7 @@ export async function getKpiStats(): Promise<{
     };
   } catch (err) {
     console.error('[cantieri] getKpiStats error:', err);
-    // Fallback conservativo allineato ai numeri reali a 2026-05-19
-    return { cantieri: 6545, soggetti: 38510, firms: 37789 };
+    // Fallback conservativo: nessun numero cablato (no claim pubblici fuori proof-bank).
+    return { cantieri: 0, soggetti: 0, firms: 0 };
   }
 }

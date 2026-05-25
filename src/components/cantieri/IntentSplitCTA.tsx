@@ -31,7 +31,7 @@ export default function IntentSplitCTA() {
             Trasforma i cantieri pubblici in clienti reali.
           </h2>
           <p className="text-base md:text-lg opacity-80 leading-relaxed">
-            Scegli il percorso che fa per te. Registrazione gratuita, senza carta di credito.
+            Scegli il percorso che fa per te. Gratis per iniziare, nessun vincolo.
           </p>
         </div>
 
@@ -110,7 +110,7 @@ export default function IntentSplitCTA() {
         </div>
 
         <p className="text-xs opacity-60 text-center mt-8 max-w-2xl mx-auto">
-          Dati provenienti da fonti pubbliche italiane, trattati nel rispetto del GDPR (Art. 6.1.f legittimo interesse).
+          Dati provenienti da fonti pubbliche italiane, trattati nel rispetto del GDPR (Art. 6, par. 1, lett. f), legittimo interesse).
         </p>
       </div>
     </section>

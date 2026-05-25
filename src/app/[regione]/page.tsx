@@ -84,7 +84,7 @@ export default async function RegionePage({ params }: PageProps) {
   const regioneFaq = [
     {
       q: `Quanti cantieri sono tracciati in ${regioneNome}?`,
-      a: `Attualmente abbiamo ${formatNumber(stats.totale)} cantieri attivi tracciati in ${regioneNome}, distribuiti su ${stats.province} province e ${stats.comuni} Comuni. Il numero cresce ogni settimana con l'importazione automatica dai portali ufficiali.`,
+      a: `Attualmente abbiamo ${formatNumber(stats.totale)} cantieri attivi tracciati in ${regioneNome}, distribuiti su ${stats.province} province e ${stats.comuni} Comuni. L'elenco si aggiorna dalle fonti pubbliche.`,
     },
     {
       q: `Come posso intercettare i nuovi cantieri in ${regioneNome}?`,

@@ -38,7 +38,7 @@ const faqs = [
   },
   {
     q: 'Qual e la base legale del trattamento?',
-    a: 'Art. 6.1.f GDPR (legittimo interesse alla trasparenza pubblica e liberta di informazione su dati di rilevanza pubblicistica) + Art. 14 GDPR (informativa per dati raccolti da terzi). Il trattamento e bilanciato con la tutela dei diritti dei titolari, valutati caso per caso.',
+    a: 'Art. 6, par. 1, lett. f) GDPR (legittimo interesse alla trasparenza pubblica e liberta di informazione su dati di rilevanza pubblicistica) + Art. 14 GDPR (informativa per dati raccolti da terzi). Il trattamento e bilanciato con la tutela dei diritti dei titolari, valutati caso per caso.',
   },
   {
     q: "Cos'e la k-anonymity 5 che applicate ai cantieri privati?",
@@ -89,7 +89,7 @@ export default function ComeTrattiamoIDatiPage() {
               <Scale className="h-6 w-6 text-foreground mb-2" />
               <h3 className="font-semibold mb-1">Base legale GDPR</h3>
               <p className="text-sm text-secondary-text">
-                Art. 6.1.f (legittimo interesse alla trasparenza) + Art. 14 (informativa terzi).
+                Art. 6, par. 1, lett. f) (legittimo interesse alla trasparenza) + Art. 14 (informativa terzi).
               </p>
             </div>
             <div className="rounded-2xl border border-border bg-white p-5">

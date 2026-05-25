@@ -10,7 +10,6 @@ import {
   getCantieri,
   getCantieriByRegione,
   getGlobalStats,
-  getKpiStats,
 } from '@/lib/supabase/queries/cantieri';
 import { regioneSlug, formatNumber } from '@/lib/utils';
 import { ogImageUrl, howToLd, safeJsonLd } from '@/lib/seo/structured-data';
@@ -18,12 +17,12 @@ import { ogImageUrl, howToLd, safeJsonLd } from '@/lib/seo/structured-data';
 export const revalidate = 3600; // ISR ogni ora
 
 export const metadata: Metadata = {
-  title: 'Italia Cantieri — Sai prima dove si lavora in Italia | Cantieri edilizi e bandi pubblici',
+  title: 'Italia Cantieri — Sai chi lavora dove | Cantieri edilizi e permessi italiani',
   description:
-    'Database cantieri italiano in espansione: oltre 6.500 cantieri tracciati, 38.000 soggetti analizzati e 37.000 imprese e studi nel network. Permessi di costruire, SCIA, CILA e bandi pubblici aggregati settimanalmente da fonti pubbliche.',
+    'Permessi, cantieri e opere sul territorio, con il dato che conta: chi sta gia lavorando li, con che frequenza e dove c\'e spazio per te. Circa 24.748 cantieri tracciati da fonti pubbliche (albi pretori, open data PA). Consultazione gratuita.',
   alternates: { canonical: '/' },
   openGraph: {
-    title: 'Italia Cantieri — Sai prima dove si lavora in Italia',
+    title: 'Italia Cantieri — Sai chi lavora dove in Italia',
     description:
       'Database pubblico di cantieri edilizi, permessi di costruire (PDC, SCIA, CILA) e bandi di gara italiani. Aggiornato ogni giorno da albi pretori e open data PA.',
     url: '/',
@@ -31,10 +30,10 @@ export const metadata: Metadata = {
     images: [
       {
         url: ogImageUrl({
-          title: 'Sai prima dove si lavora in Italia',
+          title: 'Sai chi lavora dove in Italia',
           subtitle: 'Database pubblico di cantieri edilizi, PDC, SCIA, CILA e bandi di gara',
           kind: 'generic',
-          count: '8.880',
+          count: '~24.748',
           label: 'cantieri tracciati',
         }),
         width: 1200,
@@ -45,15 +44,15 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Italia Cantieri — Sai prima dove si lavora in Italia',
+    title: 'Italia Cantieri — Sai chi lavora dove in Italia',
     description:
       'Database pubblico di cantieri edilizi italiani: PDC, SCIA, CILA e bandi pubblici aggiornati ogni giorno.',
     images: [
       ogImageUrl({
-        title: 'Sai prima dove si lavora in Italia',
+        title: 'Sai chi lavora dove in Italia',
         subtitle: 'Database pubblico di cantieri edilizi e bandi di gara',
         kind: 'generic',
-        count: '8.880',
+        count: '~24.748',
         label: 'cantieri tracciati',
       }),
     ],
@@ -63,54 +62,49 @@ export const metadata: Metadata = {
 // HowTo schema (HIGH-3 featured snippet) per "Come funziona Italia Cantieri"
 const homeHowTo = howToLd(
   'Come funziona Italia Cantieri',
-  'Tre passi per consultare cantieri pubblici italiani e attivare il contatto con i progettisti.',
+  'Dai dati pubblici a una decisione su dove cercare lavoro, in tre passi.',
   [
     {
-      name: 'Cerca il tuo territorio',
-      text: 'Filtra cantieri e bandi per Comune, provincia o regione. Esplora i lavori in corso nella tua zona di interesse.',
+      name: 'Leggi il territorio',
+      text: 'Filtra permessi e cantieri per Comune, provincia o regione. Vedi dove si concentrano i lavori, non solo i singoli indirizzi.',
     },
     {
-      name: 'Analizza il cantiere',
-      text: 'Visualizza tipologia di titolo (PDC, SCIA, CILA), importo lavori, superficie, categoria e geolocalizzazione su mappa.',
+      name: 'Capisci il segnale',
+      text: 'Per ogni cantiere: tipo di titolo (PDC, SCIA, CILA), importo lavori se dichiarato, categoria e zona. Tre permessi vicini della stessa tipologia ti dicono che li c\'e movimento.',
     },
     {
-      name: 'Sblocca i contatti',
-      text: 'Iscriviti gratis su ItaliaProgettisti per accedere ai profili di progettisti, studi e imprese collegati al cantiere.',
+      name: 'Arriva prima degli altri',
+      text: 'Attiva il radar sulla rete ItaliaProgettisti: ti avvisa quando si apre un cantiere nella tua zona, prima che lo vedano tutti.',
     },
   ],
 );
 
 const homepageFaq = [
   {
-    q: 'Da dove provengono i dati pubblicati su Italia Cantieri?',
-    a: 'Esclusivamente da fonti pubbliche italiane: albi pretori dei Comuni, open data della Pubblica Amministrazione (es. Comune di Bologna), portali appalti regionali e ANAC. Non utilizziamo dati privati ne fonti non autorizzate.',
+    q: 'Da dove arrivano i dati?',
+    a: 'Da fonti pubbliche italiane: albi pretori dei Comuni, open data della Pubblica Amministrazione, portali appalti regionali e ANAC. Solo fonti pubbliche, dichiarate su ogni scheda.',
   },
   {
-    q: 'Quanto spesso vengono aggiornati i cantieri?',
-    a: 'I dati vengono aggiornati settimanalmente dalle fonti pubbliche (albi pretori comunali, portali Maggioli, open data PA). In media importiamo circa +200 nuovi cantieri al mese da Comuni gia coperti e siamo in continua espansione su nuovi territori.',
+    q: 'Quanto spesso si aggiornano i cantieri?',
+    a: 'Ogni settimana dalle fonti pubbliche.',
   },
   {
-    q: 'Come posso ottenere i contatti del progettista di un cantiere?',
-    a: 'I contatti diretti di progettisti, studi e imprese sono disponibili agli iscritti del network ItaliaProgettisti. La registrazione base e gratuita: ti permette di consultare i profili professionali collegati ai cantieri di tuo interesse.',
+    q: 'Costa?',
+    a: 'Consultare i cantieri pubblici e gratis. Gli strumenti avanzati — radar sui nuovi permessi della tua zona, statistiche di dettaglio, profili professionali collegati — sono inclusi nei piani della rete ItaliaProgettisti.',
   },
   {
-    q: 'Italia Cantieri e a pagamento?',
-    a: 'La consultazione del database pubblico cantieri e dei bandi e completamente gratuita. Le funzioni avanzate (alert via email, esportazioni CSV, accesso dati committenti, dashboard intelligence) sono incluse nei piani Premium del network ItaliaProgettisti.',
+    q: 'Cosa significano PDC, SCIA e CILA?',
+    a: 'PDC e il Permesso di Costruire (interventi rilevanti, autorizzazione preventiva). SCIA e la Segnalazione Certificata di Inizio Attivita (interventi minori, asseverata). CILA e la Comunicazione Inizio Lavori Asseverata (manutenzione straordinaria con asseverazione tecnica).',
   },
   {
-    q: 'Sono il titolare di un cantiere pubblicato. Posso chiedere la rimozione?',
-    a: 'Si. In qualsiasi momento puoi richiedere opt-out o rettifica scrivendo al nostro DPO. La valutiamo individualmente entro 30 giorni come previsto dal GDPR (Art. 15-22). Trovi il modulo direttamente nella pagina di ogni cantiere.',
-  },
-  {
-    q: 'Italia Cantieri copre tutta Italia?',
-    a: 'Stiamo costruendo la copertura nazionale Comune per Comune. Oggi siamo presenti in piu regioni, con copertura completa di alcune citta chiave (Bologna, Torino) e in espansione settimanale su Piemonte, Lombardia ed Emilia-Romagna.',
+    q: 'Sono il titolare di un cantiere. Posso chiedere la rimozione?',
+    a: 'Si. In qualsiasi momento puoi richiedere opt-out o rettifica. Trovi il modulo in ogni scheda cantiere; valutiamo entro 30 giorni come previsto dal GDPR (Art. 15-22).',
   },
 ];
 
 export default async function HomePage() {
-  const [stats, kpi, recenti, regioni] = await Promise.all([
+  const [stats, recenti, regioni] = await Promise.all([
     getGlobalStats(),
-    getKpiStats(),
     getCantieri({ limit: 6, orderBy: 'data_pubblicazione', orderDirection: 'desc' }),
     getCantieriByRegione(),
   ]);
@@ -133,7 +127,7 @@ export default async function HomePage() {
         AI Overview / Google snippet preferiscono frase fattuale all'inizio del DOM.
       */}
       <p className="sr-only">
-        Italia Cantieri è il database pubblico dei cantieri edilizi italiani: raccoglie {formatNumber(stats.totale)} cantieri da {stats.comuni} Comuni e {stats.regioni} regioni, aggiornati ogni giorno da albi pretori e open data della Pubblica Amministrazione. Permessi di costruire (PDC), SCIA, CILA e bandi di gara consultabili gratuitamente, con fonte dichiarata su ogni scheda e base legale GDPR esplicita (Art. 6.1.f).
+        Italia Cantieri è il database pubblico dei cantieri edilizi italiani: raccoglie {formatNumber(stats.totale)} cantieri da {stats.comuni} Comuni e {stats.regioni} regioni, aggiornati settimanalmente da albi pretori e open data della Pubblica Amministrazione. Permessi di costruire (PDC), SCIA, CILA e bandi di gara consultabili gratuitamente, con fonte dichiarata su ogni scheda e base legale GDPR esplicita (Art. 6, par. 1, lett. f)).
       </p>
       {/*
         HERO MINIMAL HUB-ALIGNED — sfondo cream, NO immagine background,
@@ -149,7 +143,7 @@ export default async function HomePage() {
             {/* Eyebrow editorial discreto */}
             <p className="mb-10 inline-flex items-center gap-2.5 text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
               <ShieldCheck className="h-3.5 w-3.5" strokeWidth={2} />
-              <span>Database cantieri Italia · Fonti pubbliche · GDPR</span>
+              <span>Cantieri e permessi sul territorio · Fonti pubbliche (albi pretori, open data PA) · GDPR</span>
             </p>
 
             {/* Display headline GIGANTE su cream */}
@@ -158,25 +152,26 @@ export default async function HomePage() {
               className="font-black tracking-[-0.055em] leading-[0.88] text-foreground text-balance"
               style={{ fontSize: 'clamp(2.75rem, 8vw + 0.5rem, 7.5rem)' }}
             >
-              Sai{' '}
-              <em className="italic font-black text-construction">prima</em>
+              Gli altri ti dicono dove si scava.
               <br />
-              dove si lavora<br className="md:hidden" /> in Italia.
+              Noi chi{' '}
+              <em className="italic font-black text-construction">lavora</em> dove.
             </h1>
 
             {/* Sub-headline misurato */}
             <p
               className="mt-10 md:mt-14 text-lg md:text-2xl font-light leading-relaxed text-secondary-text max-w-3xl mx-auto text-pretty"
             >
-              Permessi di costruire, SCIA e bandi pubblici aggregati settimanalmente
-              da albi pretori e open data della PA. Intercetta le opere prima dei competitor.
+              Permessi, cantieri e opere sul territorio, con il dato che conta: chi sta gia
+              lavorando li, con che frequenza, e dove c&apos;e spazio per te. Circa 24.748
+              cantieri tracciati da fonti pubbliche.
             </p>
 
             {/* Search pill su sfondo chiaro */}
             <div className="mt-12 md:mt-16 max-w-2xl mx-auto">
               <SearchComune placeholder="Cerca il tuo Comune (es. Alessandria, Bologna, Moncalieri)..." />
               <p className="mt-5 text-sm text-muted-foreground">
-                Citta popolari:{' '}
+                Comuni piu coperti:{' '}
                 <Link href="/comune/alessandria" className="text-foreground underline-offset-4 hover:underline transition-colors">Alessandria</Link>
                 {' · '}
                 <Link href="/comune/moncalieri" className="text-foreground underline-offset-4 hover:underline transition-colors">Moncalieri</Link>
@@ -208,9 +203,9 @@ export default async function HomePage() {
             <div className="mt-20 md:mt-24 grid grid-cols-2 md:grid-cols-4 gap-y-10 gap-x-8 md:gap-x-12 max-w-5xl mx-auto pt-12 border-t border-border">
               {[
                 { value: formatNumber(stats.totale), label: 'Cantieri tracciati' },
-                { value: formatNumber(kpi.soggetti), label: 'Soggetti analizzati' },
                 { value: stats.regioni.toString(), label: 'Regioni coperte' },
-                { value: 'GDPR', label: 'Trasparenza piena' },
+                { value: stats.comuni.toString(), label: 'Comuni coperti' },
+                { value: 'GDPR', label: 'Solo dati pubblici' },
               ].map((k) => (
                 <div key={k.label} className="text-center">
                   <div
@@ -241,8 +236,8 @@ export default async function HomePage() {
         spacing="default"
         tone="muted"
         eyebrow="Esplora il territorio"
-        title="Cantieri edilizi per regione"
-        subtitle={`Oggi tracciamo cantieri in ${regioniReali.length} regioni. La copertura cresce ogni settimana con nuovi Comuni.`}
+        title="Dove si lavora, regione per regione"
+        subtitle={`Oggi tracciamo cantieri in ${regioniReali.length} regioni, Comune per Comune.`}
         action={
           <Link
             href="/regioni"
@@ -298,29 +293,29 @@ export default async function HomePage() {
         spacing="default"
         align="center"
         eyebrow="Come funziona"
-        title="Tre passi per trasformare i dati pubblici in opportunita"
-        subtitle="Dalla ricerca territoriale all'attivazione del contatto diretto. Tutto in un flusso lineare."
+        title="Dai dati pubblici a una decisione su dove cercare lavoro"
+        subtitle="Un cantiere isolato e un punto. Migliaia di cantieri, letti insieme, sono una mappa della domanda."
         headerMaxW="lg"
       >
         <div className="relative grid grid-cols-1 md:grid-cols-3 gap-0 md:gap-0">
           {[
             {
               step: '01',
-              title: 'Cerca il tuo territorio',
+              title: 'Leggi il territorio',
               body:
-                'Filtra cantieri e bandi per Comune, provincia o regione. Esplora i lavori in corso esattamente dove operi.',
+                'Filtra permessi e cantieri per Comune, provincia o regione. Vedi dove si concentrano i lavori, non solo i singoli indirizzi.',
             },
             {
               step: '02',
-              title: 'Analizza il cantiere',
+              title: 'Capisci il segnale',
               body:
-                'Visualizza tipologia di titolo (PDC, SCIA, CILA), importo lavori, superficie, categoria e geolocalizzazione su mappa.',
+                'Per ogni cantiere: tipo di titolo (PDC, SCIA, CILA), importo lavori se dichiarato, categoria e zona. Tre permessi vicini della stessa tipologia ti dicono che li c\'e movimento.',
             },
             {
               step: '03',
-              title: 'Sblocca i contatti',
+              title: 'Arriva prima degli altri',
               body:
-                'Iscriviti gratis su ItaliaProgettisti per accedere ai profili di progettisti, studi e imprese collegati al cantiere.',
+                'Attiva il radar sulla rete ItaliaProgettisti: ti avvisa quando si apre un cantiere nella tua zona, prima che lo vedano tutti.',
             },
           ].map((s, i) => (
             <div
@@ -348,9 +343,9 @@ export default async function HomePage() {
       <SectionWrapper
         spacing="default"
         tone="muted"
-        eyebrow="Aggiornamenti recenti"
+        eyebrow="Aggiornamenti"
         title="Ultimi cantieri pubblicati"
-        subtitle={`${recenti.data.length} permessi e SCIA arrivati di recente dai Comuni italiani.`}
+        subtitle="Permessi e SCIA arrivati di recente dai Comuni italiani."
         action={
           <Link
             href="/statistiche"
@@ -375,7 +370,7 @@ export default async function HomePage() {
         <div className="container-zen max-w-4xl">
           <FAQ
             title="Domande frequenti su Italia Cantieri"
-            subtitle="Tutto quello che ti serve sapere su dati, fonti, costi e accesso ai contatti."
+            subtitle="Dati, fonti, costi e copertura."
             items={homepageFaq}
           />
         </div>
@@ -398,11 +393,11 @@ export default async function HomePage() {
               className="font-black tracking-[-0.04em] leading-[0.95] text-foreground text-balance mb-8"
               style={{ fontSize: 'clamp(2rem, 4vw + 0.5rem, 4.5rem)' }}
             >
-              Trasforma i cantieri pubblici<br className="hidden md:block" /> in clienti reali.
+              Tu vedi il tuo cantiere.<br className="hidden md:block" /> Noi vediamo dove pulsa il lavoro.
             </h2>
             <p className="text-base md:text-lg text-secondary-text leading-relaxed max-w-2xl mx-auto mb-12">
-              Iscriviti gratis al network. Niente carta di credito, niente impegno.
-              Sblocca i contatti dei progettisti e ricevi alert sui nuovi cantieri della tua zona.
+              Crea un account gratuito sulla rete: radar sui nuovi cantieri della tua zona e
+              accesso ai profili professionali collegati. Gratis per iniziare.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
               <a
@@ -424,7 +419,7 @@ export default async function HomePage() {
               </a>
             </div>
             <p className="mt-10 text-xs text-muted-foreground max-w-xl mx-auto">
-              Dati provenienti da fonti pubbliche italiane, trattati nel rispetto del GDPR (Art. 6.1.f legittimo interesse).
+              Dati da fonti pubbliche italiane, trattati nel rispetto del GDPR (Art. 6, par. 1, lett. f), legittimo interesse). Solo persone giuridiche.
             </p>
           </div>
         </div>

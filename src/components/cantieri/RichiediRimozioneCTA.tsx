@@ -31,7 +31,7 @@ Grazie.`,
           <h3 className="font-semibold text-amber-900 mb-1.5">Sono titolare di questo cantiere</h3>
           <p className="text-sm text-amber-900/80 leading-relaxed mb-4">
             Questi dati provengono da <strong>fonti pubbliche</strong> (albo pretorio / open data della Pubblica
-            Amministrazione), trattati nel rispetto del GDPR (base giuridica Art. 6.1.f). Se sei il titolare puoi
+            Amministrazione), trattati nel rispetto del GDPR (base giuridica Art. 6, par. 1, lett. f)). Se sei il titolare puoi
             richiedere in qualsiasi momento la <strong>rimozione, la rettifica o l'opposizione</strong> (Art. 15-22 e 21 GDPR).
           </p>
           <div className="flex flex-wrap items-center gap-3">

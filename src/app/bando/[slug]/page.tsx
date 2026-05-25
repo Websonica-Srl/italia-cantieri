@@ -131,7 +131,7 @@ export default async function BandoPage({ params }: PageProps) {
               <Database className="h-4 w-4" /> Trasparenza fonte
             </h2>
             <p className="text-sm text-secondary-text">
-              Dati raccolti da fonti pubbliche open data. Trattamento conforme ad Art. 6.1.f GDPR (legittimo interesse).
+              Dati raccolti da fonti pubbliche open data. Trattamento conforme ad Art. 6, par. 1, lett. f) GDPR (legittimo interesse).
               Maggiori dettagli alla pagina <Link href="/come-trattiamo-i-dati" className="underline">Trasparenza dati</Link>.
             </p>
           </div>

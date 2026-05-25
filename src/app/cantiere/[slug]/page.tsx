@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { Calendar, MapPin, FileText, Hash, Tag, Database, Building2 } from 'lucide-react';
+import { Calendar, MapPin, FileText, Hash, Tag, Building2 } from 'lucide-react';
 import { getCantiereBySlug, countFirmsByComune } from '@/lib/supabase/queries/cantieri';
 import { formatDate, formatEuro, formatNumber, regioneSlug, slugify } from '@/lib/utils';
 import { provinciaSlugFromCode, provinciaNameFromCode } from '@/lib/province';
