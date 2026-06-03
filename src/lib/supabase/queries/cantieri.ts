@@ -72,7 +72,7 @@ export async function getCantieri(filters: CantieriFilters = {}): Promise<{ data
   } = filters;
 
   let query = supabase
-    .from('cantieri_pubblici')
+    .from('cantieri_pubblici_attivi')
     .select('*', { count: 'exact' })
     .eq('is_active', true);
 
@@ -96,6 +96,8 @@ export async function getCantieri(filters: CantieriFilters = {}): Promise<{ data
 
 export async function getCantiereBySlug(slug: string): Promise<Cantiere | null> {
   const supabase: any = createServerClient();
+  // Dettaglio: vista COMPLETA (no finestra 18 mesi) -> le schede archiviate
+  // restano raggiungibili via permalink (no 404 su URL già indicizzati).
   const { data, error } = await supabase
     .from('cantieri_pubblici')
     .select('*')
@@ -112,7 +114,7 @@ export async function getCantiereBySlug(slug: string): Promise<Cantiere | null> 
 export async function getAllCantieriSlugs(limit = 5000): Promise<{ slug: string; updated_at: string }[]> {
   const supabase: any = createServerClient();
   const { data, error } = await supabase
-    .from('cantieri_pubblici')
+    .from('cantieri_pubblici_attivi')
     .select('slug, updated_at')
     .eq('is_active', true)
     .order('updated_at', { ascending: false })
@@ -133,12 +135,12 @@ export async function getGlobalStats(): Promise<{
 }> {
   const supabase: any = createServerClient();
   const [{ count: totale }, { data: distinctData }, { data: importoData }] = await Promise.all([
-    supabase.from('cantieri_pubblici').select('id', { count: 'exact', head: true }).eq('is_active', true),
+    supabase.from('cantieri_pubblici_attivi').select('id', { count: 'exact', head: true }).eq('is_active', true),
     supabase.rpc('get_cantieri_distinct_counts').then(
       (r: any) => r.error ? { data: null } : r,
       () => ({ data: null })
     ),
-    supabase.from('cantieri_pubblici').select('importo_lavori').eq('is_active', true).not('importo_lavori', 'is', null).limit(5000),
+    supabase.from('cantieri_pubblici_attivi').select('importo_lavori').eq('is_active', true).not('importo_lavori', 'is', null).limit(5000),
   ]);
 
   // Fallback se RPC non esiste: paginazione per superare cap PostgREST 1000.
@@ -150,10 +152,10 @@ export async function getGlobalStats(): Promise<{
   } else {
     const [regs, coms] = await Promise.all([
       fetchAllPages<{ regione: string }>(() =>
-        supabase.from('cantieri_pubblici').select('regione').eq('is_active', true),
+        supabase.from('cantieri_pubblici_attivi').select('regione').eq('is_active', true),
       ),
       fetchAllPages<{ comune: string }>(() =>
-        supabase.from('cantieri_pubblici').select('comune').eq('is_active', true),
+        supabase.from('cantieri_pubblici_attivi').select('comune').eq('is_active', true),
       ),
     ]);
     // Conta solo regioni "reali" (escludi placeholder "Italia" usato per i bandi).
@@ -205,7 +207,7 @@ async function fetchAllPages<T extends Record<string, any>>(
 export async function getCantieriByRegione(): Promise<{ regione: string; cnt: number }[]> {
   const supabase: any = createServerClient();
   const data = await fetchAllPages<{ regione: string }>(() =>
-    supabase.from('cantieri_pubblici').select('regione').eq('is_active', true),
+    supabase.from('cantieri_pubblici_attivi').select('regione').eq('is_active', true),
   );
   const counts: Record<string, number> = {};
   for (const r of data) {
@@ -222,7 +224,7 @@ export async function getCantieriByProvincia(regione: string): Promise<{ provinc
   const supabase: any = createServerClient();
   const data = await fetchAllPages<{ provincia: string }>(() =>
     supabase
-      .from('cantieri_pubblici')
+      .from('cantieri_pubblici_attivi')
       .select('provincia')
       .ilike('regione', regione)
       .eq('is_active', true),
@@ -242,7 +244,7 @@ export async function getCantieriByComune(provincia: string): Promise<{ comune: 
   const supabase: any = createServerClient();
   const data = await fetchAllPages<{ comune: string }>(() =>
     supabase
-      .from('cantieri_pubblici')
+      .from('cantieri_pubblici_attivi')
       .select('comune')
       .ilike('provincia', provincia)
       .eq('is_active', true),
@@ -261,7 +263,7 @@ export async function getCantieriByComune(provincia: string): Promise<{ comune: 
 export async function getTipoTitoloDistribution(): Promise<{ tipo: string; cnt: number }[]> {
   const supabase: any = createServerClient();
   const data = await fetchAllPages<{ tipo_titolo: string | null }>(() =>
-    supabase.from('cantieri_pubblici').select('tipo_titolo').eq('is_active', true),
+    supabase.from('cantieri_pubblici_attivi').select('tipo_titolo').eq('is_active', true),
   );
   const counts: Record<string, number> = {};
   for (const r of data) {
@@ -278,7 +280,7 @@ export async function getTopCategorie(limit = 10, regione?: string): Promise<{ c
   const supabase: any = createServerClient();
   const data = await fetchAllPages<{ categorie: string[] | null }>(() => {
     let q = supabase
-      .from('cantieri_pubblici')
+      .from('cantieri_pubblici_attivi')
       .select('categorie')
       .eq('is_active', true)
       .not('categorie', 'is', null);
@@ -307,10 +309,10 @@ export async function getRegioneStats(regione: string): Promise<{
 }> {
   const supabase: any = createServerClient();
   const [{ count }, rows, top_categorie] = await Promise.all([
-    supabase.from('cantieri_pubblici').select('id', { count: 'exact', head: true }).ilike('regione', regione).eq('is_active', true),
+    supabase.from('cantieri_pubblici_attivi').select('id', { count: 'exact', head: true }).ilike('regione', regione).eq('is_active', true),
     fetchAllPages<{ provincia: string; comune: string; importo_lavori: number | null }>(() =>
       supabase
-        .from('cantieri_pubblici')
+        .from('cantieri_pubblici_attivi')
         .select('provincia, comune, importo_lavori')
         .ilike('regione', regione)
         .eq('is_active', true),
@@ -365,7 +367,7 @@ export async function searchComuni(
   const supabase: any = createServerClient();
 
   // NB: in supabase-js i filtri (.ilike/.eq) vanno DOPO .select().
-  const base = () => supabase.from('cantieri_pubblici').select('comune, provincia, regione').eq('is_active', true);
+  const base = () => supabase.from('cantieri_pubblici_attivi').select('comune, provincia, regione').eq('is_active', true);
 
   // 1) match per nome comune
   const queries: Promise<any>[] = [base().ilike('comune', `${q}%`).limit(400)];
@@ -414,7 +416,7 @@ export async function getAllComuni(limit = 5000): Promise<{ comune: string; prov
 export async function getAllProvince(): Promise<{ provincia: string; regione: string }[]> {
   const supabase: any = createServerClient();
   const { data, error } = await supabase
-    .from('cantieri_pubblici')
+    .from('cantieri_pubblici_attivi')
     .select('provincia, regione')
     .eq('is_active', true)
     .limit(20000);
@@ -457,7 +459,7 @@ export async function getKpiStats(): Promise<{
   const supabase: any = createServerClient();
   try {
     const [cantieri, soggetti, firms] = await Promise.all([
-      supabase.from('cantieri_pubblici').select('id', { count: 'exact', head: true }).eq('is_active', true),
+      supabase.from('cantieri_pubblici_attivi').select('id', { count: 'exact', head: true }).eq('is_active', true),
       supabase.from('cantieri_soggetti').select('id', { count: 'exact', head: true }),
       supabase
         .from('firms_public')
