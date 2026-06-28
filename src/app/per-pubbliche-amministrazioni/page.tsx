@@ -4,6 +4,10 @@ import { Building2, Database, FileCheck2, Mail, Newspaper, Shield, Sparkles, Use
 import { siteConfig } from '@/lib/site-config';
 import BreadcrumbCantiere from '@/components/cantieri/BreadcrumbCantiere';
 import { ogImageUrl, safeJsonLd } from '@/lib/seo/structured-data';
+import { getGlobalStats } from '@/lib/supabase/queries/cantieri';
+import { formatNumber } from '@/lib/utils';
+
+export const revalidate = 3600; // ISR ogni ora: press kit sempre allineato al DB
 
 export const metadata: Metadata = {
   title: 'Per Pubbliche Amministrazioni — Partnership, embed e press kit',
@@ -21,7 +25,7 @@ export const metadata: Metadata = {
           title: 'Per Pubbliche Amministrazioni',
           subtitle: 'Partnership, embed, press kit',
           kind: 'generic',
-          count: '~24.748',
+          count: '~40.000',
           label: 'cantieri tracciati',
         }),
         width: 1200,
@@ -49,35 +53,6 @@ const partnerships = [
   },
 ];
 
-const pressKit = [
-  { label: 'Cantieri tracciati', value: '~24.748' },
-  { label: 'Regioni coperte', value: '5' },
-  { label: 'Comuni coperti', value: '23' },
-  { label: 'Conformita', value: 'GDPR + k-anon 5' },
-  { label: 'Fonti', value: 'Albi pretori + open data PA' },
-  { label: 'Dati personali PF', value: 'Mai pubblicati' },
-  { label: 'Licenza dati aggregati', value: 'CC BY 4.0' },
-  { label: 'Aggiornamento dataset', value: 'Settimanale' },
-];
-
-const press = [
-  {
-    quote:
-      'Italia Cantieri unifica i dati di Albo Pretorio e Open Data dei Comuni in un database nazionale ricercabile.',
-    context: 'Riassunto editoriale 50 caratteri',
-  },
-  {
-    quote:
-      'Sono circa 24.748 i cantieri edilizi italiani tracciati su italiacantieri.it, con copertura attuale di 23 Comuni in 5 regioni e in progressiva espansione.',
-    context: 'Riassunto dati 200 caratteri',
-  },
-  {
-    quote:
-      'Italia Cantieri e un servizio editoriale di AZIENDA 365 SRL che aggrega i cantieri edilizi pubblicati ai sensi del D.Lgs. 33/2013 (Trasparenza), gestendo i dati personali secondo GDPR e tecniche di k-anonymity per i cantieri privati.',
-    context: 'Profilo lungo 300 caratteri',
-  },
-];
-
 const apiEndpoints = [
   {
     path: '/api/cantieri?regione=Piemonte&limit=10',
@@ -93,7 +68,39 @@ const apiEndpoints = [
   },
 ];
 
-export default function PerPubblicheAmministrazioniPage() {
+export default async function PerPubblicheAmministrazioniPage() {
+  const stats = await getGlobalStats();
+  const nTot = formatNumber(stats.totale);
+
+  const pressKit = [
+    { label: 'Cantieri tracciati', value: nTot },
+    { label: 'Regioni coperte', value: String(stats.regioni) },
+    { label: 'Comuni coperti', value: String(stats.comuni) },
+    { label: 'Conformita', value: 'GDPR + k-anon 5' },
+    { label: 'Fonti', value: 'Albi pretori + open data PA' },
+    { label: 'Dati personali PF', value: 'Mai pubblicati' },
+    { label: 'Licenza dati aggregati', value: 'CC BY 4.0' },
+    { label: 'Aggiornamento dataset', value: 'Settimanale' },
+  ];
+
+  const press = [
+    {
+      quote:
+        'Italia Cantieri unifica i dati di Albo Pretorio e Open Data dei Comuni in un database nazionale ricercabile.',
+      context: 'Riassunto editoriale 50 caratteri',
+    },
+    {
+      quote:
+        `Sono circa ${nTot} i cantieri edilizi italiani tracciati su italiacantieri.it, con copertura attuale di ${stats.comuni} Comuni in ${stats.regioni} regioni e in progressiva espansione.`,
+      context: 'Riassunto dati 200 caratteri',
+    },
+    {
+      quote:
+        'Italia Cantieri e un servizio editoriale di AZIENDA 365 SRL che aggrega i cantieri edilizi pubblicati ai sensi del D.Lgs. 33/2013 (Trasparenza), gestendo i dati personali secondo GDPR e tecniche di k-anonymity per i cantieri privati.',
+      context: 'Profilo lungo 300 caratteri',
+    },
+  ];
+
   const orgLd = {
     '@context': 'https://schema.org',
     '@type': 'GovernmentService',

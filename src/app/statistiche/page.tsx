@@ -21,7 +21,7 @@ const ogImage = ogImageUrl({
   title: 'Statistiche cantieri edilizi in Italia',
   subtitle: 'Distribuzione per regione, tipologia (PDC, SCIA, CILA), categorie e importi',
   kind: 'stats',
-  count: '~24.748',
+  count: '~40.000',
   label: 'cantieri analizzati',
 });
 

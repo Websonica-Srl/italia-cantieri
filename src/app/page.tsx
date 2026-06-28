@@ -19,7 +19,7 @@ export const revalidate = 3600; // ISR ogni ora
 export const metadata: Metadata = {
   title: 'Italia Cantieri — Sai chi lavora dove | Cantieri edilizi e permessi italiani',
   description:
-    'Permessi, cantieri e opere sul territorio, con il dato che conta: chi sta gia lavorando li, con che frequenza e dove c\'e spazio per te. Circa 24.748 cantieri tracciati da fonti pubbliche (albi pretori, open data PA). Consultazione gratuita.',
+    'Permessi, cantieri e opere sul territorio, con il dato che conta: chi sta gia lavorando li, con che frequenza e dove c\'e spazio per te. Oltre 40.000 cantieri tracciati da fonti pubbliche (albi pretori, open data PA). Consultazione gratuita.',
   alternates: { canonical: '/' },
   openGraph: {
     title: 'Italia Cantieri — Sai chi lavora dove in Italia',
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
           title: 'Sai chi lavora dove in Italia',
           subtitle: 'Database pubblico di cantieri edilizi, PDC, SCIA, CILA e bandi di gara',
           kind: 'generic',
-          count: '~24.748',
+          count: '~40.000',
           label: 'cantieri tracciati',
         }),
         width: 1200,
@@ -163,8 +163,8 @@ export default async function HomePage() {
               className="mt-10 md:mt-14 text-lg md:text-2xl font-light leading-relaxed text-secondary-text max-w-3xl mx-auto text-pretty"
             >
               Permessi, cantieri e opere sul territorio, con il dato che conta: chi sta gia
-              lavorando li, con che frequenza, e dove c&apos;e spazio per te. Circa 24.748
-              cantieri tracciati da fonti pubbliche.
+              lavorando li, con che frequenza, e dove c&apos;e spazio per te. Circa{' '}
+              {formatNumber(stats.totale)} cantieri tracciati da fonti pubbliche.
             </p>
 
             {/* Search pill su sfondo chiaro */}
