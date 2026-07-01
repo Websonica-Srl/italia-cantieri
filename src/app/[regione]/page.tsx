@@ -1,18 +1,21 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { MapPin, ArrowRight, Bell, ShieldCheck } from 'lucide-react';
+import { MapPin, ArrowRight, ShieldCheck } from 'lucide-react';
+import { isReservedPrefix } from '@websonica/cantieri-core';
 import {
-  getCantieri,
   getCantieriByProvincia,
   getCantieriByRegione,
   getRegioneStats,
 } from '@/lib/supabase/queries/cantieri';
+import { getCantieriScheda, getEnrichedCount } from '@/lib/supabase/queries/cantieri-scheda';
+import { isAggregateIndexable } from '@/lib/seo/indexable';
 import { regioneSlug, formatNumber } from '@/lib/utils';
 import { provinciaSlugFromCode, provinciaNameFromCode } from '@/lib/province';
 import BreadcrumbCantiere from '@/components/cantieri/BreadcrumbCantiere';
 import StatsBox from '@/components/cantieri/StatsBox';
-import CantiereCard from '@/components/cantieri/CantiereCard';
+import CardSchedaCompact from '@/components/cantieri/CardSchedaCompact';
+import AlertCantieriCTA from '@/components/cantieri/AlertCantieriCTA';
 import BarChart from '@/components/cantieri/BarChart';
 import FAQ from '@/components/cantieri/FAQ';
 import DividerOrnament from '@/components/cantieri/DividerOrnament';
@@ -38,10 +41,12 @@ async function resolveRegione(slug: string): Promise<string | null> {
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  if (isReservedPrefix(params.regione)) notFound();
   const reg = await resolveRegione(params.regione);
   if (!reg) return { title: 'Regione non trovata' };
   // Carica stats per popolare l'OG image
   const stats = await getRegioneStats(reg);
+  const enriched = await getEnrichedCount({ regione: reg });
   const title = `Cantieri edilizi in ${reg} — Permessi PDC, SCIA e CILA`;
   const description = `Tutti i cantieri attivi in ${reg}: permessi di costruire, SCIA, CILA e bandi pubblici aggiornati. Aggregati da albi pretori e open data PA.`;
   const ogImage = ogImageUrl({
@@ -55,6 +60,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     title,
     description,
     alternates: { canonical: `/${params.regione}` },
+    robots: isAggregateIndexable(enriched) ? { index: true, follow: true } : { index: false, follow: true },
     openGraph: {
       title: `Cantieri edilizi in ${reg} — Italia Cantieri`,
       description,
@@ -72,13 +78,14 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 export default async function RegionePage({ params }: PageProps) {
+  if (isReservedPrefix(params.regione)) notFound();
   const regioneNome = await resolveRegione(params.regione);
   if (!regioneNome) notFound();
 
   const [stats, province, recenti] = await Promise.all([
     getRegioneStats(regioneNome),
     getCantieriByProvincia(regioneNome),
-    getCantieri({ regione: regioneNome, limit: 20, orderBy: 'data_pubblicazione' }),
+    getCantieriScheda({ regione: regioneNome, limit: 12 }, 'list'),
   ]);
 
   const regioneFaq = [
@@ -232,47 +239,15 @@ export default async function RegionePage({ params }: PageProps) {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
             {recenti.data.map((c) => (
-              <CantiereCard key={c.id} cantiere={c} />
+              <CardSchedaCompact key={c.id} c={c} />
             ))}
           </div>
         </div>
 
         <DividerOrnament variant="line" spacing="default" />
 
-        {/* CTA ALERT - tinted radial backdrop */}
-        <div className="relative overflow-hidden rounded-[2rem] bg-foreground text-background p-8 md:p-12">
-          <div
-            aria-hidden="true"
-            className="absolute -top-20 -right-20 h-72 w-72 rounded-full bg-background/[0.06] blur-3xl pointer-events-none"
-          />
-          <div className="relative flex items-start gap-5">
-            <span className="inline-flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-background/10 border border-background/15">
-              <Bell className="h-5 w-5" strokeWidth={1.75} />
-            </span>
-            <div className="flex-1 max-w-2xl">
-              <p className="mb-3 inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-background/60">
-                <span aria-hidden="true" className="h-px w-6 bg-background/30" />
-                Alert personalizzati
-              </p>
-              <h2 className="text-2xl md:text-3xl font-bold mb-3 tracking-tight leading-tight">
-                Vuoi ricevere ogni nuovo cantiere in {regioneNome}?
-              </h2>
-              <p className="text-sm md:text-base opacity-80 mb-7 leading-relaxed">
-                Attiva gli alert email gratuiti: ricevi una notifica appena viene pubblicato un nuovo permesso di
-                costruire, SCIA o bando di gara in {regioneNome}. Filtrabili per provincia, importo e categoria.
-              </p>
-              <a
-                href="https://www.italiaprogettisti.com/register"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group inline-flex items-center justify-center gap-2 rounded-full bg-background text-foreground px-6 py-3 text-sm font-semibold transition-all duration-200 hover:scale-[1.02] hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-background focus-visible:ring-offset-2 focus-visible:ring-offset-foreground"
-              >
-                Iscriviti gratis e attiva gli alert
-                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" strokeWidth={2} />
-              </a>
-            </div>
-          </div>
-        </div>
+        {/* CTA ALERT */}
+        <AlertCantieriCTA scope={{ regione: regioneNome }} />
 
         <FAQ
           title={`Domande frequenti sui cantieri in ${regioneNome}`}

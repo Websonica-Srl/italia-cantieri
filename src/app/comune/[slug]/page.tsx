@@ -1,18 +1,20 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { Lock, Info, Bell } from 'lucide-react';
+import { Lock, Info } from 'lucide-react';
 import {
-  getCantieri,
   getAggregatiAnonimiByComune,
   countFirmsByComune,
   getAllComuni,
 } from '@/lib/supabase/queries/cantieri';
+import { getCantieriScheda, getEnrichedCount } from '@/lib/supabase/queries/cantieri-scheda';
+import { isAggregateIndexable } from '@/lib/seo/indexable';
 import { slugify, formatNumber, formatEuro, regioneSlug } from '@/lib/utils';
 import { provinciaSlugFromCode, provinciaNameFromCode } from '@/lib/province';
 import BreadcrumbCantiere from '@/components/cantieri/BreadcrumbCantiere';
 import StatsBox from '@/components/cantieri/StatsBox';
-import CantiereCard from '@/components/cantieri/CantiereCard';
+import CardSchedaCompact from '@/components/cantieri/CardSchedaCompact';
+import AlertCantieriCTA from '@/components/cantieri/AlertCantieriCTA';
 import CrossLinkCorrelati from '@/components/cantieri/CrossLinkCorrelati';
 import BarChart from '@/components/cantieri/BarChart';
 import FAQ from '@/components/cantieri/FAQ';
@@ -34,7 +36,8 @@ async function resolveComune(slug: string): Promise<{ comune: string; provincia:
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const comune = await resolveComune(params.slug);
   if (!comune) return { title: 'Comune non trovato' };
-  const { total } = await getCantieri({ comune: comune.comune, limit: 1 });
+  const { total } = await getCantieriScheda({ comune: comune.comune, limit: 1 }, 'list');
+  const enriched = await getEnrichedCount({ comune: comune.comune });
   const title = `Cantieri edilizi a ${comune.comune} (${comune.provincia}) — Permessi PDC, SCIA e CILA`;
   const description = `Tutti i cantieri attivi a ${comune.comune} (${comune.provincia}, ${comune.regione}): permessi di costruire, SCIA, CILA e bandi pubblici. Dati ufficiali aggiornati ogni giorno dall'albo pretorio comunale.`;
   const ogImage = ogImageUrl({
@@ -48,6 +51,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     title,
     description,
     alternates: { canonical: `/comune/${params.slug}` },
+    robots: isAggregateIndexable(enriched) ? { index: true, follow: true } : { index: false, follow: true },
     openGraph: {
       title: `Cantieri edilizi a ${comune.comune} — Italia Cantieri`,
       description,
@@ -69,7 +73,7 @@ export default async function ComunePage({ params }: PageProps) {
   if (!meta) notFound();
 
   const [{ data: cantieriPubblici, total }, aggregati, firmCount] = await Promise.all([
-    getCantieri({ comune: meta.comune, limit: 30, orderBy: 'data_pubblicazione' }),
+    getCantieriScheda({ comune: meta.comune, limit: 12 }, 'list'),
     getAggregatiAnonimiByComune(meta.comune),
     countFirmsByComune(meta.comune),
   ]);
@@ -150,7 +154,7 @@ export default async function ComunePage({ params }: PageProps) {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {cantieriPubblici.map((c) => (
-                <CantiereCard key={c.id} cantiere={c} />
+                <CardSchedaCompact key={c.id} c={c} />
               ))}
             </div>
           )}
@@ -198,27 +202,10 @@ export default async function ComunePage({ params }: PageProps) {
         )}
 
         {/* CTA ALERT */}
-        <div className="mt-12 rounded-2xl bg-foreground text-background p-8">
-          <div className="flex items-start gap-4">
-            <Bell className="h-6 w-6 flex-shrink-0 mt-1" />
-            <div className="flex-1">
-              <h2 className="text-xl md:text-2xl font-bold mb-2">
-                Sii il primo a sapere quando si apre un cantiere a {meta.comune}.
-              </h2>
-              <p className="text-sm md:text-base opacity-80 mb-5 leading-relaxed">
-                Attiva il radar gratuito: ti avvisiamo a ogni nuovo permesso o SCIA pubblicato a{' '}
-                {meta.comune}, filtrabile per tipologia e fascia di importo. Solo le notifiche che ti servono.
-              </p>
-              <a
-                href="https://www.italiaprogettisti.com/register"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-2 rounded-full bg-background text-foreground px-5 py-2.5 text-sm font-medium hover:opacity-90 transition-opacity"
-              >
-                Iscriviti gratis e attiva gli alert
-              </a>
-            </div>
-          </div>
+        <div className="mt-12">
+          <AlertCantieriCTA
+            scope={{ regione: meta.regione, provincia: provinciaNameFromCode(meta.provincia), comune: meta.comune }}
+          />
         </div>
 
         {/* CROSS LINK */}

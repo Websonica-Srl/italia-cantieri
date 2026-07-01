@@ -2,16 +2,19 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { MapPin } from 'lucide-react';
+import { isReservedPrefix } from '@websonica/cantieri-core';
 import {
-  getCantieri,
   getCantieriByComune,
   getCantieriByProvincia,
   getCantieriByRegione,
 } from '@/lib/supabase/queries/cantieri';
+import { getCantieriScheda, getEnrichedCount } from '@/lib/supabase/queries/cantieri-scheda';
+import { isAggregateIndexable } from '@/lib/seo/indexable';
 import { regioneSlug, slugify, formatNumber } from '@/lib/utils';
 import { provinciaCodeFromSlug, provinciaNameFromCode } from '@/lib/province';
 import BreadcrumbCantiere from '@/components/cantieri/BreadcrumbCantiere';
-import CantiereCard from '@/components/cantieri/CantiereCard';
+import CardSchedaCompact from '@/components/cantieri/CardSchedaCompact';
+import AlertCantieriCTA from '@/components/cantieri/AlertCantieriCTA';
 import StatsBox from '@/components/cantieri/StatsBox';
 import { ogImageUrl } from '@/lib/seo/structured-data';
 
@@ -42,13 +45,15 @@ async function resolveProvincia(regione: string, slug: string): Promise<string |
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  if (isReservedPrefix(params.regione)) notFound();
   const reg = await resolveRegione(params.regione);
   if (!reg) return { title: 'Provincia non trovata' };
   const prov = await resolveProvincia(reg, params.provincia);
   if (!prov) return { title: 'Provincia non trovata' };
   const provName = provinciaNameFromCode(prov);
   // Conta cantieri della provincia per OG count
-  const { total } = await getCantieri({ regione: reg, provincia: prov, limit: 1 });
+  const { total } = await getCantieriScheda({ regione: reg, provincia: prov, limit: 1 }, 'list');
+  const enriched = await getEnrichedCount({ regione: reg, provincia: prov });
   const title = `Cantieri in provincia di ${provName} (${reg}) — PDC, SCIA e CILA`;
   const description = `Permessi di costruire, SCIA e CILA nella provincia di ${provName}, ${reg}. Esplora i Comuni e i cantieri pubblicati negli ultimi giorni dagli albi pretori.`;
   const ogImage = ogImageUrl({
@@ -62,6 +67,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     title,
     description,
     alternates: { canonical: `/${params.regione}/${params.provincia}` },
+    robots: isAggregateIndexable(enriched) ? { index: true, follow: true } : { index: false, follow: true },
     openGraph: {
       title: `Cantieri provincia di ${provName} (${reg}) — Italia Cantieri`,
       description,
@@ -79,6 +85,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 export default async function ProvinciaPage({ params }: PageProps) {
+  if (isReservedPrefix(params.regione)) notFound();
   const reg = await resolveRegione(params.regione);
   if (!reg) notFound();
   const prov = await resolveProvincia(reg, params.provincia);
@@ -88,7 +95,7 @@ export default async function ProvinciaPage({ params }: PageProps) {
 
   const [comuni, recenti] = await Promise.all([
     getCantieriByComune(prov),
-    getCantieri({ regione: reg, provincia: prov, limit: 30, orderBy: 'data_pubblicazione' }),
+    getCantieriScheda({ regione: reg, provincia: prov, limit: 12 }, 'list'),
   ]);
 
   const totale = recenti.total;
@@ -144,9 +151,14 @@ export default async function ProvinciaPage({ params }: PageProps) {
           <h2 className="text-xl font-semibold mb-6">Cantieri recenti in provincia di {provName}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {recenti.data.map((c) => (
-              <CantiereCard key={c.id} cantiere={c} />
+              <CardSchedaCompact key={c.id} c={c} />
             ))}
           </div>
+        </div>
+
+        {/* CTA ALERT */}
+        <div className="mt-12">
+          <AlertCantieriCTA scope={{ regione: reg, provincia: provName }} />
         </div>
       </div>
     </section>
