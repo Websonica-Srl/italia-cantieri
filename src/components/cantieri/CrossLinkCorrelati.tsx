@@ -73,7 +73,7 @@ export default function CrossLinkCorrelati({ comune, countImprese, cantiereSlug 
             rel="noopener noreferrer"
             className="inline-flex items-center justify-center gap-1.5 rounded-full border border-foreground/20 bg-transparent px-5 py-2.5 text-xs font-medium text-foreground/80 hover:bg-foreground/5 hover:text-foreground transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
-            Sblocca contatti progettista
+            Vedi i professionisti del network
           </a>
         </div>
       </div>

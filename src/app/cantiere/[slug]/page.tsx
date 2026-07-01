@@ -131,8 +131,8 @@ export default async function CantierePage({ params }: PageProps) {
 
   const cantiereFaq = [
     {
-      q: 'Chi e il progettista o l\'impresa che lavora su questo cantiere?',
-      a: `I dati di progettisti, studi e imprese collegati ai cantieri di ${c.comune} sono disponibili nel network ItaliaProgettisti. Iscriviti gratis per consultare i profili professionali della zona e attivare il contatto diretto.`,
+      q: `Sono un'impresa: come intercetto i nuovi cantieri a ${c.comune}?`,
+      a: `Per tutela della privacy non pubblichiamo i dati personali di progettisti o titolari estratti dagli atti. Se sei un'impresa (edile, serramentista, impiantista) puoi registrarti gratis su ItaliaProgettisti e ricevere gli avvisi sui nuovi cantieri della zona di ${c.comune} appena vengono pubblicati, per proporti sui lavori prima degli altri.`,
     },
     {
       q: 'Cosa significa "tipo titolo" PDC, SCIA, CILA?',
