@@ -14,7 +14,7 @@ interface Props {
 
 /**
  * LEVA A (avviso nuovi cantieri) + LEVA B (bridge co-branding verso HUB).
- * Il satellite e' zero-PII/zero-stato: la CTA punta sempre a hubRegisterUrl,
+ * Il satellite è zero-PII/zero-stato: la CTA punta sempre a hubRegisterUrl,
  * mai a un signup locale.
  */
 export default function AlertCantieriCTA({ scope }: Props) {
@@ -54,7 +54,7 @@ export default function AlertCantieriCTA({ scope }: Props) {
         </div>
       </div>
       <p className="text-sm text-secondary-text mb-4 leading-relaxed">
-        Niente pubblicita': sai prima degli altri dove c&apos;e' lavoro.
+        Niente pubblicita': sai prima degli altri dove c&apos;è lavoro.
       </p>
       <div className="mb-6 inline-flex items-center gap-2 rounded-2xl border border-construction/25 bg-construction-soft px-4 py-2.5">
         <Gift className="h-4 w-4 text-construction flex-shrink-0" strokeWidth={2} aria-hidden="true" />
@@ -75,8 +75,8 @@ export default function AlertCantieriCTA({ scope }: Props) {
           italiacantieri.it fa parte del network ItaliaProgettisti.
         </p>
         <p className="text-sm text-secondary-text leading-relaxed">
-          Il tuo accesso ai cantieri di tutta Italia e' gestito da ItaliaProgettisti, la piattaforma
-          del network. Completi qui la registrazione gratuita e ricevi subito il tuo cantiere piu'
+          Il tuo accesso ai cantieri di tutta Italia è gestito da ItaliaProgettisti, la piattaforma
+          del network. Completi qui la registrazione gratuita e ricevi subito il tuo cantiere più
           gli avvisi.
         </p>
       </div>

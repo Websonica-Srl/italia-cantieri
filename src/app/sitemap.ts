@@ -19,9 +19,9 @@ export const revalidate = 3600;
 /**
  * Sitemap UNICA servita su /sitemap.xml (come /robots.txt, metadata route
  * affidabile). In Fase 1 il volume totale (foglie index-gate ~2.700 + geo +
- * 12 pillar + statiche) e' ben sotto il limite di 50.000 URL per sitemap.
+ * 12 pillar + statiche) è ben sotto il limite di 50.000 URL per sitemap.
  *
- * NB: lo split via `generateSitemaps` (4 shard) NON e' usato: in questa app
+ * NB: lo split via `generateSitemaps` (4 shard) NON è usato: in questa app
  * genera route `/sitemap/[__metadata_id__]` che, con id stringa, collide col
  * catch-all `/[regione]/[provincia]` e non serve XML in produzione (404/HTML).
  * Lo split andra' rifatto con route handler espliciti quando il backfill F2

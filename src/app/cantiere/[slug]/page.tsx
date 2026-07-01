@@ -18,7 +18,8 @@ import {
   formatValoreRange,
   type Mestiere,
 } from '@websonica/cantieri-core';
-import { formatDate, formatEuro, formatNumber, regioneSlug, slugify } from '@/lib/utils';
+import { formatDate, formatEuro, formatNumber, prepA, regioneSlug, slugify } from '@/lib/utils';
+import { maskCivico } from '@/lib/cantieri/mask';
 import { provinciaSlugFromCode, provinciaNameFromCode } from '@/lib/province';
 import { cantiereLd, faqLd, safeJsonLd, ogImageUrl } from '@/lib/seo/structured-data';
 import type { CantiereScheda } from '@/lib/supabase/queries/cantieri-scheda';
@@ -46,17 +47,17 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const indexable = isCantiereIndexable(c);
   const titolo = c.intervento_categoria ? displayInterventoLabel(c.intervento_categoria) : null;
   const tipoTitolo = titolo || c.tipo_titolo || 'Cantiere edilizio';
-  const title = `${tipoTitolo} a ${c.comune} (${c.provincia})${c.protocollo ? ` — Prot. ${c.protocollo}` : ''}`;
+  const title = `${tipoTitolo} ${prepA(c.comune)} (${c.provincia})${c.protocollo ? ` — Prot. ${c.protocollo}` : ''}`;
   const importo = c.importo_lavori ? ` Importo lavori ${formatEuro(c.importo_lavori, { compact: true })}.` : '';
   const hasMeaningfulDesc =
     c.descrizione && c.descrizione.trim().toLowerCase() !== tipoTitolo.trim().toLowerCase();
   const description = (
     hasMeaningfulDesc
-      ? `${c.descrizione} — ${tipoTitolo} a ${c.comune} (${c.provincia}, ${c.regione}).${importo} Dati ufficiali dall'albo pretorio comunale.`
-      : `${tipoTitolo} pubblicato a ${c.comune} (${c.provincia}, ${c.regione}).${importo} Dati ufficiali dall'albo pretorio. Scopri dettagli, fonte e professionisti collegati.`
+      ? `${c.descrizione} — ${tipoTitolo} ${prepA(c.comune)} (${c.provincia}, ${c.regione}).${importo} Dati ufficiali dall'albo pretorio comunale.`
+      : `${tipoTitolo} pubblicato ${prepA(c.comune)} (${c.provincia}, ${c.regione}).${importo} Dati ufficiali dall'albo pretorio. Scopri dettagli, fonte e professionisti collegati.`
   ).slice(0, 160);
   const ogImage = ogImageUrl({
-    title: `${tipoTitolo} a ${c.comune}`,
+    title: `${tipoTitolo} ${prepA(c.comune)}`,
     subtitle: c.protocollo
       ? `Prot. ${c.protocollo} · ${c.provincia}, ${c.regione}`
       : `${c.provincia}, ${c.regione}`,
@@ -92,8 +93,8 @@ function buildRispostaFirst(c: CantiereScheda): string {
   const frasi: string[] = [];
 
   const apertura = titolo
-    ? `${titolo} a ${c.comune} (${c.provincia}), pubblicato tramite ${c.tipo_titolo || 'titolo edilizio'}.`
-    : `Cantiere a ${c.comune} (${c.provincia}), pubblicato tramite ${c.tipo_titolo || 'titolo edilizio'}.`;
+    ? `${titolo} ${prepA(c.comune)} (${c.provincia}), pubblicato tramite ${c.tipo_titolo || 'titolo edilizio'}.`
+    : `Cantiere ${prepA(c.comune)} (${c.provincia}), pubblicato tramite ${c.tipo_titolo || 'titolo edilizio'}.`;
   frasi.push(apertura);
 
   if (isMeaningful(c.destinazione_uso)) {
@@ -121,26 +122,34 @@ export default async function CantierePage({ params }: PageProps) {
   const correlati = correlatiComune.data.filter((x) => x.slug !== c.slug).slice(0, 3);
 
   const titolo = c.intervento_categoria ? displayInterventoLabel(c.intervento_categoria) : null;
-  const h1 = `${titolo ?? 'Cantiere'} a ${c.comune}`;
+  const h1 = `${titolo ?? 'Cantiere'} ${prepA(c.comune)}`;
   const rispostaFirst = buildRispostaFirst(c);
   const mestieri = (c.mestieri as Mestiere[] | null) ?? [];
   const frasiSorgente = c.scheda?.frasi_sorgente ?? [];
   const unita = unitaOf(c);
   const mq = mqOf(c);
   const valoreLabel = formatValoreRange(c.valore_min, c.valore_max, c.valore_metodo);
+  // Indirizzo: preferisci la forma normalizzata, ripiega su quella grezza.
+  // Il civico resta sempre mascherato (R7 privacy).
+  const indirizzoNorm = c.indirizzo_norm ?? c.indirizzo;
+  const civicoMasked = maskCivico(c.civico_norm ?? c.civico);
+  const indirizzoFull = indirizzoNorm
+    ? `${indirizzoNorm}${civicoMasked ? `, ${civicoMasked}` : ''}`
+    : null;
+  const hasDescrizione = !!(c.descrizione && c.descrizione.trim());
 
   const cantiereFaq = [
     {
-      q: `Sono un'impresa: come intercetto i nuovi cantieri a ${c.comune}?`,
+      q: `Sono un'impresa: come intercetto i nuovi cantieri ${prepA(c.comune)}?`,
       a: `Per tutela della privacy non pubblichiamo i dati personali di progettisti o titolari estratti dagli atti. Se sei un'impresa (edile, serramentista, impiantista) puoi registrarti gratis su ItaliaProgettisti e ricevere gli avvisi sui nuovi cantieri della zona di ${c.comune} appena vengono pubblicati, per proporti sui lavori prima degli altri.`,
     },
     {
       q: 'Cosa significa "tipo titolo" PDC, SCIA, CILA?',
-      a: 'PDC = Permesso di Costruire (interventi rilevanti, autorizzazione preventiva). SCIA = Segnalazione Certificata di Inizio Attivita (interventi minori, comunicazione asseverata). CILA = Comunicazione Inizio Lavori Asseverata (manutenzione straordinaria con asseverazione tecnica).',
+      a: 'PDC = Permesso di Costruire (interventi rilevanti, autorizzazione preventiva). SCIA = Segnalazione Certificata di Inizio Attività (interventi minori, comunicazione asseverata). CILA = Comunicazione Inizio Lavori Asseverata (manutenzione straordinaria con asseverazione tecnica).',
     },
     {
       q: 'I dati di questo cantiere sono verificati?',
-      a: `Si. I dati provengono direttamente dall'albo pretorio del Comune di ${c.comune} o dal portale open data della Pubblica Amministrazione locale. La fonte e la data di pubblicazione originale sono dichiarate piu sopra nella scheda.`,
+      a: `Sì. I dati provengono direttamente dall'albo pretorio del Comune di ${c.comune} o dal portale open data della Pubblica Amministrazione locale. La fonte e la data di pubblicazione originale sono dichiarate più sopra nella scheda.`,
     },
     {
       q: 'Sono il titolare del cantiere. Come posso chiedere modifiche o rimozione?',
@@ -240,6 +249,18 @@ export default async function CantierePage({ params }: PageProps) {
             <CardScheda c={c} />
           </div>
 
+          {/* 5b. DESCRIZIONE LAVORI (testo grezzo della fonte, se presente) */}
+          {hasDescrizione && (
+            <div className="mb-10">
+              <h2 className="text-base font-bold mb-3 tracking-tight">Descrizione lavori</h2>
+              <div className="rounded-3xl border border-border bg-card p-6 md:p-7">
+                <p className="text-sm md:text-base leading-relaxed text-secondary-text whitespace-pre-line">
+                  {c.descrizione}
+                </p>
+              </div>
+            </div>
+          )}
+
           {/* 6. MESTIERI (navigazione interna) */}
           {mestieri.length > 0 && (
             <div className="mb-10">
@@ -272,6 +293,9 @@ export default async function CantierePage({ params }: PageProps) {
                 )}
                 {c.tipo_titolo && (
                   <div className="flex gap-3"><dt className="w-40 flex-shrink-0 text-muted-foreground">Tipo titolo</dt><dd className="font-medium">{c.tipo_titolo}</dd></div>
+                )}
+                {indirizzoFull && (
+                  <div className="flex gap-3"><dt className="w-40 flex-shrink-0 text-muted-foreground inline-flex items-center gap-1"><MapPin className="h-3 w-3" />Indirizzo</dt><dd className="font-medium">{indirizzoFull}</dd></div>
                 )}
                 {c.data_pubblicazione && (
                   <div className="flex gap-3"><dt className="w-40 flex-shrink-0 text-muted-foreground inline-flex items-center gap-1"><Calendar className="h-3 w-3" />Pubblicazione</dt><dd className="font-medium">{formatDate(c.data_pubblicazione)}</dd></div>
@@ -332,7 +356,7 @@ export default async function CantierePage({ params }: PageProps) {
 
           {correlati.length > 0 && (
             <div className="mb-10">
-              <h2 className="text-lg md:text-xl font-bold mb-4">Cantieri arricchiti a {c.comune}</h2>
+              <h2 className="text-lg md:text-xl font-bold mb-4">Cantieri arricchiti {prepA(c.comune)}</h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                 {correlati.map((cc) => (
                   <CardSchedaCompact key={cc.id} c={cc} />

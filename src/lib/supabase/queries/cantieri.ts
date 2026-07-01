@@ -126,7 +126,8 @@ export async function getAllCantieriSlugs(limit = 5000): Promise<{ slug: string;
   return (data as any[]) || [];
 }
 
-/** Stats globali: count totale, regioni, comuni, importo totale. */
+/** Stats globali: count totale, regioni, comuni, importo totale.
+ *  Fonte: RPC cached `get_cantieri_home_stats()` (conteggi "circa" istantanei). */
 export async function getGlobalStats(): Promise<{
   totale: number;
   regioni: number;
@@ -134,48 +135,43 @@ export async function getGlobalStats(): Promise<{
   importo_totale: number;
 }> {
   const supabase: any = createServerClient();
-  const [{ count: totale }, { data: distinctData }, { data: importoData }] = await Promise.all([
-    supabase.from('cantieri_pubblici_attivi').select('id', { count: 'exact', head: true }).eq('is_active', true),
-    supabase.rpc('get_cantieri_distinct_counts').then(
-      (r: any) => r.error ? { data: null } : r,
-      () => ({ data: null })
-    ),
-    supabase.from('cantieri_pubblici_attivi').select('importo_lavori').eq('is_active', true).not('importo_lavori', 'is', null).limit(5000),
-  ]);
-
-  // Fallback se RPC non esiste: paginazione per superare cap PostgREST 1000.
-  let regioni = 0;
-  let comuni = 0;
-  if (distinctData && Array.isArray(distinctData) && distinctData[0]) {
-    regioni = distinctData[0].regioni || 0;
-    comuni = distinctData[0].comuni || 0;
-  } else {
-    const [regs, coms] = await Promise.all([
-      fetchAllPages<{ regione: string }>(() =>
-        supabase.from('cantieri_pubblici_attivi').select('regione').eq('is_active', true),
-      ),
-      fetchAllPages<{ comune: string }>(() =>
-        supabase.from('cantieri_pubblici_attivi').select('comune').eq('is_active', true),
-      ),
-    ]);
-    // Conta solo regioni "reali" (escludi placeholder "Italia" usato per i bandi).
-    regioni = new Set(
-      regs.map((r) => r.regione).filter((x) => x && x.toLowerCase() !== 'italia'),
-    ).size;
-    comuni = new Set(coms.map((c) => c.comune).filter(Boolean)).size;
+  const { data, error } = await supabase.rpc('get_cantieri_home_stats');
+  if (error || !data) {
+    // Throw invece di zeri: con ISR Next mantiene l'ultima pagina buona invece
+    // di servire (e indicizzare) una home che dichiara "0 cantieri".
+    console.error('[cantieri] getGlobalStats error:', error?.message);
+    throw new Error(`getGlobalStats: cache non disponibile (${error?.message ?? 'nessun dato'})`);
   }
-
-  const importo_totale = ((importoData as any[]) || []).reduce(
-    (sum, r: any) => sum + (Number(r.importo_lavori) || 0),
-    0,
-  );
-
+  // La RPC ritorna una singola riga { totale, regioni, comuni }.
+  const row = Array.isArray(data) ? data[0] : data;
   return {
-    totale: totale || 0,
-    regioni,
-    comuni,
-    importo_totale,
+    totale: Number(row?.totale) || 0,
+    regioni: Number(row?.regioni) || 0,
+    comuni: Number(row?.comuni) || 0,
+    // importo_lavori è sempre NULL nel DB: nessun valore da sommare.
+    importo_totale: 0,
   };
+}
+
+/**
+ * Regioni con conteggio dalla cache stats (`get_stats_cache('cantieri_regioni')`):
+ * conteggi "circa" istantanei e coerenti fra home, /regioni e /statistiche.
+ * Ritorna [{ regione, cnt }] ordinato desc, escluso il placeholder "Italia".
+ */
+export async function getCantieriRegioniCached(): Promise<{ regione: string; cnt: number }[]> {
+  const supabase: any = createServerClient();
+  const { data, error } = await supabase.rpc('get_stats_cache', { p_key: 'cantieri_regioni' });
+  if (error || !data) {
+    // Throw invece di []: le 6 regioni sono sempre presenti; un errore cache non
+    // deve svuotare silenziosamente home/regioni/statistiche (ISR tiene l'ultima buona).
+    console.error('[cantieri] getCantieriRegioniCached error:', error?.message);
+    throw new Error(`getCantieriRegioniCached: cache non disponibile (${error?.message ?? 'nessun dato'})`);
+  }
+  const arr: any[] = Array.isArray(data) ? data : [];
+  return arr
+    .map((r) => ({ regione: r.regione as string, cnt: Number(r.n) || 0 }))
+    .filter((r) => r.regione && r.regione.toLowerCase() !== 'italia' && r.cnt > 0)
+    .sort((a, b) => b.cnt - a.cnt);
 }
 
 /**

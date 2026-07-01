@@ -1,5 +1,5 @@
 import { ArrowRight, Users, MapPin, ShieldCheck } from 'lucide-react';
-import { slugify } from '@/lib/utils';
+import { prepA, slugify } from '@/lib/utils';
 
 interface Props {
   comune: string;
@@ -39,8 +39,8 @@ export default function CrossLinkCorrelati({ comune, countImprese, cantiereSlug 
           </div>
           <h3 id="crosslink-heading" className="text-lg md:text-xl font-bold mb-2 tracking-tight">
             {hasCount
-              ? `${countImprese.toLocaleString('it-IT')} imprese e studi attivi a ${comune}`
-              : `Esplora studi e imprese a ${comune}`}
+              ? `${countImprese.toLocaleString('it-IT')} imprese e studi attivi ${prepA(comune)}`
+              : `Esplora studi e imprese ${prepA(comune)}`}
           </h3>
           <p className="text-sm text-secondary-text leading-relaxed mb-4">
             {hasCount
@@ -62,9 +62,9 @@ export default function CrossLinkCorrelati({ comune, countImprese, cantiereSlug 
           <a
             href={comuneUrl}
             className="group inline-flex items-center justify-center gap-2 rounded-full bg-foreground text-background px-5 py-3 text-sm font-semibold transition-all duration-200 hover:scale-[1.03] hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-            aria-label={`Esplora i cantieri a ${comune}`}
+            aria-label={`Esplora i cantieri ${prepA(comune)}`}
           >
-            Esplora i cantieri a {comune}
+            Esplora i cantieri {prepA(comune)}
             <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" strokeWidth={2} />
           </a>
           <a

@@ -8,7 +8,7 @@ export function cn(...inputs: ClassValue[]) {
 /**
  * Costruisce l'URL di registrazione HUB (ItaliaProgettisti) trasportando il
  * contesto del funnel (intent, cantiere, geo) e le UTM di attribuzione.
- * R7: il satellite e' zero-PII/zero-stato — ogni CTA di conversione punta
+ * R7: il satellite è zero-PII/zero-stato — ogni CTA di conversione punta
  * qui, mai a un flusso di signup locale.
  */
 export function hubRegisterUrl(
@@ -33,6 +33,12 @@ export function hubRegisterUrl(
   if (opts.regione) qs.set('regione', opts.regione);
   if (opts.intervento) qs.set('intervento', opts.intervento);
   return `https://www.italiaprogettisti.com/register?${qs.toString()}`;
+}
+
+/** Preposizione "a"/"ad" (elisione eufonica davanti a vocale). */
+export function prepA(nome: string): string {
+  const n = (nome || '').trim();
+  return /^[aeiouAEIOUàèéìòù]/.test(n) ? `ad ${n}` : `a ${n}`;
 }
 
 export function formatDate(dateStr: string | null | undefined): string {
@@ -116,10 +122,10 @@ export function regioneFromSlug(slug: string): string {
  * coerente con la convenzione editoriale italiaprogettisti.com.
  *
  * @deprecated Usa `provinciaSlugFromCode` da `@/lib/province` per ottenere lo slug
- * canonico (es. "torino"). Questa funzione adesso e' un wrapper di compatibilita.
+ * canonico (es. "torino"). Questa funzione adesso è un wrapper di compatibilita.
  */
 export function provinciaSlug(provinciaSigla: string): string {
-  // Lazy import per evitare cicli — ma in pratica e' un re-export sicuro.
+  // Lazy import per evitare cicli — ma in pratica è un re-export sicuro.
   // Mantieni signature stabile per i call-site legacy.
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { provinciaSlugFromCode } = require('./province') as typeof import('./province');

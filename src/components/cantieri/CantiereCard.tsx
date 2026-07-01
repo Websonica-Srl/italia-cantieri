@@ -1,15 +1,30 @@
 import Link from 'next/link';
 import { MapPin, Calendar, FileText, ArrowRight } from 'lucide-react';
+import {
+  TITOLO_LABELS,
+  INTERVENTO_META,
+  type TipoTitolo,
+  type InterventoCategoria,
+} from '@websonica/cantieri-core';
 import { Cantiere } from '@/lib/supabase/queries/cantieri';
-import { formatDateShort, formatEuro, truncate } from '@/lib/utils';
+import { formatDateShort, formatEuro, formatNumber, truncate } from '@/lib/utils';
 
 interface Props {
   cantiere: Cantiere;
   compact?: boolean;
 }
 
+/** Label leggibile del tipo cantiere: titolo edilizio, poi intervento, poi generico. */
+function tipoLabel(cantiere: Cantiere): string {
+  const tt = cantiere.tipo_titolo;
+  if (tt && tt in TITOLO_LABELS) return TITOLO_LABELS[tt as TipoTitolo];
+  const ic = (cantiere as { intervento_categoria?: InterventoCategoria | null }).intervento_categoria;
+  if (ic && ic in INTERVENTO_META) return INTERVENTO_META[ic].label;
+  return 'Cantiere edilizio';
+}
+
 export default function CantiereCard({ cantiere, compact = false }: Props) {
-  const titolo = cantiere.tipo_titolo || 'Cantiere';
+  const titolo = tipoLabel(cantiere);
   const data = cantiere.data_rilascio || cantiere.data_pubblicazione;
   const indirizzoBreve = [cantiere.indirizzo, cantiere.civico].filter(Boolean).join(' ');
 
@@ -49,7 +64,7 @@ export default function CantiereCard({ cantiere, compact = false }: Props) {
           {cantiere.importo_lavori && (
             <span className="font-semibold text-foreground">{formatEuro(cantiere.importo_lavori, { compact: true })}</span>
           )}
-          {cantiere.superficie_mq && <span>{Math.round(Number(cantiere.superficie_mq))} m²</span>}
+          {cantiere.superficie_mq && <span>{formatNumber(Math.round(Number(cantiere.superficie_mq)))} m²</span>}
         </div>
         <span className="inline-flex items-center gap-1 text-xs font-medium text-foreground opacity-0 group-hover:opacity-100 transition-opacity">
           Dettagli <ArrowRight className="h-3 w-3" />

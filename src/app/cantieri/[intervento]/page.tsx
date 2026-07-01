@@ -7,7 +7,7 @@
  * la distribuzione per provincia e i cantieri recenti. Sotto soglia il pillar resta
  * puramente educativo (nessun numero inventato).
  *
- * 404 se il pillar non e' pronto (answerFirst vuoto, stub): vedi getPillar/pillars.ts.
+ * 404 se il pillar non è pronto (answerFirst vuoto, stub): vedi getPillar/pillars.ts.
  */
 import type { Metadata } from 'next';
 import Link from 'next/link';
@@ -67,7 +67,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   return {
     title: pillar.metaTitle,
     description: pillar.metaDescription,
-    // Pagina di volume: sempre indicizzabile, il blocco-dato e' solo un componente opzionale.
+    // Pagina di volume: sempre indicizzabile, il blocco-dato è solo un componente opzionale.
     alternates: { canonical: `/cantieri/${pillar.slug}` },
     robots: { index: true, follow: true },
     openGraph: {
@@ -98,7 +98,7 @@ export default async function InterventoPillarPage({ params }: PageProps) {
 
   return (
     <>
-      {/* itemListLd sui recenti: solo quando il blocco-dato e' attivo (davvero indicizzabile). */}
+      {/* itemListLd sui recenti: solo quando il blocco-dato è attivo (davvero indicizzabile). */}
       {blocDatoAttivo && agg.recenti.length > 0 && (
         <script
           type="application/ld+json"
@@ -168,7 +168,7 @@ export default async function InterventoPillarPage({ params }: PageProps) {
                     Distribuzione per provincia
                   </h2>
                   {/* Fase 1: elenco non cliccabile (nessuna combinazione intervento+provincia filtrata
-                      ancora disponibile). La route /cantieri/[intervento]/[provincia] e' Fase 2. */}
+                      ancora disponibile). La route /cantieri/[intervento]/[provincia] è Fase 2. */}
                   <ul className="flex flex-wrap gap-2">
                     {agg.perProvincia.map((p) => (
                       <li

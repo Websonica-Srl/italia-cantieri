@@ -4,9 +4,9 @@
  * Editoriale pura: H1 + answer-first + sezioni (quando si usa/quando NON basta,
  * iter/tempi/costi/sanzioni) + tabella di confronto tra titoli edilizi + FAQ +
  * correlati, via PillarSections. NESSUN blocco-dato (quello vive solo nei pillar-
- * intervento, Task 10): qui il contenuto e' normativo, non un aggregato di cantieri.
+ * intervento, Task 10): qui il contenuto è normativo, non un aggregato di cantieri.
  *
- * 404 se il pillar non e' pronto (answerFirst vuoto, stub): vedi getPillar/pillars.ts.
+ * 404 se il pillar non è pronto (answerFirst vuoto, stub): vedi getPillar/pillars.ts.
  */
 import type { Metadata } from 'next';
 import Link from 'next/link';

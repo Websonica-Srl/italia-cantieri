@@ -20,7 +20,7 @@ interface Props {
   pillar: PillarContent;
   /** Slot opzionale renderizzato dopo le sections e prima della FAQ (es. blocco-dato). */
   children?: ReactNode;
-  /** Se true la FAQ interna non emette il proprio FAQPage JSON-LD: usare quando la pagina emette gia' faqLd() esplicitamente (evita doppio schema). */
+  /** Se true la FAQ interna non emette il proprio FAQPage JSON-LD: usare quando la pagina emette già faqLd() esplicitamente (evita doppio schema). */
   skipFaqJsonLd?: boolean;
 }
 

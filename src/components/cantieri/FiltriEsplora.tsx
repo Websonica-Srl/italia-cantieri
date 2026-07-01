@@ -14,7 +14,7 @@ import {
 
 /**
  * Filtri /esplora — naviga a /esplora con querystring.
- * /esplora e' sempre noindex,follow (tool di ricerca, gestito lato page con
+ * /esplora è sempre noindex,follow (tool di ricerca, gestito lato page con
  * generateMetadata): nessuna combinazione di filtri va indicizzata, il valore
  * SEO indicizzabile vive nei silo geo/mestiere/intervento.
  */

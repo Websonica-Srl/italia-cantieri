@@ -75,7 +75,7 @@ export const URBAN_CRANE: UnsplashImage = {
 export const URBAN_RENOVATION: UnsplashImage = {
   id: 'GLVxsSdV25w',
   src: cdn('photo-1765191739520-be9e96d58eeb', 2400, 1350),
-  alt: 'Vista aerea di citta italiana con tetti in cotto e geometria urbana ricorrente',
+  alt: 'Vista aerea di città italiana con tetti in cotto e geometria urbana ricorrente',
   photographer: 'Dimitris Iosifidis',
   photographerUrl: 'https://unsplash.com/@dimjoseph',
   photoUrl: 'https://unsplash.com/photos/GLVxsSdV25w',

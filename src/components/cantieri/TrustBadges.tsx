@@ -20,8 +20,8 @@ const badges = [
   },
   {
     icon: RefreshCw,
-    title: 'Aggiornato quotidianamente',
-    desc: 'Nuovi cantieri importati ogni giorno dai portali ufficiali.',
+    title: 'Aggiornato ogni settimana',
+    desc: 'Nuovi cantieri importati ogni settimana dai portali ufficiali.',
   },
   {
     icon: ShieldCheck,

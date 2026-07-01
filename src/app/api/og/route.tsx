@@ -283,7 +283,7 @@ export async function GET(request: NextRequest) {
               >
                 <span style={{ display: 'flex' }}>Fonti pubbliche italiane</span>
                 <span style={{ display: 'flex' }}>·</span>
-                <span style={{ display: 'flex' }}>Aggiornato ogni giorno</span>
+                <span style={{ display: 'flex' }}>Aggiornato ogni settimana</span>
                 <span style={{ display: 'flex' }}>·</span>
                 <span style={{ display: 'flex' }}>GDPR compliant</span>
               </div>

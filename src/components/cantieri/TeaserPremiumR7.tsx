@@ -1,6 +1,6 @@
 import { Hash, TrendingUp, FileDown, BellRing, ArrowRight, ShieldCheck } from 'lucide-react';
 import type { CantiereScheda } from '@/lib/supabase/queries/cantieri-scheda';
-import { hubRegisterUrl } from '@/lib/utils';
+import { hubRegisterUrl, prepA } from '@/lib/utils';
 import { maskCivico } from '@/lib/cantieri/mask';
 import { formatValoreRange } from '@websonica/cantieri-core';
 
@@ -9,8 +9,8 @@ interface Props {
 }
 
 /**
- * R7: teaser premium conforme. Impacchetta SOLO dati gia' pubblici in forma
- * piu' comoda/precisa (civico esatto, forbice di valore stretta, export,
+ * R7: teaser premium conforme. Impacchetta SOLO dati già pubblici in forma
+ * più comoda/precisa (civico esatto, forbice di valore stretta, export,
  * alert di zona). Nessun contatto privato (niente titolare/progettista/
  * telefono): sostituisce concettualmente il vecchio DatiPremiumLocked.
  * Il crawler vede la stessa pagina pubblica: zero cloaking.
@@ -39,7 +39,7 @@ export default function TeaserPremiumR7({ c }: Props) {
       icon: TrendingUp,
       label: 'Range di valore',
       inPagina: rangeInPagina,
-      conAccount: 'forbice ridotta, piu\' precisa',
+      conAccount: 'forbice ridotta, più precisa',
     },
     {
       icon: FileDown,
@@ -79,7 +79,7 @@ export default function TeaserPremiumR7({ c }: Props) {
         </div>
       </div>
       <p className="text-sm text-secondary-text mb-6 leading-relaxed">
-        Sono tutti dati gia' pubblici (fonte: albo pretorio/PA), qui li trovi in versione ridotta.
+        Sono tutti dati già pubblici (fonte: albo pretorio/PA), qui li trovi in versione ridotta.
         Con un account gratuito li ricevi in forma completa e comoda: utile se cerchi lavori nella
         tua zona come impresa esecutrice, serramentista o impiantista.
       </p>
@@ -111,14 +111,14 @@ export default function TeaserPremiumR7({ c }: Props) {
       <div className="mt-6 flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
         <p className="text-[11px] text-muted-foreground leading-relaxed max-w-md">
           Nessun contatto privato: qui trovi solo dati pubblici del cantiere, impacchettati in forma
-          piu' precisa e scaricabile. Conformita' GDPR garantita.
+          più precisa e scaricabile. Conformità GDPR garantita.
         </p>
         <a
           href={hubUrl}
           target="_blank"
           rel="noopener noreferrer"
           className="group inline-flex flex-shrink-0 items-center gap-2 rounded-full bg-foreground text-background px-5 py-3 text-sm font-semibold transition-all duration-200 hover:scale-[1.03] hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-          aria-label={`Registrati gratis per sbloccare i dati completi del cantiere a ${c.comune}`}
+          aria-label={`Registrati gratis per sbloccare i dati completi del cantiere ${prepA(c.comune)}`}
         >
           <ShieldCheck className="h-4 w-4" strokeWidth={2} aria-hidden="true" />
           Sblocca gratis

@@ -14,7 +14,7 @@ export default function BreadcrumbCantiere({
   steps: BreadcrumbStep[];
   /** Modalità su sfondo scuro (hero immagine). Usa testo bianco. */
   inverted?: boolean;
-  /** Se true non genera il proprio BreadcrumbList: usare quando la pagina emette gia' breadcrumbLd() esplicitamente (evita doppio schema). */
+  /** Se true non genera il proprio BreadcrumbList: usare quando la pagina emette già breadcrumbLd() esplicitamente (evita doppio schema). */
   skipJsonLd?: boolean;
 }) {
   // JSON-LD BreadcrumbList

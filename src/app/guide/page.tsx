@@ -13,7 +13,7 @@ export const revalidate = 86400;
 export const metadata: Metadata = {
   title: 'Guide ai titoli edilizi: CILA, SCIA, Permesso di Costruire',
   description:
-    'Guide normative ai titoli edilizi italiani: cos\'e\' la CILA, cos\'e\' la SCIA, il Permesso di Costruire, quando servono e quali sono le differenze.',
+    'Guide normative ai titoli edilizi italiani: cos\'è la CILA, cos\'è la SCIA, il Permesso di Costruire, quando servono e quali sono le differenze.',
   alternates: { canonical: '/guide' },
   robots: { index: true, follow: true },
 };

@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { MapPin, Calendar, ArrowRight } from 'lucide-react';
 import {
   displayInterventoLabel, formatValoreRange, mestiereLabel,
+  TITOLO_LABELS, type TipoTitolo,
   type Mestiere,
 } from '@websonica/cantieri-core';
 import type { CantiereScheda } from '@/lib/supabase/queries/cantieri-scheda';
@@ -11,9 +12,12 @@ const MAX_MESTIERI = 3;
 
 /** Versione compatta della scheda cantiere per liste/pagine esplora. Nessun civico/indirizzo esatto. */
 export default function CardSchedaCompact({ c }: { c: CantiereScheda }) {
+  // Etichetta: intervento (scheda) → tipo titolo (SCIA/CILA/PDC…) → generico.
   const interventoLabel = c.intervento_categoria
     ? displayInterventoLabel(c.intervento_categoria)
-    : null;
+    : c.tipo_titolo && c.tipo_titolo in TITOLO_LABELS
+      ? TITOLO_LABELS[c.tipo_titolo as TipoTitolo]
+      : null;
   const data = c.data_rilascio || c.data_pubblicazione;
   const valoreLabel = formatValoreRange(c.valore_min, c.valore_max, c.valore_metodo);
   const mestieri = (c.mestieri as Mestiere[] | null) ?? [];
@@ -24,7 +28,7 @@ export default function CardSchedaCompact({ c }: { c: CantiereScheda }) {
     <Link href={`/cantiere/${c.slug}`} className="group block card-zen card-hover p-5">
       <div className="flex items-start justify-between gap-3 mb-3">
         <span className="eyebrow eyebrow-construction">
-          {interventoLabel ?? 'Cantiere'}
+          {interventoLabel ?? 'Cantiere edilizio'}
         </span>
         {data && (
           <span className="text-xs text-muted-foreground inline-flex items-center gap-1 flex-shrink-0">

@@ -212,7 +212,7 @@ export default function ApiPubblichePage() {
           <Key className="h-8 w-8 text-construction mx-auto mb-4" strokeWidth={1.5} />
           <h2 className="heading-section mb-4">Serve una chiave API dedicata?</h2>
           <p className="text-muted-foreground mb-6">
-            Per uso istituzionale (PA, universita, ricerca) con rate limit personalizzato, SLA e dataset
+            Per uso istituzionale (PA, università, ricerca) con rate limit personalizzato, SLA e dataset
             aggiuntivi (CSV/GeoJSON export, webhook nuovi cantieri):{' '}
             <a href="mailto:api@italiacantieri.it" className="underline underline-offset-4">
               api@italiacantieri.it

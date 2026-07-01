@@ -98,8 +98,10 @@ export default async function ProvinciaPage({ params }: PageProps) {
     getCantieriScheda({ regione: reg, provincia: prov, limit: 12 }, 'list'),
   ]);
 
-  const totale = recenti.total;
-  const importoTotale = recenti.data.reduce((s, c) => s + (Number(c.importo_lavori) || 0), 0);
+  // Header coerente con la lista Comuni (conteggio ungated su tutta la provincia),
+  // non col sottoinsieme gated della scheda: evita l'header a 0 quando i Comuni
+  // sottostanti sommano cantieri reali.
+  const totale = comuni.reduce((s, c) => s + c.cnt, 0);
 
   return (
     <section className="pt-32 md:pt-40 pb-12 md:pb-16">
@@ -121,9 +123,8 @@ export default async function ProvinciaPage({ params }: PageProps) {
           items={[
             { label: 'Cantieri', value: totale, format: 'number' },
             { label: 'Comuni', value: comuni.length, format: 'number' },
-            { label: 'Importo recenti (campione)', value: importoTotale, format: 'euro' },
           ]}
-          columns={3}
+          columns={2}
         />
 
         {/* COMUNI */}

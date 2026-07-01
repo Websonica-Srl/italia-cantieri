@@ -52,7 +52,7 @@ export function mqOf(c: Pick<CantiereScheda, 'superficie_mq' | 'scheda'>): numbe
 }
 
 function applyGate(query: any, gate: 'list' | 'index') {
-  // La view garantisce gia' visibilita_pubblica=true.
+  // La view garantisce già visibilita_pubblica=true.
   return gate === 'index'
     ? query.eq('scheda_pubblicabile', true)
     : query.or('scheda_pubblicabile.is.null,scheda_pubblicabile.is.true');
@@ -103,7 +103,7 @@ export async function getInterventoAggregato(intervento: InterventoCategoria): P
   const [{ data: recenti, total }, provRows] = await Promise.all([
     getCantieriScheda({ intervento, limit: 6 }, 'index').then((r) => ({ data: r.data, total: r.total })),
     (async () => {
-      // PostgREST cappa a 1000: pagino con .range() cosi' il breakdown per
+      // PostgREST cappa a 1000: pagino con .range() così il breakdown per
       // provincia resta corretto anche per interventi con >1000 schede (F2).
       const pageSize = 1000;
       const rows: { provincia: string }[] = [];

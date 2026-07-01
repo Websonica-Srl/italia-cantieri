@@ -1,11 +1,11 @@
-// Server Component: nessuna interattivita' client (blur = CSS, CTA = link).
+// Server Component: nessuna interattività client (blur = CSS, CTA = link).
 // NON marcare 'use client': la pagina server /esplora passa renderCard/keyOf
 // (funzioni) come props, cosa vietata verso i Client Component.
 import { Lock, ArrowRight } from 'lucide-react';
 import { formatNumber, hubRegisterUrl } from '@/lib/utils';
 
 interface Props<T> {
-  /** Elementi della pagina/sezione corrente (gia' impaginati a monte). */
+  /** Elementi della pagina/sezione corrente (già impaginati a monte). */
   items: T[];
   /**
    * Numero TOTALE di elementi disponibili per il contesto (per la copy della
@@ -39,8 +39,8 @@ interface Props<T> {
  * che porta alla registrazione gratuita sull'HUB. Se gli elementi totali sono
  * <= previewCount, nessun blur/overlay: mostra tutto.
  *
- * Accessibilita': la zona sfocata e' aria-hidden e non contiene link cliccabili
- * (avvolta in pointer-events-none); la CTA dell'overlay e' un vero link focusabile.
+ * Accessibilita': la zona sfocata è aria-hidden e non contiene link cliccabili
+ * (avvolta in pointer-events-none); la CTA dell'overlay è un vero link focusabile.
  */
 export default function ListPaywall<T>({
   items,

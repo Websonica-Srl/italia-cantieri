@@ -25,8 +25,6 @@ export const metadata: Metadata = {
           title: 'Per Pubbliche Amministrazioni',
           subtitle: 'Partnership, embed, press kit',
           kind: 'generic',
-          count: '~40.000',
-          label: 'cantieri tracciati',
         }),
         width: 1200,
         height: 630,
@@ -38,7 +36,7 @@ export const metadata: Metadata = {
 const partnerships = [
   {
     icon: Building2,
-    title: 'Per Comuni e Citta Metropolitane',
+    title: 'Per Comuni e Città Metropolitane',
     body: 'Integriamo gratuitamente i vostri Albo Pretorio e Open Data nel database nazionale. Citazione standardizzata della fonte in ogni scheda cantiere. Restate visibili a progettisti, imprese e cittadini.',
   },
   {
@@ -48,7 +46,7 @@ const partnerships = [
   },
   {
     icon: Newspaper,
-    title: 'Per Stampa, Ricerca e Universita',
+    title: 'Per Stampa, Ricerca e Università',
     body: 'Press kit con dati certificati per giornalisti, tesisti e ricercatori. Snapshot statistici per regione/provincia/comune, citabili con DOI permanente (in arrivo).',
   },
 ];
@@ -76,7 +74,7 @@ export default async function PerPubblicheAmministrazioniPage() {
     { label: 'Cantieri tracciati', value: nTot },
     { label: 'Regioni coperte', value: String(stats.regioni) },
     { label: 'Comuni coperti', value: String(stats.comuni) },
-    { label: 'Conformita', value: 'GDPR + k-anon 5' },
+    { label: 'Conformità', value: 'GDPR + k-anon 5' },
     { label: 'Fonti', value: 'Albi pretori + open data PA' },
     { label: 'Dati personali PF', value: 'Mai pubblicati' },
     { label: 'Licenza dati aggregati', value: 'CC BY 4.0' },
@@ -96,7 +94,7 @@ export default async function PerPubblicheAmministrazioniPage() {
     },
     {
       quote:
-        'Italia Cantieri e un servizio editoriale di AZIENDA 365 SRL che aggrega i cantieri edilizi pubblicati ai sensi del D.Lgs. 33/2013 (Trasparenza), gestendo i dati personali secondo GDPR e tecniche di k-anonymity per i cantieri privati.',
+        'Italia Cantieri è un servizio editoriale di AZIENDA 365 SRL che aggrega i cantieri edilizi pubblicati ai sensi del D.Lgs. 33/2013 (Trasparenza), gestendo i dati personali secondo GDPR e tecniche di k-anonymity per i cantieri privati.',
       context: 'Profilo lungo 300 caratteri',
     },
   ];

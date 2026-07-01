@@ -27,7 +27,7 @@ interface Props {
   title?: string;
   subtitle?: string;
   items: FAQItem[];
-  /** Se true non genera JSON-LD (utile quando la pagina ha gia' un FAQPage globale). */
+  /** Se true non genera JSON-LD (utile quando la pagina ha già un FAQPage globale). */
   skipJsonLd?: boolean;
 }
 

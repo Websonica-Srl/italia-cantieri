@@ -51,7 +51,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const description = `Tutti i cantieri attivi in ${reg}: permessi di costruire, SCIA, CILA e bandi pubblici aggiornati. Aggregati da albi pretori e open data PA.`;
   const ogImage = ogImageUrl({
     title: `Cantieri edilizi in ${reg}`,
-    subtitle: `${stats.province} province · ${stats.comuni} Comuni · Aggiornati ogni giorno`,
+    subtitle: `${stats.province} province · ${stats.comuni} Comuni · Aggiornati ogni settimana`,
     kind: 'regione',
     count: formatNumber(stats.totale),
     label: 'cantieri tracciati',
@@ -99,11 +99,11 @@ export default async function RegionePage({ params }: PageProps) {
     },
     {
       q: `I dati di ${regioneNome} sono completi?`,
-      a: `Stiamo costruendo la copertura Comune per Comune: oggi importiamo dai portali con open data attivo e dagli albi pretori digitali. Se il tuo Comune non e ancora coperto, segnalalo: lo aggiungiamo entro 30 giorni quando i dati sono accessibili.`,
+      a: `Stiamo costruendo la copertura Comune per Comune: oggi importiamo dai portali con open data attivo e dagli albi pretori digitali. Se il tuo Comune non è ancora coperto, segnalalo: lo aggiungiamo entro 30 giorni quando i dati sono accessibili.`,
     },
     {
       q: `Posso esportare i cantieri di ${regioneNome} in CSV?`,
-      a: `L'esportazione dei cantieri e l'accesso al feed completo con gli avvisi sui nuovi cantieri di ${regioneNome} sono funzioni del network ItaliaProgettisti. Iscriviti gratis per attivarle: non pubblichiamo dati personali di progettisti o committenti, il valore e' la freschezza e la copertura del dato pubblico.`,
+      a: `L'esportazione dei cantieri e l'accesso al feed completo con gli avvisi sui nuovi cantieri di ${regioneNome} sono funzioni del network ItaliaProgettisti. Iscriviti gratis per attivarle: non pubblichiamo dati personali di progettisti o committenti, il valore è la freschezza e la copertura del dato pubblico.`,
     },
   ];
 
@@ -123,7 +123,7 @@ export default async function RegionePage({ params }: PageProps) {
             </div>
             <p className="mb-8 inline-flex items-center gap-2.5 text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
               <ShieldCheck className="h-3.5 w-3.5" strokeWidth={2} />
-              <span>Dati pubblici · Aggiornati ogni giorno</span>
+              <span>Dati pubblici · Aggiornati ogni settimana</span>
             </p>
             <h1
               id="regione-hero-heading"
@@ -152,8 +152,8 @@ export default async function RegionePage({ params }: PageProps) {
             { label: 'Cantieri attivi', value: stats.totale, format: 'number' },
             { label: 'Province coperte', value: stats.province, format: 'number' },
             { label: 'Comuni tracciati', value: stats.comuni, format: 'number' },
-            { label: 'Valore opere tracciate', value: stats.importo_totale, format: 'euro' },
           ]}
+          columns={3}
         />
 
         {/* TOP CATEGORIE */}
@@ -164,7 +164,7 @@ export default async function RegionePage({ params }: PageProps) {
                 <span aria-hidden="true" className="h-px w-6 bg-foreground/30" />
                 Distribuzione
               </p>
-              <h2 className="text-xl md:text-2xl font-bold mb-2 tracking-tight">Categorie di lavori piu frequenti in {regioneNome}</h2>
+              <h2 className="text-xl md:text-2xl font-bold mb-2 tracking-tight">Categorie di lavori più frequenti in {regioneNome}</h2>
               <p className="text-sm text-muted-foreground">
                 Distribuzione per tipologia di intervento sui cantieri tracciati.
               </p>

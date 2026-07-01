@@ -2,7 +2,7 @@
  * Navigazione mestiere /lavori/[mestiere] (spec §1, Task 12).
  *
  * Pagina di navigazione interna per l'azienda esecutrice: elenco dei cantieri che
- * richiedono un dato mestiere (es. serramenti, impianti elettrici). NON e' un pillar
+ * richiedono un dato mestiere (es. serramenti, impianti elettrici). NON è un pillar
  * di volume: in Fase 1 resta sempre noindex,follow (nessuna pagina /lavori indicizzata),
  * usata solo per instradare il crawler/utente verso le schede cantiere pubbliche.
  */
@@ -36,7 +36,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   const label = mestiereLabel(m);
   const title = `Cantieri che richiedono ${label} — Italia Cantieri`;
-  const description = `Elenco dei cantieri che richiedono il mestiere ${label.toLowerCase()}: permessi di costruire, SCIA e CILA dove la tua impresa puo' proporsi per i lavori.`;
+  const description = `Elenco dei cantieri che richiedono il mestiere ${label.toLowerCase()}: permessi di costruire, SCIA e CILA dove la tua impresa può proporsi per i lavori.`;
 
   return {
     title,

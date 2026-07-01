@@ -59,7 +59,7 @@ export default function CantieriIndexPage() {
                 </div>
                 <p className="text-sm text-muted-foreground line-clamp-2">{p.answerFirst}</p>
                 <div className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-primary opacity-0 group-hover:opacity-100 transition-opacity">
-                  Scopri di piu' <ArrowRight className="h-3.5 w-3.5" />
+                  Scopri di più <ArrowRight className="h-3.5 w-3.5" />
                 </div>
               </Link>
             );

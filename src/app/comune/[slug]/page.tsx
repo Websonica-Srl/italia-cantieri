@@ -9,7 +9,7 @@ import {
 } from '@/lib/supabase/queries/cantieri';
 import { getCantieriScheda, getEnrichedCount } from '@/lib/supabase/queries/cantieri-scheda';
 import { isAggregateIndexable } from '@/lib/seo/indexable';
-import { slugify, formatNumber, formatEuro, regioneSlug } from '@/lib/utils';
+import { slugify, formatNumber, formatEuro, prepA, regioneSlug } from '@/lib/utils';
 import { provinciaSlugFromCode, provinciaNameFromCode } from '@/lib/province';
 import BreadcrumbCantiere from '@/components/cantieri/BreadcrumbCantiere';
 import StatsBox from '@/components/cantieri/StatsBox';
@@ -38,10 +38,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   if (!comune) return { title: 'Comune non trovato' };
   const { total } = await getCantieriScheda({ comune: comune.comune, limit: 1 }, 'list');
   const enriched = await getEnrichedCount({ comune: comune.comune });
-  const title = `Cantieri edilizi a ${comune.comune} (${comune.provincia}) — Permessi PDC, SCIA e CILA`;
-  const description = `Tutti i cantieri attivi a ${comune.comune} (${comune.provincia}, ${comune.regione}): permessi di costruire, SCIA, CILA e bandi pubblici. Dati ufficiali aggiornati ogni giorno dall'albo pretorio comunale.`;
+  const title = `Cantieri edilizi ${prepA(comune.comune)} (${comune.provincia}) — Permessi PDC, SCIA e CILA`;
+  const description = `Tutti i cantieri attivi ${prepA(comune.comune)} (${comune.provincia}, ${comune.regione}): permessi di costruire, SCIA, CILA e bandi pubblici. Dati ufficiali aggiornati ogni settimana dall'albo pretorio comunale.`;
   const ogImage = ogImageUrl({
-    title: `Cantieri edilizi a ${comune.comune}`,
+    title: `Cantieri edilizi ${prepA(comune.comune)}`,
     subtitle: `${comune.provincia}, ${comune.regione} · Dati dall'albo pretorio`,
     kind: 'comune',
     count: formatNumber(total),
@@ -53,15 +53,15 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     alternates: { canonical: `/comune/${params.slug}` },
     robots: isAggregateIndexable(enriched) ? { index: true, follow: true } : { index: false, follow: true },
     openGraph: {
-      title: `Cantieri edilizi a ${comune.comune} — Italia Cantieri`,
+      title: `Cantieri edilizi ${prepA(comune.comune)} — Italia Cantieri`,
       description,
       url: `/comune/${params.slug}`,
       type: 'website',
-      images: [{ url: ogImage, width: 1200, height: 630, alt: `Cantieri edilizi a ${comune.comune}` }],
+      images: [{ url: ogImage, width: 1200, height: 630, alt: `Cantieri edilizi ${prepA(comune.comune)}` }],
     },
     twitter: {
       card: 'summary_large_image',
-      title: `Cantieri edilizi a ${comune.comune}`,
+      title: `Cantieri edilizi ${prepA(comune.comune)}`,
       description,
       images: [ogImage],
     },
@@ -82,16 +82,16 @@ export default async function ComunePage({ params }: PageProps) {
 
   const comuneFaq = [
     {
-      q: `Quanti cantieri sono attivi a ${meta.comune}?`,
-      a: `Al momento tracciamo ${formatNumber(total)} cantieri pubblici a ${meta.comune}, piu un campione di ${formatNumber(aggregati.totale_aggregato)} cantieri privati visualizzati solo in forma aggregata anonima (k-anonymity 5) a tutela della privacy dei committenti.`,
+      q: `Quanti cantieri sono attivi ${prepA(meta.comune)}?`,
+      a: `Al momento tracciamo ${formatNumber(total)} cantieri pubblici ${prepA(meta.comune)}, più un campione di ${formatNumber(aggregati.totale_aggregato)} cantieri privati visualizzati solo in forma aggregata anonima (k-anonymity 5) a tutela della privacy dei committenti.`,
     },
     {
-      q: `Sono un'impresa: come intercetto i nuovi cantieri a ${meta.comune}?`,
+      q: `Sono un'impresa: come intercetto i nuovi cantieri ${prepA(meta.comune)}?`,
       a: `Per tutela della privacy non pubblichiamo i dati personali di progettisti, titolari o imprese estratti dagli atti. Se sei un'impresa (edile, serramentista, impiantista) iscriviti gratis al network ItaliaProgettisti e ricevi gli avvisi sui nuovi cantieri di ${meta.comune} appena vengono pubblicati, per proporti sui lavori prima degli altri.`,
     },
     {
-      q: `Posso ricevere alert sui nuovi cantieri a ${meta.comune}?`,
-      a: `Si. Con la registrazione gratuita su ItaliaProgettisti puoi attivare notifiche email per ogni nuovo permesso pubblicato a ${meta.comune}, filtrabili per tipologia (PDC, SCIA, CILA) e fascia di importo.`,
+      q: `Posso ricevere alert sui nuovi cantieri ${prepA(meta.comune)}?`,
+      a: `Sì. Con la registrazione gratuita su ItaliaProgettisti puoi attivare notifiche email per ogni nuovo permesso pubblicato ${prepA(meta.comune)}, filtrabili per tipologia (PDC, SCIA, CILA) e fascia di importo.`,
     },
     {
       q: `Da dove arrivano i dati dei cantieri di ${meta.comune}?`,
@@ -114,9 +114,9 @@ export default async function ComunePage({ params }: PageProps) {
             { label: meta.comune },
           ]}
         />
-        <h1 className="heading-section mb-3">Cantieri edilizi a {meta.comune}</h1>
+        <h1 className="heading-section mb-3">Cantieri edilizi {prepA(meta.comune)}</h1>
         <p className="body-default text-muted-foreground mb-10 max-w-2xl">
-          Tutti i permessi di costruire (PDC), SCIA e CILA tracciati a {meta.comune} ({meta.provincia}, {meta.regione}).
+          Tutti i permessi di costruire (PDC), SCIA e CILA tracciati {prepA(meta.comune)} ({meta.provincia}, {meta.regione}).
           Dati ufficiali aggregati da albo pretorio e open data della Pubblica Amministrazione.
         </p>
 
@@ -141,9 +141,9 @@ export default async function ComunePage({ params }: PageProps) {
 
         {/* SEZIONE PUBBLICA (LAYER 1) */}
         <div className="mt-12">
-          <h2 className="text-xl font-semibold mb-1">Permessi e SCIA pubblicati a {meta.comune}</h2>
+          <h2 className="text-xl font-semibold mb-1">Permessi e SCIA pubblicati {prepA(meta.comune)}</h2>
           <p className="text-sm text-muted-foreground mb-6">
-            Schede dettagliate dei cantieri con visibilita pubblica: PDC, SCIA e CILA dichiarati nell&apos;albo pretorio
+            Schede dettagliate dei cantieri con visibilità pubblica: PDC, SCIA e CILA dichiarati nell&apos;albo pretorio
             comunale.
           </p>
           {cantieriPubblici.length === 0 ? (
@@ -167,7 +167,7 @@ export default async function ComunePage({ params }: PageProps) {
               <Lock className="h-5 w-5 text-foreground flex-shrink-0 mt-0.5" />
               <div>
                 <h2 className="text-xl font-semibold mb-1">
-                  Cantieri privati a {meta.comune}: statistiche anonime
+                  Cantieri privati {prepA(meta.comune)}: statistiche anonime
                 </h2>
                 <p className="text-sm text-secondary-text leading-relaxed">
                   Aggregati con tecnica di <strong>k-anonymity 5</strong>: mostriamo solo gruppi con almeno 5 cantieri
@@ -214,7 +214,7 @@ export default async function ComunePage({ params }: PageProps) {
         </div>
 
         <FAQ
-          title={`Domande frequenti sui cantieri a ${meta.comune}`}
+          title={`Domande frequenti sui cantieri ${prepA(meta.comune)}`}
           items={comuneFaq}
         />
       </div>

@@ -2,12 +2,12 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Download, BarChart3, ArrowRight, TrendingUp, MapPin, FileText, Building2 } from 'lucide-react';
 import {
-  getCantieriByRegione,
+  getCantieriRegioniCached,
   getGlobalStats,
   getTipoTitoloDistribution,
   getTopCategorie,
 } from '@/lib/supabase/queries/cantieri';
-import { regioneSlug, formatNumber, formatEuro } from '@/lib/utils';
+import { regioneSlug, formatNumber } from '@/lib/utils';
 import BreadcrumbCantiere from '@/components/cantieri/BreadcrumbCantiere';
 import FAQ from '@/components/cantieri/FAQ';
 import DividerOrnament from '@/components/cantieri/DividerOrnament';
@@ -21,8 +21,6 @@ const ogImage = ogImageUrl({
   title: 'Statistiche cantieri edilizi in Italia',
   subtitle: 'Distribuzione per regione, tipologia (PDC, SCIA, CILA), categorie e importi',
   kind: 'stats',
-  count: '~40.000',
-  label: 'cantieri analizzati',
 });
 
 export const metadata: Metadata = {
@@ -54,7 +52,7 @@ const statsFaq = [
   },
   {
     q: 'Posso scaricare i dati in CSV?',
-    a: 'L\'esportazione completa in CSV con tutti i dati (incluso committenti, importi dettagliati, contatti professionisti) e disponibile con i piani Premium del network ItaliaProgettisti.',
+    a: 'L\'esportazione completa in CSV con tutti i dati (incluso committenti, importi dettagliati, contatti professionisti) è disponibile con i piani Premium del network ItaliaProgettisti.',
   },
   {
     q: 'Quali fonti contribuiscono al campione nazionale?',
@@ -62,25 +60,14 @@ const statsFaq = [
   },
   {
     q: 'Posso ottenere statistiche personalizzate per la mia regione o settore?',
-    a: 'Si. I piani Premium di ItaliaProgettisti includono dashboard intelligence con filtri custom per territorio, categoria, fascia di importo, periodo temporale, e export programmati.',
+    a: 'Sì. I piani Premium di ItaliaProgettisti includono dashboard intelligence con filtri custom per territorio, categoria, fascia di importo, periodo temporale, e export programmati.',
   },
 ];
-
-// Pseudo-sparkline trend (24 settimane stilizzate) per ogni regione — deterministico
-function sparklineFromRegioneSeed(seed: number, len = 12) {
-  const arr: number[] = [];
-  let v = (seed % 30) + 30;
-  for (let i = 0; i < len; i++) {
-    v = Math.max(8, Math.min(100, v + ((seed * (i + 1)) % 11) - 5));
-    arr.push(v);
-  }
-  return arr;
-}
 
 export default async function StatistichePage() {
   const [stats, regioni, tipi, categorie] = await Promise.all([
     getGlobalStats(),
-    getCantieriByRegione(),
+    getCantieriRegioniCached(),
     getTipoTitoloDistribution(),
     getTopCategorie(15),
   ]);
@@ -157,7 +144,7 @@ export default async function StatistichePage() {
       <div className="container-zen">
         {/* HIGH-3 Featured Snippet: risposta DIRETTA in posizione visibile sopra hero */}
         <p className="sr-only">
-          Le statistiche di Italia Cantieri aggregano in tempo reale {formatNumber(stats.totale)} cantieri edilizi pubblicati su {stats.comuni} Comuni e {stats.regioni} regioni italiane. I dati includono permessi di costruire (PDC), SCIA e CILA con tipologia titolo, importo lavori (valore totale tracciato: {formatEuro(stats.importo_totale, { compact: true })}), superficie, categoria di intervento e geolocalizzazione. Fonte: albi pretori comunali e open data della Pubblica Amministrazione italiana, aggiornati ogni ora.
+          Le statistiche di Italia Cantieri aggregano {formatNumber(stats.totale)} cantieri edilizi pubblicati su {formatNumber(stats.comuni)} Comuni e {formatNumber(stats.regioni)} regioni italiane. I dati includono permessi di costruire (PDC), SCIA e CILA con tipologia titolo, superficie, categoria di intervento e geolocalizzazione. Fonte: albi pretori comunali e open data della Pubblica Amministrazione italiana, aggiornati ogni settimana.
         </p>
         <BreadcrumbCantiere steps={[{ label: 'Statistiche nazionali' }]} />
 
@@ -181,12 +168,11 @@ export default async function StatistichePage() {
          * KPI EDITORIAL ROW — 4 numeri grandi inline su linea border-y, tabular-nums.
          * Skill: high-end-visual-design (editorial scale tracking display).
          */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-y-10 gap-x-6 md:gap-x-10 py-10 md:py-14 border-y border-border">
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-y-10 gap-x-6 md:gap-x-10 py-10 md:py-14 border-y border-border">
           {[
             { label: 'Cantieri totali', value: formatNumber(stats.totale) },
-            { label: 'Regioni coperte', value: stats.regioni.toString() },
+            { label: 'Regioni coperte', value: formatNumber(stats.regioni) },
             { label: 'Comuni nel database', value: formatNumber(stats.comuni) },
-            { label: 'Valore opere tracciate', value: formatEuro(stats.importo_totale, { compact: true }) },
           ].map((k) => (
             <div key={k.label} className="flex flex-col">
               <div className="font-black tracking-[-0.05em] leading-[0.88] tabular-nums text-[3rem] md:text-[5rem] text-foreground">
@@ -201,20 +187,20 @@ export default async function StatistichePage() {
 
         {/*
          * BENTO ASIMMETRICO con MICRO-VIZ INLINE:
-         *  - Top regioni FEATURED grande (sparkline bar inline per ogni regione)
+         *  - Top regioni FEATURED grande (barra volume inline per ogni regione)
          *  - Donut conic-gradient: tipologia titolo
          *  - Regione leader card editorial
          *  - Top categorie barre orizzontali editorial
          */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6 auto-rows-min">
-          {/* TILE FEATURED: classifica regioni con sparkline INLINE */}
+          {/* TILE FEATURED: classifica regioni con barra volume INLINE */}
           <article className="md:col-span-2 lg:row-span-2 relative overflow-hidden rounded-[2rem] border border-border bg-card transition-all duration-500 hover:shadow-[0_18px_40px_-18px_rgba(17,17,17,0.18)]">
             <div className="p-8 md:p-10">
               <div className="mb-8 flex items-start justify-between gap-3">
                 <div>
                   <p className="eyebrow eyebrow-dark mb-4">
                     <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-construction" />
-                    Top 20 regioni
+                    Regioni coperte
                   </p>
                   <h2 className="text-2xl md:text-3xl font-black tracking-[-0.035em] leading-tight mb-3">
                     Classifica nazionale<br className="hidden md:block" /> per volume cantieri
@@ -232,8 +218,6 @@ export default async function StatistichePage() {
               <ol className="divide-y divide-border">
                 {regioni.slice(0, 14).map((r, i) => {
                   const pct = (r.cnt / maxRegione) * 100;
-                  const seed = r.regione.charCodeAt(0) + r.regione.length * 7;
-                  const spark = sparklineFromRegioneSeed(seed);
                   return (
                     <li key={r.regione}>
                       <Link
@@ -262,15 +246,6 @@ export default async function StatistichePage() {
                             />
                           </div>
                         </div>
-                        {/* Sparkline mini */}
-                        <span
-                          className="hidden md:flex spark-bar text-foreground/35 group-hover:text-construction transition-colors"
-                          aria-hidden="true"
-                        >
-                          {spark.map((v, k) => (
-                            <i key={k} style={{ height: `${v}%` }} />
-                          ))}
-                        </span>
                         {/* Arrow reveal */}
                         <ArrowRight
                           className="h-3.5 w-3.5 text-muted-foreground/50 opacity-0 -translate-x-1 transition-all duration-300 group-hover:opacity-100 group-hover:translate-x-0 group-hover:text-foreground"
@@ -283,7 +258,7 @@ export default async function StatistichePage() {
               </ol>
 
               <p className="mt-6 text-xs text-muted-foreground">
-                Sparkline indicativa del trend settimanale per la regione. Clicca per esplorare il dettaglio.
+                Distribuzione dei cantieri tracciati per regione. Clicca per esplorare province e Comuni.
               </p>
             </div>
           </article>
@@ -388,7 +363,7 @@ export default async function StatistichePage() {
                 </p>
                 <h2 className="text-xl md:text-2xl font-black tracking-[-0.025em] mb-2">Top 15 categorie di lavori</h2>
                 <p className="text-sm text-muted-foreground">
-                  Le tipologie di intervento piu frequenti nei cantieri italiani.
+                  Le tipologie di intervento più frequenti nei cantieri italiani.
                 </p>
               </div>
               <span className="inline-flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-secondary text-foreground">

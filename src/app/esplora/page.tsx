@@ -1,9 +1,9 @@
 /**
  * /esplora — tool di ricerca filtrabile sulle schede cantiere arricchite
  * (spec §5, Task 13). Mostra SOLO cantieri con scheda_pubblicabile=true (gate
- * 'index'): e' lo show-room del dato strutturato, non un elenco grezzo.
+ * 'index'): è lo show-room del dato strutturato, non un elenco grezzo.
  *
- * Sempre noindex,follow: qualunque combinazione di filtri qui e' una vista
+ * Sempre noindex,follow: qualunque combinazione di filtri qui è una vista
  * dinamica, il valore SEO indicizzabile vive nei silo (geo, mestiere,
  * intervento) generati altrove. /esplora resta raggiungibile e crawlabile
  * (follow) per scoprire le singole schede /cantiere/[slug].
@@ -44,7 +44,7 @@ export async function generateMetadata(): Promise<Metadata> {
     description:
       'Cerca i cantieri edilizi italiani arricchiti con dati strutturati: tipo di intervento, destinazione d\'uso, scala, mestieri coinvolti e valore stimato. Filtra per zona e tipologia.',
     alternates: { canonical: '/esplora' },
-    // Tool di ricerca: qualunque combinazione di filtri e' una vista dinamica,
+    // Tool di ricerca: qualunque combinazione di filtri è una vista dinamica,
     // mai indicizzata. Resta crawlabile (follow) per scoprire le schede.
     robots: { index: false, follow: true },
   };

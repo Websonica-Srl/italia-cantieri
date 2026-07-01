@@ -6,8 +6,8 @@ export const revalidate = 3600;
 
 /**
  * llms.txt (convenzione emergente per agenti AI/LLM crawler): riassunto del
- * sito + elenco delle risorse stabili con URL assoluto e descrizione, cosi'
- * un modello puo' orientarsi senza dover crawlare tutto il sito.
+ * sito + elenco delle risorse stabili con URL assoluto e descrizione, così
+ * un modello può orientarsi senza dover crawlare tutto il sito.
  *
  * Include solo i pillar pubblicati (answerFirst non vuoto): gli stub non
  * hanno ancora copy pronto e restano fuori (coerente con lo shard "pillar"

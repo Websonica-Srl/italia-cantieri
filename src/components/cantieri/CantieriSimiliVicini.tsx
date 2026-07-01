@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { MapPin, ArrowRight } from 'lucide-react';
 import { getCantieri, type Cantiere } from '@/lib/supabase/queries/cantieri';
-import { formatEuro, slugify } from '@/lib/utils';
+import { formatEuro, prepA, slugify } from '@/lib/utils';
 
 interface Props {
   currentSlug: string;
@@ -23,7 +23,7 @@ export default async function CantieriSimiliVicini({ currentSlug, comune }: Prop
       <div className="flex items-end justify-between gap-3 mb-5 flex-wrap">
         <div>
           <h2 id="cantieri-simili-heading" className="text-lg md:text-xl font-bold mb-1">
-            Altri cantieri a {comune}
+            Altri cantieri {prepA(comune)}
           </h2>
           <p className="text-sm text-secondary-text">
             Esplora i lavori più recenti nello stesso Comune.

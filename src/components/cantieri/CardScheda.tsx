@@ -245,10 +245,12 @@ export default function CardScheda({ c }: { c: CantiereScheda }) {
     );
   }
 
-  // Localizzazione (civico SEMPRE mascherato, R7)
-  const civicoMasked = maskCivico(c.civico_norm);
-  const indirizzoParte = c.indirizzo_norm
-    ? `${c.indirizzo_norm}${civicoMasked ? `, ${civicoMasked}` : ''}, `
+  // Localizzazione (civico SEMPRE mascherato, R7). Fallback ai campi grezzi
+  // quando la forma normalizzata non è disponibile.
+  const civicoMasked = maskCivico(c.civico_norm ?? c.civico);
+  const indirizzoNorm = c.indirizzo_norm ?? c.indirizzo;
+  const indirizzoParte = indirizzoNorm
+    ? `${indirizzoNorm}${civicoMasked ? `, ${civicoMasked}` : ''}, `
     : '';
   cards.push(
     <FactCard

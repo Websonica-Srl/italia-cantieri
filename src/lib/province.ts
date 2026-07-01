@@ -5,7 +5,7 @@
  * Le URL del sito usano il nome esteso slugificato (Torino → torino).
  *
  * Coperte tutte le 110 province italiane (post-soppressione 2015,
- * include citta metropolitane e province autonome).
+ * include città metropolitane e province autonome).
  */
 
 export const PROVINCIA_SLUG_TO_CODE: Record<string, string> = {

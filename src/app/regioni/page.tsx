@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { MapPin, ArrowRight } from 'lucide-react';
-import { getCantieriByRegione } from '@/lib/supabase/queries/cantieri';
+import { getCantieriRegioniCached } from '@/lib/supabase/queries/cantieri';
 import { regioneSlug, formatNumber } from '@/lib/utils';
 import BreadcrumbCantiere from '@/components/cantieri/BreadcrumbCantiere';
 import FAQ from '@/components/cantieri/FAQ';
@@ -18,20 +18,20 @@ export const metadata: Metadata = {
 const regioniFaq = [
   {
     q: 'Come e organizzato il database per regione?',
-    a: 'Per ogni regione mostriamo il numero totale di cantieri tracciati, la distribuzione per provincia e per Comune, le categorie di lavori piu frequenti e i permessi pubblicati piu di recente. Clicca su una regione per accedere alla pagina dedicata.',
+    a: 'Per ogni regione mostriamo il numero totale di cantieri tracciati, la distribuzione per provincia e per Comune, le categorie di lavori più frequenti e i permessi pubblicati più di recente. Clicca su una regione per accedere alla pagina dedicata.',
   },
   {
-    q: 'Perche alcune regioni hanno piu cantieri di altre?',
-    a: 'Il numero di cantieri tracciati dipende da due fattori: il volume reale di attivita edilizia e il livello di apertura dei dati pubblici della PA locale. Stiamo lavorando per portare ogni regione a copertura completa, Comune per Comune.',
+    q: 'Perché alcune regioni hanno più cantieri di altre?',
+    a: 'Il numero di cantieri tracciati dipende da due fattori: il volume reale di attività edilizia e il livello di apertura dei dati pubblici della PA locale. Stiamo lavorando per portare ogni regione a copertura completa, Comune per Comune.',
   },
   {
     q: 'Posso ricevere alert sui nuovi cantieri della mia regione?',
-    a: 'Si. Iscrivendoti gratuitamente al network ItaliaProgettisti puoi attivare notifiche email sui nuovi cantieri pubblicati nella tua regione, provincia o Comune di interesse. Configurabili anche per tipologia di lavoro e fascia di importo.',
+    a: 'Sì. Iscrivendoti gratuitamente al network ItaliaProgettisti puoi attivare notifiche email sui nuovi cantieri pubblicati nella tua regione, provincia o Comune di interesse. Configurabili anche per tipologia di lavoro e fascia di importo.',
   },
 ];
 
 export default async function RegioniPage() {
-  const regioni = await getCantieriByRegione();
+  const regioni = await getCantieriRegioniCached();
   const totale = regioni.reduce((s, r) => s + r.cnt, 0);
 
   return (

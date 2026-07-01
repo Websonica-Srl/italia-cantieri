@@ -20,7 +20,7 @@ const CARDS = [
     icon: DraftingCompass,
     title: 'Studi & professionisti',
     pitch:
-      'Trova committenti nel momento piu caldo: quando il permesso e appena stato rilasciato e il cantiere sta per partire.',
+      'Trova committenti nel momento più caldo: quando il permesso è appena stato rilasciato e il cantiere sta per partire.',
     bullets: [
       { icon: FileSearch, label: 'Cantieri in fase progettuale' },
       { icon: BellRing, label: 'Profilo studio + portfolio digitale' },
@@ -63,7 +63,7 @@ export default function IntentSplitCards() {
             id="intent-cards-heading"
             className="font-black tracking-[-0.04em] leading-[0.92] text-[2.5rem] md:text-[4rem] mb-6 text-balance"
           >
-            Per chi e<br className="hidden sm:block" /> Italia Cantieri?
+            Per chi è<br className="hidden sm:block" /> Italia Cantieri?
           </h2>
           <p className="text-lg md:text-xl text-muted-foreground leading-relaxed text-pretty max-w-2xl">
             Scegli il tuo punto di partenza. Chiunque lavora nell&apos;edilizia trova

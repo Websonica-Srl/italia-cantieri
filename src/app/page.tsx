@@ -8,7 +8,7 @@ import IntentSplitCards from '@/components/cantieri/IntentSplitCards';
 import SectionWrapper from '@/components/cantieri/SectionWrapper';
 import {
   getCantieri,
-  getCantieriByRegione,
+  getCantieriRegioniCached,
   getGlobalStats,
 } from '@/lib/supabase/queries/cantieri';
 import { regioneSlug, formatNumber } from '@/lib/utils';
@@ -19,12 +19,12 @@ export const revalidate = 3600; // ISR ogni ora
 export const metadata: Metadata = {
   title: 'Italia Cantieri — Sai chi lavora dove | Cantieri edilizi e permessi italiani',
   description:
-    'Permessi, cantieri e opere sul territorio, con il dato che conta: chi sta gia lavorando li, con che frequenza e dove c\'e spazio per te. Oltre 40.000 cantieri tracciati da fonti pubbliche (albi pretori, open data PA). Consultazione gratuita.',
+    'Permessi, cantieri e opere sul territorio, con il dato che conta: chi sta già lavorando lì, con che frequenza e dove c\'è spazio per te. Decine di migliaia di cantieri tracciati da fonti pubbliche (albi pretori, open data PA). Consultazione gratuita.',
   alternates: { canonical: '/' },
   openGraph: {
     title: 'Italia Cantieri — Sai chi lavora dove in Italia',
     description:
-      'Database pubblico di cantieri edilizi, permessi di costruire (PDC, SCIA, CILA) e bandi di gara italiani. Aggiornato ogni giorno da albi pretori e open data PA.',
+      'Database pubblico di cantieri edilizi, permessi di costruire (PDC, SCIA, CILA) e bandi di gara italiani. Aggiornato ogni settimana da albi pretori e open data PA.',
     url: '/',
     type: 'website',
     images: [
@@ -33,8 +33,6 @@ export const metadata: Metadata = {
           title: 'Sai chi lavora dove in Italia',
           subtitle: 'Database pubblico di cantieri edilizi, PDC, SCIA, CILA e bandi di gara',
           kind: 'generic',
-          count: '~40.000',
-          label: 'cantieri tracciati',
         }),
         width: 1200,
         height: 630,
@@ -46,14 +44,12 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Italia Cantieri — Sai chi lavora dove in Italia',
     description:
-      'Database pubblico di cantieri edilizi italiani: PDC, SCIA, CILA e bandi pubblici aggiornati ogni giorno.',
+      'Database pubblico di cantieri edilizi italiani: PDC, SCIA, CILA e bandi pubblici aggiornati ogni settimana.',
     images: [
       ogImageUrl({
         title: 'Sai chi lavora dove in Italia',
         subtitle: 'Database pubblico di cantieri edilizi e bandi di gara',
         kind: 'generic',
-        count: '~24.748',
-        label: 'cantieri tracciati',
       }),
     ],
   },
@@ -70,7 +66,7 @@ const homeHowTo = howToLd(
     },
     {
       name: 'Capisci il segnale',
-      text: 'Per ogni cantiere: tipo di titolo (PDC, SCIA, CILA), importo lavori se dichiarato, categoria e zona. Tre permessi vicini della stessa tipologia ti dicono che li c\'e movimento.',
+      text: 'Per ogni cantiere: tipo di titolo (PDC, SCIA, CILA), importo lavori se dichiarato, categoria e zona. Tre permessi vicini della stessa tipologia ti dicono che lì c\'è movimento.',
     },
     {
       name: 'Arriva prima degli altri',
@@ -90,15 +86,15 @@ const homepageFaq = [
   },
   {
     q: 'Costa?',
-    a: 'Consultare i cantieri pubblici e gratis. Gli strumenti avanzati — radar sui nuovi permessi della tua zona, statistiche di dettaglio, profili professionali collegati — sono inclusi nei piani della rete ItaliaProgettisti.',
+    a: 'Consultare i cantieri pubblici è gratis. Gli strumenti avanzati (radar sui nuovi permessi della tua zona, statistiche di dettaglio, profili professionali collegati) sono inclusi nei piani della rete ItaliaProgettisti.',
   },
   {
     q: 'Cosa significano PDC, SCIA e CILA?',
-    a: 'PDC e il Permesso di Costruire (interventi rilevanti, autorizzazione preventiva). SCIA e la Segnalazione Certificata di Inizio Attivita (interventi minori, asseverata). CILA e la Comunicazione Inizio Lavori Asseverata (manutenzione straordinaria con asseverazione tecnica).',
+    a: 'PDC è il Permesso di Costruire (interventi rilevanti, autorizzazione preventiva). SCIA è la Segnalazione Certificata di Inizio Attività (interventi minori, asseverata). CILA è la Comunicazione Inizio Lavori Asseverata (manutenzione straordinaria con asseverazione tecnica).',
   },
   {
     q: 'Sono il titolare di un cantiere. Posso chiedere la rimozione?',
-    a: 'Si. In qualsiasi momento puoi richiedere opt-out o rettifica. Trovi il modulo in ogni scheda cantiere; valutiamo entro 30 giorni come previsto dal GDPR (Art. 15-22).',
+    a: 'Sì. In qualsiasi momento puoi richiedere opt-out o rettifica. Trovi il modulo in ogni scheda cantiere; valutiamo entro 30 giorni come previsto dal GDPR (Art. 15-22).',
   },
 ];
 
@@ -106,14 +102,12 @@ export default async function HomePage() {
   const [stats, recenti, regioni] = await Promise.all([
     getGlobalStats(),
     getCantieri({ limit: 6, orderBy: 'data_pubblicazione', orderDirection: 'desc' }),
-    getCantieriByRegione(),
+    getCantieriRegioniCached(),
   ]);
 
-  // Solo regioni con cantieri reali: filtro placeholder "Italia" + count > 0.
-  // Niente card "in arrivo": mostriamo solo quello che esiste davvero.
-  const regioniReali = regioni.filter(
-    (r) => r.regione && r.regione.toLowerCase() !== 'italia' && r.cnt > 0,
-  );
+  // La cache stats esclude già il placeholder "Italia" e i count a zero:
+  // mostriamo solo quello che esiste davvero, niente card "in arrivo".
+  const regioniReali = regioni;
 
   return (
     <>
@@ -162,8 +156,8 @@ export default async function HomePage() {
             <p
               className="mt-10 md:mt-14 text-lg md:text-2xl font-light leading-relaxed text-secondary-text max-w-3xl mx-auto text-pretty"
             >
-              Permessi, cantieri e opere sul territorio, con il dato che conta: chi sta gia
-              lavorando li, con che frequenza, e dove c&apos;e spazio per te. Circa{' '}
+              Permessi, cantieri e opere sul territorio, con il dato che conta: chi sta già
+              lavorando lì, con che frequenza, e dove c&apos;è spazio per te. Circa{' '}
               {formatNumber(stats.totale)} cantieri tracciati da fonti pubbliche.
             </p>
 
@@ -171,7 +165,7 @@ export default async function HomePage() {
             <div className="mt-12 md:mt-16 max-w-2xl mx-auto">
               <SearchComune placeholder="Cerca il tuo Comune (es. Alessandria, Bologna, Moncalieri)..." />
               <p className="mt-5 text-sm text-muted-foreground">
-                Comuni piu coperti:{' '}
+                Comuni più coperti:{' '}
                 <Link href="/comune/alessandria" className="text-foreground underline-offset-4 hover:underline transition-colors">Alessandria</Link>
                 {' · '}
                 <Link href="/comune/moncalieri" className="text-foreground underline-offset-4 hover:underline transition-colors">Moncalieri</Link>
@@ -203,8 +197,8 @@ export default async function HomePage() {
             <div className="mt-20 md:mt-24 grid grid-cols-2 md:grid-cols-4 gap-y-10 gap-x-8 md:gap-x-12 max-w-5xl mx-auto pt-12 border-t border-border">
               {[
                 { value: formatNumber(stats.totale), label: 'Cantieri tracciati' },
-                { value: stats.regioni.toString(), label: 'Regioni coperte' },
-                { value: stats.comuni.toString(), label: 'Comuni coperti' },
+                { value: formatNumber(stats.regioni), label: 'Regioni coperte' },
+                { value: formatNumber(stats.comuni), label: 'Comuni coperti' },
                 { value: 'GDPR', label: 'Solo dati pubblici' },
               ].map((k) => (
                 <div key={k.label} className="text-center">
@@ -309,7 +303,7 @@ export default async function HomePage() {
               step: '02',
               title: 'Capisci il segnale',
               body:
-                'Per ogni cantiere: tipo di titolo (PDC, SCIA, CILA), importo lavori se dichiarato, categoria e zona. Tre permessi vicini della stessa tipologia ti dicono che li c\'e movimento.',
+                'Per ogni cantiere: tipo di titolo (PDC, SCIA, CILA), importo lavori se dichiarato, categoria e zona. Tre permessi vicini della stessa tipologia ti dicono che lì c\'è movimento.',
             },
             {
               step: '03',

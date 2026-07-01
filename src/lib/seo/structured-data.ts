@@ -98,7 +98,7 @@ export function itemListLd(
 /**
  * Schema.org ConstructionProject (type diretto per AI engines), scheda-driven.
  * Innesta i fragments strutturati (additionalProperty/estimatedCost/about) di
- * cantieri-core quando la scheda arricchita e' disponibile.
+ * cantieri-core quando la scheda arricchita è disponibile.
  * R7: mai il civico esatto nel markup pubblico — solo indirizzo_norm + localita'.
  */
 export function cantiereLd(c: CantiereScheda) {

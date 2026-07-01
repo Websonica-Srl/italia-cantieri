@@ -37,7 +37,7 @@ export default function Footer() {
             </div>
             <p className="text-lg md:text-xl text-background/85 leading-relaxed max-w-md text-pretty">
               Sai prima dove si lavora in Italia. Cantieri edilizi pubblici e bandi di
-              gara aggregati da fonti ufficiali, aggiornati ogni giorno.
+              gara aggregati da fonti ufficiali, aggiornati ogni settimana.
             </p>
             <div className="mt-8 space-y-2.5">
               <p className="text-xs text-background/55 flex items-center gap-2">

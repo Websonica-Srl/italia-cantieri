@@ -7,7 +7,7 @@
  *
  * Il registry indicizza i file in src/content/pillars/*.ts per kind:slug.
  * Uno stub con answerFirst='' esiste nel registry ma NON va pubblicato:
- * e' la route (Task 10+) a mostrare 404/noindex finche' il copy non e' pronto.
+ * è la route (Task 10+) a mostrare 404/noindex finche' il copy non è pronto.
  */
 import { INTERVENTO_META, type InterventoCategoria } from '@websonica/cantieri-core';
 import type { TipoTitolo } from '@websonica/cantieri-core';

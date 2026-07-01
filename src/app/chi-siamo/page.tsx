@@ -21,19 +21,19 @@ export const metadata: Metadata = {
 const chiSiamoFaq = [
   {
     q: 'Chi gestisce Italia Cantieri?',
-    a: 'Italia Cantieri e un servizio editoriale di AZIENDA 365 SRL (P.IVA 02724340746), parte del network ItaliaProgettisti che dal 2024 connette progettisti, studi e imprese edili in tutta Italia.',
+    a: 'Italia Cantieri è un servizio editoriale di AZIENDA 365 SRL (P.IVA 02724340746), parte del network ItaliaProgettisti che dal 2024 connette progettisti, studi e imprese edili in tutta Italia.',
   },
   {
-    q: 'Perche e nato Italia Cantieri?',
+    q: 'Perché è nato Italia Cantieri?',
     a: 'I dati sui cantieri sono pubblici per legge, ma frammentati su centinaia di portali comunali con formati diversi. Abbiamo creato uno strumento unico che li unifica, normalizza e rende navigabili a tutti: progettisti, imprese, committenti, ricercatori e cittadini.',
   },
   {
     q: 'Italia Cantieri vende dati a terzi?',
-    a: 'No. I dati pubblici restano accessibili gratuitamente sul sito. Il modello di business e basato sulla rete di abbonamenti professionali al network ItaliaProgettisti, dove i professionisti pagano per visibilita, alert e dashboard avanzate.',
+    a: 'No. I dati pubblici restano accessibili gratuitamente sul sito. Il modello di business è basato sulla rete di abbonamenti professionali al network ItaliaProgettisti, dove i professionisti pagano per visibilità, alert e dashboard avanzate.',
   },
   {
     q: 'Posso collaborare o segnalare un Comune da aggiungere?',
-    a: 'Si. Scrivici a info@italiacantieri.it: integriamo nuovi Comuni quando i dati sono accessibili tramite API o albo pretorio digitale. Ogni nuova fonte importata e gratuita per gli utenti.',
+    a: 'Si. Scrivici a info@italiacantieri.it: integriamo nuovi Comuni quando i dati sono accessibili tramite API o albo pretorio digitale. Ogni nuova fonte importata è gratuita per gli utenti.',
   },
 ];
 
@@ -43,11 +43,11 @@ export default function ChiSiamoPage() {
       <div className="container-zen max-w-3xl">
         <BreadcrumbCantiere steps={[{ label: 'Chi siamo' }]} />
         <h1 className="heading-section mb-4">
-          Vediamo il lavoro del territorio. Lo trasformiamo in opportunita.
+          Vediamo il lavoro del territorio. Lo trasformiamo in opportunità.
         </h1>
         <p className="body-large text-muted-foreground mb-10">
-          {siteConfig.name} e l&apos;aggregatore pubblico dei cantieri edilizi italiani: un servizio editoriale di{' '}
-          {siteConfig.companyName} che raccoglie, normalizza e rende navigabili i dati gia di dominio pubblico,
+          {siteConfig.name} è l&apos;aggregatore pubblico dei cantieri edilizi italiani: un servizio editoriale di{' '}
+          {siteConfig.companyName} che raccoglie, normalizza e rende navigabili i dati già di dominio pubblico,
           frammentati fra centinaia di Comuni e portali regionali.
         </p>
 
@@ -61,17 +61,17 @@ export default function ChiSiamoPage() {
         <div className="prose prose-neutral max-w-none mb-12">
           <p>
             Crediamo che la <strong>trasparenza pubblica</strong> sia un pilastro del settore edilizio. Progettisti,
-            imprese, committenti e cittadini hanno diritto a un accesso facile alle informazioni che gia esistono nel
+            imprese, committenti e cittadini hanno diritto a un accesso facile alle informazioni che già esistono nel
             dominio pubblico, ma che oggi richiedono ore di navigazione su decine di portali comunali eterogenei.
           </p>
           <p>
             Italia Cantieri risolve questo problema: <strong>un solo posto, dati normalizzati, ricerca per Comune</strong>,
-            mappe interattive e schede dettagliate. Tutto gratuito, sempre.
+            mappe interattive e schede dettagliate. La consultazione dei dati pubblici è gratuita.
           </p>
           <p>
-            Per chi vuole andare oltre la consultazione e trasformare l&apos;informazione in opportunita di business,
-            il network <strong>ItaliaProgettisti</strong> offre alert email, contatti diretti dei professionisti
-            collegati ai cantieri, esportazioni CSV e dashboard intelligence.
+            Per chi vuole andare oltre la consultazione e trasformare l&apos;informazione in opportunità di business,
+            il network <strong>ItaliaProgettisti</strong> offre alert email, il link diretto all&apos;atto pubblico
+            e ai soggetti dichiarati nel cantiere, esportazioni CSV e dashboard intelligence.
           </p>
         </div>
 
@@ -104,7 +104,7 @@ export default function ChiSiamoPage() {
           <div className="rounded-2xl border border-border bg-white p-5">
             <h3 className="font-semibold mb-2">Progettisti e studi</h3>
             <p className="text-sm text-secondary-text">
-              Intercetta i cantieri prima dei competitor, individua opportunita di collaborazione tecnica e farti
+              Intercetta i cantieri prima dei competitor, individua opportunità di collaborazione tecnica e farti
               trovare dai committenti.
             </p>
           </div>

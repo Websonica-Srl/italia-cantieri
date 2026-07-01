@@ -46,11 +46,11 @@ const faqs = [
   },
   {
     q: 'Posso richiedere la rimozione di un cantiere che mi riguarda?',
-    a: "Si. Ai sensi degli Art. 15-22 GDPR puoi esercitare i diritti di accesso, rettifica, cancellazione, limitazione e opposizione. Scrivi al nostro DPO con allegato documento d'identita: la richiesta viene presa in carico entro 30 giorni. Trovi il modulo direttamente in ogni scheda cantiere.",
+    a: "Sì. Ai sensi degli Art. 15-22 GDPR puoi esercitare i diritti di accesso, rettifica, cancellazione, limitazione e opposizione. Scrivi al nostro DPO con allegato documento d'identità: la richiesta viene presa in carico entro 30 giorni. Trovi il modulo direttamente in ogni scheda cantiere.",
   },
   {
     q: 'Pubblicate i nomi dei committenti privati?',
-    a: "No, mai. Pubblichiamo solo dati LAYER 1 ufficiali (riferimenti protocollo, indirizzo, tipologia titolo, importo) per cantieri con visibilita pubblica gia presenti nell'albo pretorio. I cantieri privati appaiono solo in forma aggregata anonima (k-anonymity 5).",
+    a: "No, mai. Pubblichiamo solo dati LAYER 1 ufficiali (riferimenti protocollo, indirizzo, tipologia titolo, importo) per cantieri con visibilità pubblica già presenti nell'albo pretorio. I cantieri privati appaiono solo in forma aggregata anonima (k-anonymity 5).",
   },
   {
     q: 'Come vengono protetti i miei dati di navigazione sul sito?',
@@ -111,13 +111,13 @@ export default function ComeTrattiamoIDatiPage() {
           <h2 className="text-2xl font-bold mb-6">Cos&apos;e Italia Cantieri</h2>
           <div className="prose prose-neutral max-w-none mb-12">
             <p>
-              Italia Cantieri e un aggregatore pubblico di informazioni sui cantieri edilizi italiani. Raccogliamo,
+              Italia Cantieri è un aggregatore pubblico di informazioni sui cantieri edilizi italiani. Raccogliamo,
               normalizziamo e pubblichiamo dati provenienti esclusivamente da fonti pubbliche, con l&apos;obiettivo di
-              rendere accessibili e navigabili informazioni che sono gia di dominio pubblico ma frammentate fra
+              rendere accessibili e navigabili informazioni che sono già di dominio pubblico ma frammentate fra
               centinaia di portali comunali e regionali.
             </p>
             <p>
-              Il servizio e gestito da <strong>{siteConfig.companyName}</strong> ({siteConfig.companyPiva}) e fa parte
+              Il servizio è gestito da <strong>{siteConfig.companyName}</strong> ({siteConfig.companyPiva}) e fa parte
               del network ItaliaProgettisti.
             </p>
           </div>
@@ -130,11 +130,11 @@ export default function ComeTrattiamoIDatiPage() {
               <li><strong>Rettifica</strong> (Art. 16): correzione di dati inesatti o incompleti.</li>
               <li><strong>Cancellazione</strong> (Art. 17 — diritto all&apos;oblio).</li>
               <li><strong>Limitazione</strong> (Art. 18): sospensione temporanea del trattamento.</li>
-              <li><strong>Portabilita</strong> (Art. 20): ricezione dei dati in formato strutturato.</li>
+              <li><strong>Portabilità</strong> (Art. 20): ricezione dei dati in formato strutturato.</li>
               <li><strong>Opposizione</strong> (Art. 21): contestazione del legittimo interesse.</li>
             </ul>
             <p>
-              Per esercitare uno o piu diritti, contatta il nostro DPO con allegato documento d&apos;identita. Risposta
+              Per esercitare uno o più diritti, contatta il nostro DPO con allegato documento d&apos;identità. Risposta
               garantita entro 30 giorni dalla ricezione.
             </p>
           </div>

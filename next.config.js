@@ -34,11 +34,15 @@ const nextConfig = {
       } catch {}
     }
 
-    // Privacy unica: la vecchia pagina "come trattiamo i dati" confluisce nella Privacy Policy.
-    redirects.push(
-      { source: '/come-trattiamo-i-dati', destination: '/legal/privacy', permanent: true },
-      { source: '/come-trattiamo-i-dati/:path*', destination: '/legal/privacy', permanent: true },
-    );
+    // Percorso gerarchico /:regione/:provincia/:comune → pagina Comune reale
+    // (la gerarchia si ferma alla provincia, quindi il 3° livello altrimenti 404).
+    // Escludo i prefissi riservati e le dir top-level per non intercettare API/route reali.
+    redirects.push({
+      source:
+        '/:regione((?!api|api-pubbliche|bandi|bando|cantiere|cantieri|chi-siamo|come-trattiamo-i-dati|comune|contatti|esplora|glossario|guide|iscriviti|lavori|legal|per-pubbliche-amministrazioni|regioni|statistiche|_next)[^/]+)/:provincia/:comune',
+      destination: '/comune/:comune',
+      permanent: false,
+    });
 
     return redirects;
   },
