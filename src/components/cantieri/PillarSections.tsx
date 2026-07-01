@@ -6,22 +6,23 @@
  *  1. h1
  *  2. answer-first in un box citabile (GEO/AEO: risposta diretta per AI Overviews/Perplexity/ChatGPT)
  *  3. sections[] come <section><h2>...
- *  4. FAQ (componente esistente, con JSON-LD FAQPage)
- *  5. correlati[] come chip-link
- *
- * NB: nessun blocco-dato (statistiche/numeri) qui: quello e' specifico dei pillar
- * intervento e arriva nel Task 10.
+ *  4. children (slot opzionale, es. blocco-dato dei pillar intervento, Task 10)
+ *  5. FAQ (componente esistente, con JSON-LD FAQPage)
+ *  6. correlati[] come chip-link
  */
 import Link from 'next/link';
 import { Sparkles } from 'lucide-react';
+import type { ReactNode } from 'react';
 import FAQ from '@/components/cantieri/FAQ';
 import type { PillarContent } from '@/lib/content/pillars';
 
 interface Props {
   pillar: PillarContent;
+  /** Slot opzionale renderizzato dopo le sections e prima della FAQ (es. blocco-dato). */
+  children?: ReactNode;
 }
 
-export default function PillarSections({ pillar }: Props) {
+export default function PillarSections({ pillar, children }: Props) {
   return (
     <div className="container-zen section-spacing">
       <header className="max-w-3xl mb-10">
@@ -49,6 +50,8 @@ export default function PillarSections({ pillar }: Props) {
           ))}
         </div>
       )}
+
+      {children}
 
       {pillar.faq.length > 0 && <FAQ items={pillar.faq} />}
 
