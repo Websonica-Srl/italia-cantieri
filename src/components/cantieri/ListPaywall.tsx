@@ -1,5 +1,6 @@
-'use client';
-
+// Server Component: nessuna interattivita' client (blur = CSS, CTA = link).
+// NON marcare 'use client': la pagina server /esplora passa renderCard/keyOf
+// (funzioni) come props, cosa vietata verso i Client Component.
 import { Lock, ArrowRight } from 'lucide-react';
 import { formatNumber, hubRegisterUrl } from '@/lib/utils';
 
