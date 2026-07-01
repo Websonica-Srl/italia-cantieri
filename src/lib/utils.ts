@@ -5,6 +5,36 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+/**
+ * Costruisce l'URL di registrazione HUB (ItaliaProgettisti) trasportando il
+ * contesto del funnel (intent, cantiere, geo) e le UTM di attribuzione.
+ * R7: il satellite e' zero-PII/zero-stato — ogni CTA di conversione punta
+ * qui, mai a un flusso di signup locale.
+ */
+export function hubRegisterUrl(
+  opts: {
+    intent?: string;
+    cantiere?: string;
+    comune?: string;
+    provincia?: string;
+    regione?: string;
+    intervento?: string;
+    campaign?: string;
+  } = {},
+): string {
+  const qs = new URLSearchParams();
+  qs.set('utm_source', 'italiacantieri');
+  qs.set('utm_medium', 'referral');
+  qs.set('utm_campaign', opts.campaign || 'cantieri_funnel');
+  if (opts.intent) qs.set('intent', opts.intent);
+  if (opts.cantiere) qs.set('cantiere', opts.cantiere);
+  if (opts.comune) qs.set('comune', opts.comune);
+  if (opts.provincia) qs.set('provincia', opts.provincia);
+  if (opts.regione) qs.set('regione', opts.regione);
+  if (opts.intervento) qs.set('intervento', opts.intervento);
+  return `https://www.italiaprogettisti.com/register?${qs.toString()}`;
+}
+
 export function formatDate(dateStr: string | null | undefined): string {
   if (!dateStr) return '';
   return new Date(dateStr).toLocaleDateString('it-IT', {
