@@ -30,7 +30,7 @@ const pillar: PillarContent = {
     {
       heading: "L'iter generale delle pratiche edilizie",
       body:
-        "Tutte le pratiche edilizie soggette a comunicazione o autorizzazione si presentano allo Sportello Unico Edilizia (SUE) del Comune competente, generalmente per via telematica, a cura di un tecnico abilitato che redige la relazione tecnica e gli elaborati di progetto. Le tempistiche cambiano molto in base al titolo: la CILA non ha termini di attesa (i lavori iniziano subito dopo la presentazione), la SCIA ha un termine di 30 giorni entro cui il Comune puo' intervenire (60 giorni per interventi in zone vincolate), il Permesso di Costruire richiede tipicamente 60-90 giorni per il rilascio, salvo proroghe. A conclusione dei lavori, per tutti i titoli e' generalmente richiesta la presentazione della fine lavori e, se previsto, dell'agibilita', oltre all'eventuale aggiornamento catastale. Presentare la pratica sbagliata, o non presentarla affatto quando dovuta, espone a sanzioni che vanno da importi pecuniari fissi fino, nei casi piu' gravi, alla demolizione dell'opera abusiva.",
+        "Tutte le pratiche edilizie soggette a comunicazione o autorizzazione si presentano allo Sportello Unico Edilizia (SUE) del Comune competente, generalmente per via telematica, a cura di un tecnico abilitato che redige la relazione tecnica e gli elaborati di progetto. Le tempistiche cambiano molto in base al titolo: la CILA non ha termini di attesa (i lavori iniziano subito dopo la presentazione), la SCIA ha un termine di controllo di 30 giorni perentori (art. 19 comma 6-bis L. 241/1990), fermo restando che gli immobili vincolati richiedono un'autorizzazione paesaggistica o storica separata e preliminare, il Permesso di Costruire richiede tipicamente 60-90 giorni per il rilascio, salvo proroghe. A conclusione dei lavori, per tutti i titoli e' generalmente richiesta la presentazione della fine lavori e, se previsto, dell'agibilita', oltre all'eventuale aggiornamento catastale. Presentare la pratica sbagliata, o non presentarla affatto quando dovuta, espone a sanzioni che vanno da importi pecuniari fissi fino, nei casi piu' gravi, alla demolizione dell'opera abusiva.",
     },
   ],
   faq: [
@@ -52,7 +52,7 @@ const pillar: PillarContent = {
     },
     {
       q: 'Quanto tempo ci vuole per ottenere un titolo edilizio?',
-      a: "Varia molto: la CILA non ha termini di attesa (si inizia subito), la SCIA prevede un termine di controllo di 30 giorni (60 in zone vincolate), il Permesso di Costruire richiede tipicamente 60-90 giorni per il rilascio, salvo proroghe previste dalla normativa.",
+      a: "Varia molto: la CILA non ha termini di attesa (si inizia subito), la SCIA prevede un termine di controllo di 30 giorni perentori (le eventuali autorizzazioni per immobili vincolati sono separate e preliminari), il Permesso di Costruire richiede tipicamente 60-90 giorni per il rilascio, salvo proroghe previste dalla normativa.",
     },
   ],
   correlati: [
