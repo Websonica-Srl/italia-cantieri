@@ -120,9 +120,19 @@ export async function getInterventoAggregato(intervento: InterventoCategoria): P
 
 export async function getIndexableCantieriSlugs(limit = 5000): Promise<{ slug: string; updated_at: string }[]> {
   const supabase: any = createServerClient();
-  const { data, error } = await applyGate(
-    supabase.from('cantieri_pubblici_attivi').select('slug, updated_at'), 'index',
-  ).order('updated_at', { ascending: false }).limit(limit);
-  if (error) { console.error('[cantieri-scheda] idxSlugs', error.message); return []; }
-  return (data as any[]) || [];
+  // PostgREST cappa a 1000 righe: pagino con .range() per prendere tutte le
+  // foglie index-gate (oggi ~2.700, in crescita col backfill F2) fino a `limit`.
+  const pageSize = 1000;
+  const out: { slug: string; updated_at: string }[] = [];
+  for (let from = 0; from < limit; from += pageSize) {
+    const to = Math.min(from + pageSize, limit) - 1;
+    const { data, error } = await applyGate(
+      supabase.from('cantieri_pubblici_attivi').select('slug, updated_at'), 'index',
+    ).order('updated_at', { ascending: false }).range(from, to);
+    if (error) { console.error('[cantieri-scheda] idxSlugs', error.message); break; }
+    const rows = (data as { slug: string; updated_at: string }[]) || [];
+    out.push(...rows);
+    if (rows.length < pageSize) break;
+  }
+  return out;
 }
