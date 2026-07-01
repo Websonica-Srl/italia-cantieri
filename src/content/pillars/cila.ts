@@ -45,7 +45,7 @@ const pillar: PillarContent = {
     },
     {
       q: 'CILA e SCIA sono la stessa cosa?',
-      a: 'No. La CILA copre interventi piu\' semplici (manutenzione straordinaria non strutturale) e non richiede il termine di controllo di 30-60 giorni previsto invece dalla SCIA, che si usa per interventi piu\' incisivi come la ristrutturazione "leggera" o il restauro.',
+      a: 'No. La CILA copre interventi piu\' semplici (manutenzione straordinaria non strutturale) e non richiede il termine di controllo di 30 giorni previsto invece dalla SCIA, che si usa per interventi piu\' incisivi come la ristrutturazione "leggera" o il restauro.',
     },
     {
       q: 'Serve un progetto vero e proprio per la CILA?',

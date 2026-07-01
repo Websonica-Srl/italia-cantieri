@@ -16,7 +16,7 @@ const pillar: PillarContent = {
     {
       heading: 'SCIA o CILA: la tabella comparativa',
       body:
-        'Il modo piu\' rapido per capire quale titolo serve e\' guardare cosa cambia nell\'edificio con l\'intervento previsto.\n\n| Aspetto | CILA | SCIA |\n|---|---|---|\n| Interventi tipici | Manutenzione straordinaria non strutturale: impianti, infissi, tramezzi non portanti, controsoffitti | Interventi piu\' rilevanti: ristrutturazione leggera, opere su parti strutturali, restauro e risanamento conservativo, frazionamenti |\n| Parti strutturali | Non coinvolte | Puo\' coinvolgerle, senza modificare sagoma o volume |\n| Asseverazione tecnica | Si\', obbligatoria | Si\', obbligatoria |\n| Attesa prima dei lavori | Nessuna, si inizia lo stesso giorno | Di norma nessuna attesa per iniziare, ma il Comune ha un termine di controllo successivo (in genere 30-60 giorni, salvo diverse previsioni comunali) |\n| Riferimento normativo | Art. 6-bis DPR 380/2001 | Art. 22 DPR 380/2001 |\n\nIn sintesi: se l\'intervento non tocca la struttura dell\'edificio, di norma basta la CILA. Se coinvolge le parti strutturali, oppure riguarda un restauro o un frazionamento, serve tipicamente la SCIA. In caso di dubbio, la scelta corretta va sempre verificata con un tecnico abilitato, perche\' dipende anche dal regolamento edilizio del Comune competente.',
+        'Il modo piu\' rapido per capire quale titolo serve e\' guardare cosa cambia nell\'edificio con l\'intervento previsto.\n\n| Aspetto | CILA | SCIA |\n|---|---|---|\n| Interventi tipici | Manutenzione straordinaria non strutturale: impianti, infissi, tramezzi non portanti, controsoffitti | Interventi piu\' rilevanti: ristrutturazione leggera, opere su parti strutturali, restauro e risanamento conservativo, frazionamenti |\n| Parti strutturali | Non coinvolte | Puo\' coinvolgerle, senza modificare sagoma o volume |\n| Asseverazione tecnica | Si\', obbligatoria | Si\', obbligatoria |\n| Attesa prima dei lavori | Nessuna, si inizia lo stesso giorno | Di norma nessuna attesa per iniziare, ma il Comune ha un termine di controllo successivo di 30 giorni (termine perentorio, art. 19 comma 6-bis L. 241/1990) |\n| Riferimento normativo | Art. 6-bis DPR 380/2001 | Art. 22 DPR 380/2001 |\n\nIn sintesi: se l\'intervento non tocca la struttura dell\'edificio, di norma basta la CILA. Se coinvolge le parti strutturali, oppure riguarda un restauro o un frazionamento, serve tipicamente la SCIA. In caso di dubbio, la scelta corretta va sempre verificata con un tecnico abilitato, perche\' dipende anche dal regolamento edilizio del Comune competente.',
     },
     {
       heading: 'Quando invece serve il Permesso di Costruire',
@@ -44,7 +44,7 @@ const pillar: PillarContent = {
     },
     {
       q: 'Posso iniziare subito i lavori con SCIA o CILA?',
-      a: 'Con la CILA si\', i lavori iniziano il giorno stesso della presentazione. Con la SCIA, in molti Comuni si puo\' iniziare subito, ma il Comune mantiene un termine per i controlli successivi (in genere 30-60 giorni), a differenza del Permesso di Costruire che richiede autorizzazione preventiva.',
+      a: 'Con la CILA si\', i lavori iniziano il giorno stesso della presentazione. Con la SCIA, in molti Comuni si puo\' iniziare subito, ma il Comune mantiene un termine di 30 giorni per i controlli successivi (termine perentorio, art. 19 comma 6-bis L. 241/1990), a differenza del Permesso di Costruire che richiede autorizzazione preventiva.',
     },
     {
       q: 'Chi decide se serve la SCIA o la CILA?',
