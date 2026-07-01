@@ -2,7 +2,8 @@
  * Generatori JSON-LD schema.org per italiacantieri.it.
  * Escape </script> per evitare injection.
  */
-import { Cantiere } from '@/lib/supabase/queries/cantieri';
+import { schedaToSchemaFragments, type SchedaFragments } from '@websonica/cantieri-core';
+import type { CantiereScheda } from '@/lib/supabase/queries/cantieri-scheda';
 import { Bando } from '@/lib/supabase/queries/bandi';
 import { siteConfig } from '@/lib/site-config';
 import { parseCoordinate } from '@/lib/utils';
@@ -95,36 +96,44 @@ export function itemListLd(
 }
 
 /**
- * Schema.org ConstructionProject (type diretto per AI engines).
+ * Schema.org ConstructionProject (type diretto per AI engines), scheda-driven.
+ * Innesta i fragments strutturati (additionalProperty/estimatedCost/about) di
+ * cantieri-core quando la scheda arricchita e' disponibile.
+ * R7: mai il civico esatto nel markup pubblico — solo indirizzo_norm + localita'.
  */
-export function cantiereLd(c: Cantiere) {
+export function cantiereLd(c: CantiereScheda) {
   const coords = parseCoordinate(c.coordinate);
+  const fragments: SchedaFragments = c.scheda
+    ? schedaToSchemaFragments({
+        scheda: c.scheda as any,
+        valoreMin: c.valore_min,
+        valoreMax: c.valore_max,
+        valoreMetodo: c.valore_metodo,
+        baseUrl: siteConfig.baseUrl,
+      })
+    : { additionalProperty: [], about: [] };
   return {
     '@context': 'https://schema.org',
     '@type': 'ConstructionProject',
-    name: c.descrizione || `${c.tipo_titolo || 'Cantiere'} – ${c.protocollo || c.comune}`,
-    description: c.descrizione || `${c.tipo_titolo || 'Cantiere edilizio'} pubblicato a ${c.comune}, ${c.regione}.`,
+    name: c.descrizione || `${c.tipo_titolo || 'Cantiere'} — ${c.comune}`,
+    description: c.descrizione || `Cantiere a ${c.comune}, ${c.regione}.`,
     identifier: c.protocollo || c.id,
     url: `${siteConfig.baseUrl}/cantiere/${c.slug}`,
     location: {
       '@type': 'Place',
       address: {
         '@type': 'PostalAddress',
-        streetAddress: [c.indirizzo, c.civico].filter(Boolean).join(' ') || undefined,
-        postalCode: c.cap || undefined,
+        // R7: mai il civico esatto nel markup pubblico.
+        streetAddress: c.indirizzo_norm || undefined,
         addressLocality: c.comune,
         addressRegion: c.regione,
         addressCountry: 'IT',
       },
       ...(coords ? { geo: { '@type': 'GeoCoordinates', latitude: coords.lat, longitude: coords.lng } } : {}),
     },
-    ...(c.importo_lavori
-      ? { estimatedCost: { '@type': 'MonetaryAmount', currency: 'EUR', value: c.importo_lavori } }
-      : {}),
-    ...(c.data_inizio_lavori ? { startDate: c.data_inizio_lavori } : {}),
-    ...(c.data_fine_lavori_prevista ? { endDate: c.data_fine_lavori_prevista } : {}),
-    ...(c.data_rilascio ? { dateCreated: c.data_rilascio } : {}),
-    keywords: (c.categorie || []).join(', '),
+    ...(fragments.estimatedCost ? { estimatedCost: fragments.estimatedCost } : {}),
+    ...(fragments.additionalProperty.length ? { additionalProperty: fragments.additionalProperty } : {}),
+    ...(fragments.about.length ? { about: fragments.about } : {}),
     isBasedOn: {
       '@type': 'CreativeWork',
       name: `Fonte: ${c.fonte_tipo || 'open data PA'}`,
