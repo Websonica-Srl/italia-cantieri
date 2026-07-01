@@ -20,9 +20,11 @@ interface Props {
   pillar: PillarContent;
   /** Slot opzionale renderizzato dopo le sections e prima della FAQ (es. blocco-dato). */
   children?: ReactNode;
+  /** Se true la FAQ interna non emette il proprio FAQPage JSON-LD: usare quando la pagina emette gia' faqLd() esplicitamente (evita doppio schema). */
+  skipFaqJsonLd?: boolean;
 }
 
-export default function PillarSections({ pillar, children }: Props) {
+export default function PillarSections({ pillar, children, skipFaqJsonLd = false }: Props) {
   return (
     <div className="container-zen section-spacing">
       <header className="max-w-3xl mb-10">
@@ -53,7 +55,7 @@ export default function PillarSections({ pillar, children }: Props) {
 
       {children}
 
-      {pillar.faq.length > 0 && <FAQ items={pillar.faq} />}
+      {pillar.faq.length > 0 && <FAQ items={pillar.faq} skipJsonLd={skipFaqJsonLd} />}
 
       {pillar.correlati.length > 0 && (
         <nav aria-label="Contenuti correlati" className="mt-10">

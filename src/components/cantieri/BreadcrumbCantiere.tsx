@@ -9,10 +9,13 @@ export interface BreadcrumbStep {
 export default function BreadcrumbCantiere({
   steps,
   inverted = false,
+  skipJsonLd = false,
 }: {
   steps: BreadcrumbStep[];
   /** Modalità su sfondo scuro (hero immagine). Usa testo bianco. */
   inverted?: boolean;
+  /** Se true non genera il proprio BreadcrumbList: usare quando la pagina emette gia' breadcrumbLd() esplicitamente (evita doppio schema). */
+  skipJsonLd?: boolean;
 }) {
   // JSON-LD BreadcrumbList
   const itemListElement = [
@@ -33,10 +36,12 @@ export default function BreadcrumbCantiere({
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(ld).replace(/</g, '\\u003c') }}
-      />
+      {!skipJsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(ld).replace(/</g, '\\u003c') }}
+        />
+      )}
       <nav
         aria-label="Breadcrumb"
         className={inverted ? 'mb-0' : 'mb-6'}
