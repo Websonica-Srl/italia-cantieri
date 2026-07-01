@@ -103,7 +103,7 @@ export default async function RegionePage({ params }: PageProps) {
     },
     {
       q: `Posso esportare i cantieri di ${regioneNome} in CSV?`,
-      a: `L'esportazione CSV completa con dati committenti, importi dettagliati e contatti professionisti e disponibile con i piani Premium di ItaliaProgettisti, a partire da pochi euro al mese.`,
+      a: `L'esportazione dei cantieri e l'accesso al feed completo con gli avvisi sui nuovi cantieri di ${regioneNome} sono funzioni del network ItaliaProgettisti. Iscriviti gratis per attivarle: non pubblichiamo dati personali di progettisti o committenti, il valore e' la freschezza e la copertura del dato pubblico.`,
     },
   ];
 

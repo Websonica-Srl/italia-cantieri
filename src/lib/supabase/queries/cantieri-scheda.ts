@@ -103,12 +103,21 @@ export async function getInterventoAggregato(intervento: InterventoCategoria): P
   const [{ data: recenti, total }, provRows] = await Promise.all([
     getCantieriScheda({ intervento, limit: 6 }, 'index').then((r) => ({ data: r.data, total: r.total })),
     (async () => {
-      const q = applyGate(
-        supabase.from('cantieri_pubblici_attivi').select('provincia').eq('intervento_categoria', intervento),
-        'index',
-      ).limit(20000);
-      const { data } = await q;
-      return (data as { provincia: string }[]) || [];
+      // PostgREST cappa a 1000: pagino con .range() cosi' il breakdown per
+      // provincia resta corretto anche per interventi con >1000 schede (F2).
+      const pageSize = 1000;
+      const rows: { provincia: string }[] = [];
+      for (let from = 0; from < 40000; from += pageSize) {
+        const { data, error } = await applyGate(
+          supabase.from('cantieri_pubblici_attivi').select('provincia').eq('intervento_categoria', intervento),
+          'index',
+        ).range(from, from + pageSize - 1);
+        if (error) break;
+        const batch = (data as { provincia: string }[]) || [];
+        rows.push(...batch);
+        if (batch.length < pageSize) break;
+      }
+      return rows;
     })(),
   ]);
   const counts: Record<string, number> = {};

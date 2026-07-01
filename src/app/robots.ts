@@ -10,12 +10,7 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ['/api/'],
       },
     ],
-    sitemap: [
-      `${siteConfig.baseUrl}/sitemap.xml/static`,
-      `${siteConfig.baseUrl}/sitemap.xml/geo`,
-      `${siteConfig.baseUrl}/sitemap.xml/pillar`,
-      `${siteConfig.baseUrl}/sitemap.xml/cantieri`,
-    ],
+    sitemap: `${siteConfig.baseUrl}/sitemap.xml`,
     host: siteConfig.baseUrl,
   };
 }

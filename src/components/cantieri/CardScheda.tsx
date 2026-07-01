@@ -248,7 +248,7 @@ export default function CardScheda({ c }: { c: CantiereScheda }) {
   // Localizzazione (civico SEMPRE mascherato, R7)
   const civicoMasked = maskCivico(c.civico_norm);
   const indirizzoParte = c.indirizzo_norm
-    ? `${c.indirizzo_norm}${civicoMasked ? `, ${civicoMasked}` : ''} — `
+    ? `${c.indirizzo_norm}${civicoMasked ? `, ${civicoMasked}` : ''}, `
     : '';
   cards.push(
     <FactCard

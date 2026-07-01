@@ -86,8 +86,8 @@ export default async function ComunePage({ params }: PageProps) {
       a: `Al momento tracciamo ${formatNumber(total)} cantieri pubblici a ${meta.comune}, piu un campione di ${formatNumber(aggregati.totale_aggregato)} cantieri privati visualizzati solo in forma aggregata anonima (k-anonymity 5) a tutela della privacy dei committenti.`,
     },
     {
-      q: `Come faccio a sapere CHI sta progettando un cantiere a ${meta.comune}?`,
-      a: `Sblocca i contatti del progettista, dello studio o dell'impresa direttamente dalla scheda del cantiere. Iscriviti gratis al network ItaliaProgettisti per accedere ai profili professionali collegati.`,
+      q: `Sono un'impresa: come intercetto i nuovi cantieri a ${meta.comune}?`,
+      a: `Per tutela della privacy non pubblichiamo i dati personali di progettisti, titolari o imprese estratti dagli atti. Se sei un'impresa (edile, serramentista, impiantista) iscriviti gratis al network ItaliaProgettisti e ricevi gli avvisi sui nuovi cantieri di ${meta.comune} appena vengono pubblicati, per proporti sui lavori prima degli altri.`,
     },
     {
       q: `Posso ricevere alert sui nuovi cantieri a ${meta.comune}?`,
@@ -167,19 +167,19 @@ export default async function ComunePage({ params }: PageProps) {
               <Lock className="h-5 w-5 text-foreground flex-shrink-0 mt-0.5" />
               <div>
                 <h2 className="text-xl font-semibold mb-1">
-                  Cantieri privati a {meta.comune} — statistiche anonime
+                  Cantieri privati a {meta.comune}: statistiche anonime
                 </h2>
                 <p className="text-sm text-secondary-text leading-relaxed">
                   Aggregati con tecnica di <strong>k-anonymity 5</strong>: mostriamo solo gruppi con almeno 5 cantieri
-                  privati simili per proteggere l&apos;identita dei committenti. Per accesso ai dati di dettaglio,
-                  importi committenti e contatti professionisti,{' '}
+                  privati simili per proteggere la privacy. Per ricevere il feed completo dei nuovi cantieri della zona e
+                  gli avvisi personalizzati,{' '}
                   <a
-                    href="https://www.italiaprogettisti.com/abbonamenti"
+                    href="https://www.italiaprogettisti.com/register?utm_source=italiacantieri&utm_medium=referral&utm_campaign=comune_aggregati&intent=alert"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-primary underline"
                   >
-                    attiva un piano Premium
+                    iscriviti al network ItaliaProgettisti
                   </a>
                   .
                 </p>
