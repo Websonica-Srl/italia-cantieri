@@ -75,6 +75,25 @@ export function websiteLd() {
   };
 }
 
+/** ItemList per le liste di cantieri/bandi (home, /regioni/[slug], /categoria/[slug], directory). */
+export function itemListLd(
+  items: { name: string; url: string }[],
+  listName?: string,
+) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    ...(listName ? { name: listName } : {}),
+    numberOfItems: items.length,
+    itemListElement: items.map((it, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      name: it.name,
+      url: it.url,
+    })),
+  };
+}
+
 /**
  * Schema.org ConstructionProject (type diretto per AI engines).
  */
@@ -149,6 +168,30 @@ export function bandoLd(b: Bando) {
           },
         }
       : {}),
+  };
+}
+
+/**
+ * BreadcrumbList JSON-LD — riflette il silo Home › ... › foglia.
+ * Antepone sempre Home (siteConfig.name → "/"). I `path` sono relativi e
+ * vengono resi assoluti qui. L'ultimo item può non avere path (pagina corrente).
+ *
+ * NB: il componente <BreadcrumbCantiere> emette già il proprio BreadcrumbList.
+ * Questo generatore serve quando si vuole il JSON-LD senza renderizzare il
+ * componente, o per centralizzare la logica (single source per altri usi).
+ * Evitare di stampare DUE BreadcrumbList sulla stessa pagina.
+ */
+export function breadcrumbLd(items: { name: string; path?: string }[]) {
+  const full = [{ name: siteConfig.name, path: '/' }, ...items];
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: full.map((it, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      name: it.name,
+      ...(it.path ? { item: `${siteConfig.baseUrl}${it.path}` } : {}),
+    })),
   };
 }
 
