@@ -1,6 +1,6 @@
 import { createServerClient } from '../client';
 import type { InterventoCategoria, ValoreMetodo } from '@websonica/cantieri-core';
-import type { Cantiere } from './cantieri';
+import { resolveComuneCanonico, type Cantiere } from './cantieri';
 
 export interface SchedaJson {
   unita_abitative?: number | null;
@@ -77,7 +77,10 @@ export async function getCantieriScheda(
   query = applyGate(query, gate);
   if (regione) query = query.ilike('regione', regione);
   if (provincia) query = query.ilike('provincia', provincia);
-  if (comune) query = query.ilike('comune', comune);
+  if (comune) {
+    const comuneCanonico = await resolveComuneCanonico(comune);
+    query = comuneCanonico ? query.eq('comune', comuneCanonico) : query.ilike('comune', comune);
+  }
   if (intervento) query = query.eq('intervento_categoria', intervento);
   if (destinazione) query = query.eq('destinazione_uso', destinazione);
   if (scala) query = query.eq('scala', scala);

@@ -7,6 +7,7 @@
  * - Layer 1: cantieri_pubblici (single record sicuro).
  * - Layer 2: cantieri_aggregati_anonimi (k-anonymity 5).
  */
+import { cache } from 'react';
 import { createServerClient } from '../client';
 import { resolveProvincia } from '@websonica/cantieri-core';
 
@@ -78,7 +79,10 @@ export async function getCantieri(filters: CantieriFilters = {}): Promise<{ data
 
   if (regione) query = query.ilike('regione', regione);
   if (provincia) query = query.ilike('provincia', provincia);
-  if (comune) query = query.ilike('comune', comune);
+  if (comune) {
+    const comuneCanonico = await resolveComuneCanonico(comune);
+    query = comuneCanonico ? query.eq('comune', comuneCanonico) : query.ilike('comune', comune);
+  }
   if (tipo_titolo) query = query.eq('tipo_titolo', tipo_titolo);
   if (categoria) query = query.contains('categorie', [categoria]);
   if (q) query = query.or(`descrizione.ilike.%${q}%,indirizzo.ilike.%${q}%,protocollo.ilike.%${q}%`);
@@ -329,10 +333,10 @@ export async function getAggregatiAnonimiByComune(comune: string): Promise<{
   totale_aggregato: number;
 }> {
   const supabase: any = createServerClient();
-  const { data, error } = await supabase
-    .from('cantieri_aggregati_anonimi')
-    .select('categoria, totale, importo_totale')
-    .ilike('comune', comune);
+  const comuneCanonico = await resolveComuneCanonico(comune);
+  let aggQuery = supabase.from('cantieri_aggregati_anonimi').select('categoria, totale, importo_totale');
+  aggQuery = comuneCanonico ? aggQuery.eq('comune', comuneCanonico) : aggQuery.ilike('comune', comune);
+  const { data, error } = await aggQuery;
   if (error || !data) return { categorie: [], totale_aggregato: 0 };
   const map: Record<string, { totale: number; importo_totale: number }> = {};
   for (const r of data as any[]) {
@@ -401,6 +405,39 @@ export async function getAllComuni(limit = 5000): Promise<{ comune: string; prov
   return (data as any[])
     .slice(0, limit)
     .map((r) => ({ comune: r.comune, provincia: r.provincia, regione: r.regione, count: Number(r.n) || undefined }));
+}
+
+/**
+ * Mappa (nome comune in minuscolo -> nome canonico esatto in DB), costruita
+ * dalla stessa fonte di `getAllComuni` e memoizzata con `React.cache` (dedupe
+ * per-request, stesso pattern di `resolveRegione`/`resolveProvincia` nelle
+ * pagine [regione]/[provincia]): niente RPC aggiuntive ripetute.
+ */
+const getComuneCanonicoMap = cache(async (): Promise<Map<string, string>> => {
+  const all = await getAllComuni();
+  const map = new Map<string, string>();
+  for (const c of all) {
+    if (c.comune) map.set(c.comune.toLowerCase(), c.comune);
+  }
+  return map;
+});
+
+/**
+ * Risolve un valore comune (case-insensitive, da slug, testo libero utente o
+ * query esterna) al nome CANONICO esatto in DB. Ritorna null se non è un
+ * match esatto (es. ricerca parziale o comune inesistente): in quel caso il
+ * chiamante deve restare su `.ilike()`.
+ *
+ * Usata per abilitare `.eq('comune', ...)` invece di `.ilike('comune', ...)`
+ * su `cantieri`: con l'indice composito `cantieri_comune_data_idx (comune,
+ * data_pubblicazione DESC NULLS LAST) WHERE visibilita_pubblica`, `eq` sfrutta
+ * il LIMIT pushdown (da ~2,9s a ~1ms per comuni grandi tipo Verona);
+ * `ilike` invece forza il fetch di tutte le righe del comune prima del sort.
+ */
+export async function resolveComuneCanonico(input: string | undefined | null): Promise<string | null> {
+  if (!input) return null;
+  const map = await getComuneCanonicoMap();
+  return map.get(input.trim().toLowerCase()) ?? null;
 }
 
 /** Lista distinct province per regione. */
