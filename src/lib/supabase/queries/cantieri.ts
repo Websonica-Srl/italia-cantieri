@@ -175,6 +175,27 @@ export async function getCantieriRegioniCached(): Promise<{ regione: string; cnt
 }
 
 /**
+ * Province con conteggio dalla cache stats (`get_stats_cache('cantieri_province')`):
+ * conteggi "circa" istantanei, coerenti col resto del sito. Payload: array
+ * [{ regione, provincia, n }] su tutte le province, refreshato ogni ora da pg_cron.
+ */
+export async function getCantieriProvinceCached(): Promise<{ regione: string; provincia: string; cnt: number }[]> {
+  const supabase: any = createServerClient();
+  const { data, error } = await supabase.rpc('get_stats_cache', { p_key: 'cantieri_province' });
+  if (error || !data) {
+    // Throw invece di []: le province sono sempre presenti; un errore cache non
+    // deve svuotare silenziosamente le pagine regione/provincia (ISR tiene l'ultima buona).
+    console.error('[cantieri] getCantieriProvinceCached error:', error?.message);
+    throw new Error(`getCantieriProvinceCached: cache non disponibile (${error?.message ?? 'nessun dato'})`);
+  }
+  const arr: any[] = Array.isArray(data) ? data : [];
+  return arr
+    .map((r) => ({ regione: r.regione as string, provincia: r.provincia as string, cnt: Number(r.n) || 0 }))
+    .filter((r) => r.regione && r.provincia && r.cnt > 0)
+    .sort((a, b) => b.cnt - a.cnt);
+}
+
+/**
  * Helper interno: legge tutti i record di una colonna con paginazione,
  * bypassando il default cap PostgREST (1000 righe) tramite `.range()`.
  */
@@ -199,23 +220,13 @@ async function fetchAllPages<T extends Record<string, any>>(
   return out;
 }
 
-/** Conta cantieri per provincia di una regione. */
+/** Conta cantieri per provincia di una regione (da cache stats, coerente col resto del sito). */
 export async function getCantieriByProvincia(regione: string): Promise<{ provincia: string; cnt: number }[]> {
-  const supabase: any = createServerClient();
-  const data = await fetchAllPages<{ provincia: string }>(() =>
-    supabase
-      .from('cantieri_pubblici_attivi')
-      .select('provincia')
-      .ilike('regione', regione)
-      .eq('is_active', true),
-  );
-  const counts: Record<string, number> = {};
-  for (const r of data) {
-    if (!r.provincia) continue;
-    counts[r.provincia] = (counts[r.provincia] || 0) + 1;
-  }
-  return Object.entries(counts)
-    .map(([provincia, cnt]) => ({ provincia, cnt }))
+  const all = await getCantieriProvinceCached();
+  const target = regione.toLowerCase();
+  return all
+    .filter((r) => r.regione.toLowerCase() === target)
+    .map(({ provincia, cnt }) => ({ provincia, cnt }))
     .sort((a, b) => b.cnt - a.cnt);
 }
 
