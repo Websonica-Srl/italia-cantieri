@@ -1,3 +1,4 @@
+import { cache } from 'react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
@@ -5,7 +6,7 @@ import { MapPin, ArrowRight, ShieldCheck } from 'lucide-react';
 import { isReservedPrefix } from '@websonica/cantieri-core';
 import {
   getCantieriByProvincia,
-  getCantieriByRegione,
+  getCantieriRegioniCached,
   getRegioneStats,
 } from '@/lib/supabase/queries/cantieri';
 import { getCantieriScheda, getEnrichedCount } from '@/lib/supabase/queries/cantieri-scheda';
@@ -29,16 +30,17 @@ interface PageProps {
 
 /** Pre-render top 20 regioni a build time, le altre on-demand. */
 export async function generateStaticParams() {
-  const list = await getCantieriByRegione();
+  const list = await getCantieriRegioniCached();
   return list.slice(0, 20).map((r) => ({ regione: regioneSlug(r.regione) }));
 }
 
-async function resolveRegione(slug: string): Promise<string | null> {
-  const all = await getCantieriByRegione();
+// cache(): dedupe la RPC fra generateMetadata e la page nella stessa request.
+const resolveRegione = cache(async (slug: string): Promise<string | null> => {
+  const all = await getCantieriRegioniCached();
   const target = slug.toLowerCase();
   const hit = all.find((r) => regioneSlug(r.regione) === target);
   return hit ? hit.regione : null;
-}
+});
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   if (isReservedPrefix(params.regione)) notFound();

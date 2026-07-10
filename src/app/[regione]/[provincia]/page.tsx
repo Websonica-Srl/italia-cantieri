@@ -1,3 +1,4 @@
+import { cache } from 'react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
@@ -6,7 +7,7 @@ import { isReservedPrefix } from '@websonica/cantieri-core';
 import {
   getCantieriByComune,
   getCantieriByProvincia,
-  getCantieriByRegione,
+  getCantieriRegioniCached,
 } from '@/lib/supabase/queries/cantieri';
 import { getCantieriScheda, getEnrichedCount } from '@/lib/supabase/queries/cantieri-scheda';
 import { isAggregateIndexable } from '@/lib/seo/indexable';
@@ -24,12 +25,13 @@ interface PageProps {
   params: { regione: string; provincia: string };
 }
 
-async function resolveRegione(slug: string): Promise<string | null> {
-  const all = await getCantieriByRegione();
+// cache(): dedupe la RPC fra generateMetadata e la page nella stessa request.
+const resolveRegione = cache(async (slug: string): Promise<string | null> => {
+  const all = await getCantieriRegioniCached();
   const target = slug.toLowerCase();
   const hit = all.find((r) => regioneSlug(r.regione) === target);
   return hit ? hit.regione : null;
-}
+});
 
 /**
  * Risolve uno slug provincia (es. "torino") nella sigla 2-lettere DB (TO).

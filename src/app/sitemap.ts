@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next';
 import { siteConfig } from '@/lib/site-config';
 import {
-  getCantieriByRegione,
+  getCantieriRegioniCached,
   getAllProvince,
   getAllComuni,
 } from '@/lib/supabase/queries/cantieri';
@@ -82,7 +82,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   // Geo (dato persistente)
   const [regioni, province, comuni, cantieriSlugs] = await Promise.all([
-    getCantieriByRegione(),
+    getCantieriRegioniCached(),
     getAllProvince(),
     getAllComuni(500),
     getIndexableCantieriSlugs(5000),

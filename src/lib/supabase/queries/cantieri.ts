@@ -199,22 +199,6 @@ async function fetchAllPages<T extends Record<string, any>>(
   return out;
 }
 
-/** Conta cantieri per regione (lista regioni con count). */
-export async function getCantieriByRegione(): Promise<{ regione: string; cnt: number }[]> {
-  const supabase: any = createServerClient();
-  const data = await fetchAllPages<{ regione: string }>(() =>
-    supabase.from('cantieri_pubblici_attivi').select('regione').eq('is_active', true),
-  );
-  const counts: Record<string, number> = {};
-  for (const r of data) {
-    if (!r.regione) continue;
-    counts[r.regione] = (counts[r.regione] || 0) + 1;
-  }
-  return Object.entries(counts)
-    .map(([regione, cnt]) => ({ regione, cnt }))
-    .sort((a, b) => b.cnt - a.cnt);
-}
-
 /** Conta cantieri per provincia di una regione. */
 export async function getCantieriByProvincia(regione: string): Promise<{ provincia: string; cnt: number }[]> {
   const supabase: any = createServerClient();
