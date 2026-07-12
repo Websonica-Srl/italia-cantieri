@@ -8,6 +8,7 @@
  * - Layer 2: cantieri_aggregati_anonimi (k-anonymity 5).
  */
 import { cache } from 'react';
+import { unstable_cache } from 'next/cache';
 import { createServerClient } from '../client';
 import { resolveProvincia } from '@websonica/cantieri-core';
 
@@ -395,16 +396,32 @@ export async function searchComuni(
     .slice(0, limit);
 }
 
+// RPC comuni distinti, ora servita dalla MV comuni_attivi_mv (refresh notturno via
+// pg_cron). Cache Next 1h: la lista cambia solo dopo un run di ingestion. In caso di
+// errore la funzione LANCIA (unstable_cache non memorizza i fallimenti: un timeout
+// non deve avvelenare la cache con una lista vuota per un'ora).
+const fetchComuniAttivi = unstable_cache(
+  async (): Promise<any[]> => {
+    const supabase: any = createServerClient();
+    const { data, error } = await supabase.rpc('get_comuni_attivi');
+    if (error || !data) throw new Error(error?.message || 'get_comuni_attivi: nessun dato');
+    return data as any[];
+  },
+  ['comuni-attivi'],
+  { revalidate: 3600 }
+);
+
 /** Lista distinct comuni per sitemap (max 5000). */
 export async function getAllComuni(limit = 5000): Promise<{ comune: string; provincia: string; regione: string; count?: number }[]> {
-  const supabase: any = createServerClient();
-  // RPC che ritorna i comuni DISTINTI (no cap sulle righe grezze: fix /comune 404 per i comuni
-  // le cui righe cadevano oltre la finestra .limit(20000) su 24.726+ cantieri).
-  const { data, error } = await supabase.rpc('get_comuni_attivi');
-  if (error || !data) return [];
-  return (data as any[])
-    .slice(0, limit)
-    .map((r) => ({ comune: r.comune, provincia: r.provincia, regione: r.regione, count: Number(r.n) || undefined }));
+  try {
+    const data = await fetchComuniAttivi();
+    return data
+      .slice(0, limit)
+      .map((r) => ({ comune: r.comune, provincia: r.provincia, regione: r.regione, count: Number(r.n) || undefined }));
+  } catch {
+    // Degrado soft (comportamento precedente): i chiamanti ripiegano su ilike/liste vuote.
+    return [];
+  }
 }
 
 /**
