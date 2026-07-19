@@ -104,7 +104,7 @@ export default function CookieBanner({ gaId }: CookieBannerProps) {
                   Questo sito utilizza cookie tecnici necessari per il funzionamento e cookie analitici
                   per migliorare la tua esperienza. Puoi scegliere quali cookie accettare.
                   Per maggiori informazioni, consulta la nostra{" "}
-                  <Link href="/legal/cookie" className="text-primary hover:underline">Cookie Policy</Link>
+                  <Link href="/legal/cookie" prefetch={false} className="text-primary hover:underline">Cookie Policy</Link>
                   {" "}e la{" "}
                   <Link href="/legal/privacy" className="text-primary hover:underline">Privacy Policy</Link>.
                 </p>

@@ -69,7 +69,7 @@ export default function Footer() {
               <ul className="space-y-3.5 text-sm">
                 <li><FooterLink href="/legal/privacy#opposizione">Opt-out / rimozione</FooterLink></li>
                 <li><FooterLink href="/legal/privacy">Privacy Policy</FooterLink></li>
-                <li><FooterLink href="/legal/cookie">Cookie Policy</FooterLink></li>
+                <li><FooterLink href="/legal/cookie" prefetch={false}>Cookie Policy</FooterLink></li>
                 <li><FooterLink href="/legal/termini">Termini di servizio</FooterLink></li>
                 <li className="pt-1">
                   <a
@@ -124,7 +124,7 @@ export default function Footer() {
             <Link href="/legal/termini" className="hover:text-background transition-colors">
               Termini
             </Link>
-            <Link href="/legal/cookie" className="hover:text-background transition-colors">
+            <Link href="/legal/cookie" prefetch={false} className="hover:text-background transition-colors">
               Cookie
             </Link>
           </div>
@@ -150,10 +150,19 @@ export default function Footer() {
   );
 }
 
-function FooterLink({ href, children }: { href: string; children: React.ReactNode }) {
+function FooterLink({
+  href,
+  children,
+  prefetch,
+}: {
+  href: string;
+  children: React.ReactNode;
+  prefetch?: boolean;
+}) {
   return (
     <Link
       href={href}
+      prefetch={prefetch}
       className="text-background/75 hover:text-background transition-colors"
     >
       {children}
