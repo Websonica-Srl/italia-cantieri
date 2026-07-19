@@ -32,7 +32,7 @@ export const revalidate = 3600;
  *    Le foglie noindex restano fuori per costruzione della query.
  *  - pillar: /cantieri, /guide + pillar con answerFirst non vuoto (stub esclusi).
  *  - geo: regioni + province + comuni (dato persistente).
- *  - /esplora e /lavori/* sono sempre noindex,follow: NON entrano.
+ *  - /esplora è sempre noindex,follow: NON entra (route /lavori/* rimossa, era soft-404 mai linkata).
  *  - Le schede bando vivono su bandigaredappalto.it (canonica li'): non incluse.
  */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {

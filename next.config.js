@@ -34,6 +34,15 @@ const nextConfig = {
       } catch {}
     }
 
+    // Sezione /lavori/[mestiere] rimossa (TR-08): era un soft-404 mai linkato dal menu,
+    // il verticale per mestiere vive sui siti satellite dedicati. 301 verso /cantieri
+    // per eventuali link esterni/cache già indicizzati con quell'URL.
+    redirects.push({
+      source: '/lavori/:path*',
+      destination: '/cantieri',
+      permanent: true,
+    });
+
     // Percorso gerarchico /:regione/:provincia/:comune → pagina Comune reale
     // (la gerarchia si ferma alla provincia, quindi il 3° livello altrimenti 404).
     // Escludo i prefissi riservati e le dir top-level per non intercettare API/route reali.

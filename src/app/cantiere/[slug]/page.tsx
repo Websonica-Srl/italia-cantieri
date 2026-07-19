@@ -12,11 +12,8 @@ import { countFirmsByComune } from '@/lib/supabase/queries/cantieri';
 import { isCantiereIndexable } from '@/lib/seo/indexable';
 import {
   displayInterventoLabel,
-  mestiereLabel,
-  mestiereSlug,
   isMeaningful,
   formatValoreRange,
-  type Mestiere,
 } from '@websonica/cantieri-core';
 import { formatDate, formatEuro, formatNumber, prepA, regioneSlug, slugify } from '@/lib/utils';
 import { maskCivico } from '@/lib/cantieri/mask';
@@ -124,7 +121,6 @@ export default async function CantierePage({ params }: PageProps) {
   const titolo = c.intervento_categoria ? displayInterventoLabel(c.intervento_categoria) : null;
   const h1 = `${titolo ?? 'Cantiere'} ${prepA(c.comune)}`;
   const rispostaFirst = buildRispostaFirst(c);
-  const mestieri = (c.mestieri as Mestiere[] | null) ?? [];
   const frasiSorgente = c.scheda?.frasi_sorgente ?? [];
   const unita = unitaOf(c);
   const mq = mqOf(c);
@@ -257,24 +253,6 @@ export default async function CantierePage({ params }: PageProps) {
                 <p className="text-sm md:text-base leading-relaxed text-secondary-text whitespace-pre-line">
                   {c.descrizione}
                 </p>
-              </div>
-            </div>
-          )}
-
-          {/* 6. MESTIERI (navigazione interna) */}
-          {mestieri.length > 0 && (
-            <div className="mb-10">
-              <h2 className="text-base font-bold mb-3 tracking-tight">Lavori collegati a questo cantiere</h2>
-              <div className="flex flex-wrap gap-2">
-                {mestieri.map((m) => (
-                  <Link
-                    key={m}
-                    href={`/lavori/${mestiereSlug(m)}`}
-                    className="chip hover:bg-foreground hover:text-background transition-colors"
-                  >
-                    {mestiereLabel(m)}
-                  </Link>
-                ))}
               </div>
             </div>
           )}
