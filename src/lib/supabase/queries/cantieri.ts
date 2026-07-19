@@ -10,7 +10,7 @@
 import { cache } from 'react';
 import { unstable_cache } from 'next/cache';
 import { createServerClient } from '../client';
-import { resolveProvincia } from '@websonica/cantieri-core';
+import { resolveProvincia, TIPO_TITOLO_LABELS, CATEGORIA_LABELS } from '@websonica/cantieri-core';
 
 export interface Cantiere {
   id: string;
@@ -255,44 +255,80 @@ export async function getCantieriByComune(provincia: string): Promise<{ comune: 
     .sort((a, b) => b.cnt - a.cnt);
 }
 
-/** Distribuzione tipo_titolo (PDC/SCIA/CILA) nazionale. */
+/**
+ * Distribuzione tipo_titolo (PDC/SCIA/CILA/...) nazionale.
+ *
+ * FIX CV-F01: prima usava fetchAllPages con cap 30 pagine (30.000 righe su 48.733
+ * attive), sottostimando i conteggi fino al -40% e sballando l'ordinamento
+ * (es. CILA mostrato primo mentre ALTRO è primo nel dataset pieno con ~35,7%).
+ * Ora usa N count query filtrate (head:true, count exact) sui valori noti del
+ * vocab canonico `TIPO_TITOLO_LABELS` (cantieri-core, ~7 valori) invece di
+ * scaricare tutte le righe: nessuna riga trasferita, conteggio esatto su tutto
+ * il dataset attivo.
+ */
 export async function getTipoTitoloDistribution(): Promise<{ tipo: string; cnt: number }[]> {
   const supabase: any = createServerClient();
-  const data = await fetchAllPages<{ tipo_titolo: string | null }>(() =>
-    supabase.from('cantieri_pubblici_attivi').select('tipo_titolo').eq('is_active', true),
-  );
-  const counts: Record<string, number> = {};
-  for (const r of data) {
-    const t = r.tipo_titolo || 'N/D';
-    counts[t] = (counts[t] || 0) + 1;
+  const tipiNoti = Object.keys(TIPO_TITOLO_LABELS);
+  try {
+    const [totale, ...perTipo] = await Promise.all([
+      supabase.from('cantieri_pubblici_attivi').select('id', { count: 'exact', head: true }).eq('is_active', true),
+      ...tipiNoti.map((t) =>
+        supabase
+          .from('cantieri_pubblici_attivi')
+          .select('id', { count: 'exact', head: true })
+          .eq('is_active', true)
+          .eq('tipo_titolo', t),
+      ),
+    ]);
+    const result = tipiNoti
+      .map((tipo, i) => ({ tipo, cnt: perTipo[i]?.count ?? 0 }))
+      .filter((r) => r.cnt > 0);
+    // Bucket residuo per valori non presenti nel vocab noto (o null), per non perdere righe.
+    const sommaNoti = result.reduce((s, r) => s + r.cnt, 0);
+    const residuo = (totale?.count ?? 0) - sommaNoti;
+    if (residuo > 0) result.push({ tipo: 'N/D', cnt: residuo });
+    return result.sort((a, b) => b.cnt - a.cnt);
+  } catch (err) {
+    console.error('[cantieri] getTipoTitoloDistribution error:', err);
+    return [];
   }
-  return Object.entries(counts)
-    .map(([tipo, cnt]) => ({ tipo, cnt }))
-    .sort((a, b) => b.cnt - a.cnt);
 }
 
-/** Categorie top per cantieri. */
+/**
+ * Categorie top per cantieri (nazionale o filtrate per regione).
+ *
+ * FIX CV-F01: come sopra, `categorie` è un array text[] (colonna GIN-indicizzata
+ * `cantieri_categorie_gin_idx`), quindi il conteggio via fetchAllPages scaricava
+ * fino a 30.000 righe intere. Ora usa N count query filtrate (`.contains`, head:true,
+ * count exact) sui ~18 valori noti del vocab canonico `CATEGORIA_LABELS`
+ * (cantieri-core), che sfruttano l'indice GIN esistente senza trasferire righe.
+ * Nota: se in futuro il vocab cresce dinamicamente (nuove categorie fuori da
+ * CATEGORIA_LABELS), andrebbero riprese qui o con una RPC SQL GROUP BY dedicata.
+ */
 export async function getTopCategorie(limit = 10, regione?: string): Promise<{ categoria: string; cnt: number }[]> {
   const supabase: any = createServerClient();
-  const data = await fetchAllPages<{ categorie: string[] | null }>(() => {
-    let q = supabase
-      .from('cantieri_pubblici_attivi')
-      .select('categorie')
-      .eq('is_active', true)
-      .not('categorie', 'is', null);
-    if (regione) q = q.ilike('regione', regione);
-    return q;
-  });
-  const counts: Record<string, number> = {};
-  for (const r of data) {
-    for (const c of (r.categorie || []) as string[]) {
-      counts[c] = (counts[c] || 0) + 1;
-    }
+  const categorieNote = Object.keys(CATEGORIA_LABELS);
+  try {
+    const perCategoria = await Promise.all(
+      categorieNote.map((c) => {
+        let q = supabase
+          .from('cantieri_pubblici_attivi')
+          .select('id', { count: 'exact', head: true })
+          .eq('is_active', true)
+          .contains('categorie', [c]);
+        if (regione) q = q.ilike('regione', regione);
+        return q;
+      }),
+    );
+    return categorieNote
+      .map((categoria, i) => ({ categoria, cnt: perCategoria[i]?.count ?? 0 }))
+      .filter((r) => r.cnt > 0)
+      .sort((a, b) => b.cnt - a.cnt)
+      .slice(0, limit);
+  } catch (err) {
+    console.error('[cantieri] getTopCategorie error:', err);
+    return [];
   }
-  return Object.entries(counts)
-    .map(([categoria, cnt]) => ({ categoria, cnt }))
-    .sort((a, b) => b.cnt - a.cnt)
-    .slice(0, limit);
 }
 
 /** Stats per regione (count, top categorie, importo totale). */

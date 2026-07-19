@@ -372,7 +372,7 @@ export default async function StatistichePage() {
             </div>
 
             <ol className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3.5">
-              {categorie.slice(0, 14).map((c, i) => {
+              {categorie.slice(0, 15).map((c, i) => {
                 const pct = totalCategorie ? (c.cnt / categorie[0].cnt) * 100 : 0;
                 return (
                   <li key={c.categoria}>
