@@ -73,7 +73,9 @@ export async function getCantieriScheda(
   const { regione, provincia, comune, intervento, destinazione, scala, mestiere,
     valore_min, q, limit = 24, offset = 0,
     orderBy = 'data_pubblicazione', orderDirection = 'desc' } = filters;
-  let query = supabase.from('cantieri_pubblici_attivi').select('*', { count: 'exact' });
+  // count 'estimated': esatto sotto le 1.000 righe (max-rows PostgREST), stima del planner oltre.
+  // Il count esatto scorreva 28k righe a ogni pagina di lista (collasso I/O del 24/08/2026).
+  let query = supabase.from('cantieri_pubblici_attivi').select('*', { count: 'estimated' });
   query = applyGate(query, gate);
   if (regione) query = query.ilike('regione', regione);
   if (provincia) query = query.ilike('provincia', provincia);

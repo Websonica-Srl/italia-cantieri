@@ -73,9 +73,11 @@ export async function getCantieri(filters: CantieriFilters = {}): Promise<{ data
     orderDirection = 'desc',
   } = filters;
 
+  // count 'estimated': esatto sotto le 1.000 righe (max-rows PostgREST), stima del planner oltre.
+  // Il count esatto scorreva 28k righe a ogni pagina di lista (collasso I/O del 24/08/2026).
   let query = supabase
     .from('cantieri_pubblici_attivi')
-    .select('*', { count: 'exact' })
+    .select('*', { count: 'estimated' })
     .eq('is_active', true);
 
   if (regione) query = query.ilike('regione', regione);
