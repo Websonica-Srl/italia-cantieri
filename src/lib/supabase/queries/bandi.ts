@@ -45,7 +45,8 @@ export async function getBandi(filters: BandiFilters = {}): Promise<{ data: Band
     .from('bandi_gara_public')
     .select(
       'id, slug, cig, cup, numero_bando, tipo_procedura, oggetto, descrizione_completa, importo_base, importo_aggiudicazione, data_pubblicazione, scadenza_offerte, data_aggiudicazione, stazione_appaltante, comune, provincia, regione, categorie, cpv_principale, stato, aggiudicatario_ragione_sociale_raw',
-      { count: 'exact' },
+      // count 'planned': l'exact fa window sulle ~50k righe della view, timeout su compute Micro.
+      { count: 'planned' },
     );
   // NB: bandi_gara_public filtra già visibilita_pubblica + espone solo colonne safe (no piva/raw_data).
 
