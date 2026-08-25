@@ -54,6 +54,7 @@ export default function Footer() {
             <div>
               <h4 className="kpi-hero-label text-background/55 mb-5">Esplora</h4>
               <ul className="space-y-3.5 text-sm">
+                <li><FooterLink href="/per-le-imprese">Per le imprese</FooterLink></li>
                 <li><FooterLink href="/regioni">Cantieri per regione</FooterLink></li>
                 <li><FooterLink href="/bandi">Bandi pubblici</FooterLink></li>
                 <li><FooterLink href="/statistiche">Statistiche nazionali</FooterLink></li>

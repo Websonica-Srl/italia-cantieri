@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { Menu, X, ArrowRight, HardHat } from 'lucide-react';
 
 const navItems = [
+  { label: 'Per le imprese', href: '/per-le-imprese' },
   { label: 'Cantieri per regione', href: '/regioni' },
   { label: 'Bandi pubblici', href: '/bandi' },
   { label: 'Statistiche', href: '/statistiche' },
