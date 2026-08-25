@@ -7,8 +7,8 @@ import {
   countFirmsByComune,
   getAllComuni,
 } from '@/lib/supabase/queries/cantieri';
-import { getCantieriScheda, getEnrichedCount } from '@/lib/supabase/queries/cantieri-scheda';
-import { isAggregateIndexable } from '@/lib/seo/indexable';
+import { getCantieriScheda } from '@/lib/supabase/queries/cantieri-scheda';
+import { isComuneIndexable } from '@/lib/seo/indexable';
 import { slugify, formatNumber, formatEuro, prepA, regioneSlug } from '@/lib/utils';
 import { provinciaSlugFromCode, provinciaNameFromCode } from '@/lib/province';
 import BreadcrumbCantiere from '@/components/cantieri/BreadcrumbCantiere';
@@ -37,7 +37,6 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const comune = await resolveComune(params.slug);
   if (!comune) return { title: 'Comune non trovato' };
   const { total } = await getCantieriScheda({ comune: comune.comune, limit: 1 }, 'list');
-  const enriched = await getEnrichedCount({ comune: comune.comune });
   const title = `Cantieri edilizi ${prepA(comune.comune)} (${comune.provincia}) — Permessi PDC, SCIA e CILA`;
   const description = `Tutti i cantieri attivi ${prepA(comune.comune)} (${comune.provincia}, ${comune.regione}): permessi di costruire, SCIA, CILA e bandi pubblici. Dati ufficiali aggiornati ogni settimana dall'albo pretorio comunale.`;
   const ogImage = ogImageUrl({
@@ -51,7 +50,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     title,
     description,
     alternates: { canonical: `/comune/${params.slug}` },
-    robots: isAggregateIndexable(enriched) ? { index: true, follow: true } : { index: false, follow: true },
+    robots: isComuneIndexable() ? { index: true, follow: true } : { index: false, follow: true },
     openGraph: {
       title: `Cantieri edilizi ${prepA(comune.comune)} — Italia Cantieri`,
       description,

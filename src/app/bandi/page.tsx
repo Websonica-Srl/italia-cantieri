@@ -24,6 +24,7 @@ export const metadata: Metadata = {
   description:
     'I bandi e le gare d’appalto pubbliche sono il complemento naturale dei cantieri edilizi: appalti di lavori (CPV 45*) e servizi di architettura e ingegneria (CPV 71*). Esplora il portale dedicato bandigaredappalto.it.',
   alternates: { canonical: '/bandi' },
+  robots: { index: false, follow: true },
   openGraph: {
     title: 'Bandi e gare d’appalto pubbliche — Italia Cantieri',
     description:

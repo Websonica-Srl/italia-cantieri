@@ -1,11 +1,16 @@
 import { describe, it, expect } from 'vitest';
-import { isCantiereIndexable, isAggregateIndexable } from '../indexable';
+import { isCantiereIndexable, isComuneIndexable, isAggregateIndexable } from '../indexable';
 
 describe('isCantiereIndexable', () => {
-  it('true solo se scheda_pubblicabile === true', () => {
-    expect(isCantiereIndexable({ scheda_pubblicabile: true })).toBe(true);
+  it('sempre false con SCHEDE_PUBBLICHE_INDICIZZABILI a false, anche con scheda_pubblicabile true', () => {
+    expect(isCantiereIndexable({ scheda_pubblicabile: true })).toBe(false);
     expect(isCantiereIndexable({ scheda_pubblicabile: false })).toBe(false);
     expect(isCantiereIndexable({ scheda_pubblicabile: null })).toBe(false);
+  });
+});
+describe('isComuneIndexable', () => {
+  it('false finche SCHEDE_PUBBLICHE_INDICIZZABILI resta false', () => {
+    expect(isComuneIndexable()).toBe(false);
   });
 });
 describe('isAggregateIndexable', () => {
