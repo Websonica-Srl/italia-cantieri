@@ -3,23 +3,21 @@ import { siteConfig } from '@/lib/site-config';
 import {
   getCantieriRegioniCached,
   getAllProvince,
-  getAllComuni,
 } from '@/lib/supabase/queries/cantieri';
-import { getIndexableCantieriSlugs } from '@/lib/supabase/queries/cantieri-scheda';
 import {
   getInterventoPillarSlugs,
   getGuidaPillarSlugs,
   getPillar,
 } from '@/lib/content/pillars';
-import { regioneSlug, slugify } from '@/lib/utils';
+import { regioneSlug } from '@/lib/utils';
 import { provinciaSlugFromCode } from '@/lib/province';
 
 export const revalidate = 3600;
 
 /**
  * Sitemap UNICA servita su /sitemap.xml (come /robots.txt, metadata route
- * affidabile). In Fase 1 il volume totale (foglie index-gate ~2.700 + geo +
- * 12 pillar + statiche) è ben sotto il limite di 50.000 URL per sitemap.
+ * affidabile). In Fase 1 il volume totale (geo + 12 pillar + statiche) è
+ * ben sotto il limite di 50.000 URL per sitemap.
  *
  * NB: lo split via `generateSitemaps` (4 shard) NON è usato: in questa app
  * genera route `/sitemap/[__metadata_id__]` che, con id stringa, collide col
@@ -27,11 +25,12 @@ export const revalidate = 3600;
  * Lo split andra' rifatto con route handler espliciti quando il backfill F2
  * portera' il volume oltre il limite di una singola sitemap.
  *
- * Regole di inclusione (invarianti):
- *  - cantieri: SOLO foglie index-gate (getIndexableCantieriSlugs, scheda_pubblicabile=true).
- *    Le foglie noindex restano fuori per costruzione della query.
+ * Regole di inclusione (invarianti, decisione 26/08/2026):
+ *  - schede cantiere (/cantiere/[slug]) e liste comune (/comune/[slug]) sono
+ *    uscite dall'indice (noindex,follow, corsia C1): NON entrano in sitemap,
+ *    una URL noindex qui e' un segnale contraddittorio e spreca crawl budget.
  *  - pillar: /cantieri, /guide + pillar con answerFirst non vuoto (stub esclusi).
- *  - geo: regioni + province + comuni (dato persistente).
+ *  - geo: regioni + province (dato persistente).
  *  - /esplora è sempre noindex,follow: NON entra (route /lavori/* rimossa, era soft-404 mai linkata).
  *  - Le schede bando vivono su bandigaredappalto.it (canonica li'): non incluse.
  */
@@ -44,6 +43,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/regioni`, lastModified: now, changeFrequency: 'daily', priority: 0.9 },
     { url: `${baseUrl}/statistiche`, lastModified: now, changeFrequency: 'weekly', priority: 0.8 },
     { url: `${baseUrl}/bandi`, lastModified: now, changeFrequency: 'daily', priority: 0.8 },
+    { url: `${baseUrl}/per-le-imprese`, lastModified: now, changeFrequency: 'weekly', priority: 0.9 },
     { url: `${baseUrl}/iscriviti`, lastModified: now, changeFrequency: 'monthly', priority: 0.7 },
     { url: `${baseUrl}/glossario`, lastModified: now, changeFrequency: 'monthly', priority: 0.7 },
     { url: `${baseUrl}/per-pubbliche-amministrazioni`, lastModified: now, changeFrequency: 'monthly', priority: 0.6 },
@@ -81,11 +81,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ];
 
   // Geo (dato persistente)
-  const [regioni, province, comuni, cantieriSlugs] = await Promise.all([
+  const [regioni, province] = await Promise.all([
     getCantieriRegioniCached(),
     getAllProvince(),
-    getAllComuni(500),
-    getIndexableCantieriSlugs(5000),
   ]);
 
   const regionPages: MetadataRoute.Sitemap = regioni.map((r) => ({
@@ -100,27 +98,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     changeFrequency: 'daily',
     priority: 0.75,
   }));
-  const comunePages: MetadataRoute.Sitemap = comuni.map((c) => ({
-    url: `${baseUrl}/comune/${slugify(c.comune)}`,
-    lastModified: now,
-    changeFrequency: 'daily',
-    priority: 0.7,
-  }));
-
-  // Foglie index-gate (scheda_pubblicabile=true): le noindex restano fuori.
-  const cantierePages: MetadataRoute.Sitemap = cantieriSlugs.map((c) => ({
-    url: `${baseUrl}/cantiere/${c.slug}`,
-    lastModified: c.updated_at ? new Date(c.updated_at) : now,
-    changeFrequency: 'monthly',
-    priority: 0.5,
-  }));
 
   return [
     ...staticPages,
     ...pillarPages,
     ...regionPages,
     ...provinciaPages,
-    ...comunePages,
-    ...cantierePages,
   ];
 }
