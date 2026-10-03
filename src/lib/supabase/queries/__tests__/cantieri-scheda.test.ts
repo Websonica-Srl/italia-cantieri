@@ -1,4 +1,12 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
+
+// `cache` di React esiste solo nel runtime server di Next: in vitest il
+// pacchetto react 18 non la esporta e l'import di ./cantieri falliva.
+vi.mock('react', async (orig) => ({
+  ...(await orig<typeof import('react')>()),
+  cache: <T,>(fn: T) => fn,
+}));
+
 import { unitaOf, mqOf } from '../cantieri-scheda';
 
 describe('fallback jsonb unita/mq', () => {

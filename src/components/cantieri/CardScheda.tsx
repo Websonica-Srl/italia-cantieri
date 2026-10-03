@@ -2,8 +2,8 @@ import Link from 'next/link';
 import { MapPin, Radio, type LucideIcon } from 'lucide-react';
 import {
   INTERVENTO_META, DESTINAZIONE_META, SCALA_META, TIPOLOGIA_META, SEGNALE_META,
-  VALORE_METODO_LABELS, TITOLO_LABELS, TITOLO_GUIDA_SLUG,
-  isMeaningful, formatValoreRange,
+  TITOLO_LABELS, TITOLO_GUIDA_SLUG,
+  isMeaningful,
   type DestinazioneUso, type TipoTitolo,
 } from '@websonica/cantieri-core';
 import type { CantiereScheda } from '@/lib/supabase/queries/cantieri-scheda';
@@ -172,9 +172,9 @@ export default function CardScheda({ c }: { c: CantiereScheda }) {
   }
 
   // Valore stimato
-  const valoreLabel = formatValoreRange(c.valore_min, c.valore_max, c.valore_metodo);
+  const valoreLabel = c.fascia_valore;
   if (valoreLabel) {
-    const metodoLabel = c.valore_metodo ? VALORE_METODO_LABELS[c.valore_metodo] : undefined;
+    const metodoLabel = 'fascia indicativa, stima precisa con account';
     cards.push(
       <FactCard
         key="valore"

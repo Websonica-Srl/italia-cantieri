@@ -2,7 +2,6 @@ import { Hash, TrendingUp, FileDown, BellRing, ArrowRight, ShieldCheck } from 'l
 import type { CantiereScheda } from '@/lib/supabase/queries/cantieri-scheda';
 import { hubRegisterUrl, prepA } from '@/lib/utils';
 import { maskCivico } from '@/lib/cantieri/mask';
-import { formatValoreRange } from '@websonica/cantieri-core';
 
 interface Props {
   c: CantiereScheda;
@@ -25,7 +24,7 @@ export default function TeaserPremiumR7({ c }: Props) {
   });
 
   const civicoPagina = maskCivico(c.civico) || 'non disponibile';
-  const rangeLargo = formatValoreRange(c.valore_min, c.valore_max, c.valore_metodo);
+  const rangeLargo = c.fascia_valore;
   const rangeInPagina = rangeLargo || 'non stimato';
 
   const righe = [

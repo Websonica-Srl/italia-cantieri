@@ -106,9 +106,10 @@ export function cantiereLd(c: CantiereScheda) {
   const fragments: SchedaFragments = c.scheda
     ? schedaToSchemaFragments({
         scheda: c.scheda as any,
-        valoreMin: c.valore_min,
-        valoreMax: c.valore_max,
-        valoreMetodo: c.valore_metodo,
+        // Solo la fascia pubblica; l'ultima fascia non ha tetto, quindi niente estimatedCost.
+        valoreMin: c.fascia_valore_a != null ? c.fascia_valore_da : null,
+        valoreMax: c.fascia_valore_a,
+        valoreMetodo: null,
         baseUrl: siteConfig.baseUrl,
       })
     : { additionalProperty: [], about: [] };

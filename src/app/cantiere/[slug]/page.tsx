@@ -13,7 +13,6 @@ import { isCantiereIndexable } from '@/lib/seo/indexable';
 import {
   displayInterventoLabel,
   isMeaningful,
-  formatValoreRange,
 } from '@websonica/cantieri-core';
 import { formatDate, formatEuro, formatNumber, prepA, regioneSlug, slugify } from '@/lib/utils';
 import { maskCivico } from '@/lib/cantieri/mask';
@@ -124,7 +123,7 @@ export default async function CantierePage({ params }: PageProps) {
   const frasiSorgente = c.scheda?.frasi_sorgente ?? [];
   const unita = unitaOf(c);
   const mq = mqOf(c);
-  const valoreLabel = formatValoreRange(c.valore_min, c.valore_max, c.valore_metodo);
+  const valoreLabel = c.fascia_valore;
   // Indirizzo: preferisci la forma normalizzata, ripiega su quella grezza.
   // Il civico resta sempre mascherato (R7 privacy).
   const indirizzoNorm = c.indirizzo_norm ?? c.indirizzo;

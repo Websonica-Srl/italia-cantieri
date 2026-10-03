@@ -1,11 +1,10 @@
 import { createServerClient } from '../client';
-import type { InterventoCategoria, ValoreMetodo } from '@websonica/cantieri-core';
+import type { InterventoCategoria } from '@websonica/cantieri-core';
 import { resolveComuneCanonico, type Cantiere } from './cantieri';
 
 export interface SchedaJson {
   unita_abitative?: number | null;
   superficie_mq?: number | null;
-  confidence?: number | null;
   frasi_sorgente?: { campo: string; frase: string }[];
   [k: string]: unknown;
 }
@@ -19,9 +18,14 @@ export interface CantiereScheda extends Cantiere {
   posizione_urbana: string | null;
   segnale_tipo: string | null;
   segnale_forza: number | null;
-  valore_min: number | null;
-  valore_max: number | null;
-  valore_metodo: ValoreMetodo | null;
+  /**
+   * Fascia larga di valore (richiamo commerciale, decisione di Alberto del
+   * 04/10/2026). La stima precisa (valore_min/max/metodo) e' riservata agli
+   * abbonati e non esce piu' dalla vista pubblica.
+   */
+  fascia_valore: string | null;
+  fascia_valore_da: number | null;
+  fascia_valore_a: number | null;
   mestieri: string[] | null;
   indirizzo_norm: string | null;
   civico_norm: string | null;
@@ -87,7 +91,10 @@ export async function getCantieriScheda(
   if (destinazione) query = query.eq('destinazione_uso', destinazione);
   if (scala) query = query.eq('scala', scala);
   if (mestiere) query = query.contains('mestieri', [mestiere]);
-  if (valore_min != null) query = query.gte('valore_max', valore_min);
+  // "valore almeno X": fasce che arrivano oltre X (l'ultima non ha tetto).
+  if (valore_min != null) {
+    query = query.or(`fascia_valore_a.gt.${Number(valore_min)},and(fascia_valore_da.not.is.null,fascia_valore_a.is.null)`);
+  }
   if (q) query = query.or(`descrizione.ilike.%${q}%,indirizzo.ilike.%${q}%,protocollo.ilike.%${q}%`);
   query = query.order(orderBy, { ascending: orderDirection === 'asc', nullsFirst: false });
   query = query.range(offset, offset + limit - 1);

@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { MapPin, Calendar, ArrowRight } from 'lucide-react';
 import {
-  displayInterventoLabel, formatValoreRange, mestiereLabel,
+  displayInterventoLabel, mestiereLabel,
   TITOLO_LABELS, type TipoTitolo,
   type Mestiere,
 } from '@websonica/cantieri-core';
@@ -19,7 +19,7 @@ export default function CardSchedaCompact({ c }: { c: CantiereScheda }) {
       ? TITOLO_LABELS[c.tipo_titolo as TipoTitolo]
       : null;
   const data = c.data_rilascio || c.data_pubblicazione;
-  const valoreLabel = formatValoreRange(c.valore_min, c.valore_max, c.valore_metodo);
+  const valoreLabel = c.fascia_valore;
   const mestieri = (c.mestieri as Mestiere[] | null) ?? [];
   const mestieriVisibili = mestieri.slice(0, MAX_MESTIERI);
   const mestieriExtra = mestieri.length - mestieriVisibili.length;
